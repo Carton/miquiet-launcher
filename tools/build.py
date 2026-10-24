@@ -23,26 +23,27 @@ def main():
     parser.add_argument("--test", action="store_true")
     parser.add_argument("--home-tool", action="store_true")
     parser.add_argument("--data-test", action="store_true", help="Build Android data/TLS test helper after building the APK")
+    parser.add_argument("--saver-test", action="store_true", help="Build Android local-image test helper after building the APK")
     args = parser.parse_args()
     build = ROOT / "nor/build"
     build.mkdir(parents=True, exist_ok=True)
-    if args.home_tool or args.data_test:
-        folder = build / ("data-test" if args.data_test else "home-tool")
+    if args.home_tool or args.data_test or args.saver_test:
+        folder = build / ("saver-test" if args.saver_test else "data-test" if args.data_test else "home-tool")
         target = folder / "classes"
         output = folder / "dex"
         target.mkdir(parents=True, exist_ok=True)
         output.mkdir(parents=True, exist_ok=True)
-        source = ROOT / ("tests/DashboardDataTest.java" if args.data_test else "tools/android/HomeTool.java")
+        source = ROOT / ("tests/SaverDataTest.java" if args.saver_test else "tests/DashboardDataTest.java" if args.data_test else "tools/android/HomeTool.java")
         run([JDK / "bin/javac.exe", "-source", "8", "-target", "8", "-Xlint:-options", "-encoding", "UTF-8",
              "-bootclasspath", ANDROID_JAR, "-classpath", build / "classes", "-d", target, source])
         jar = folder / "classes.jar"
         with zipfile.ZipFile(jar, "w", zipfile.ZIP_DEFLATED) as archive:
             for file in sorted(target.rglob("*.class")):
                 archive.write(file, file.relative_to(target).as_posix())
-        classpath = ["--classpath", build / "classes.jar"] if args.data_test else []
+        classpath = ["--classpath", build / "classes.jar"] if args.data_test or args.saver_test else []
         run([JDK / "bin/java.exe", "-cp", TOOLS / "lib/d8.jar", "com.android.tools.r8.D8",
              "--min-api", "23", "--lib", ANDROID_JAR, *classpath, "--output", output, jar])
-        helper = ROOT / "nor/dist" / ("quiet-data-tests.jar" if args.data_test else "quiet-home-tool.jar")
+        helper = ROOT / "nor/dist" / ("quiet-saver-tests.jar" if args.saver_test else "quiet-data-tests.jar" if args.data_test else "quiet-home-tool.jar")
         helper.parent.mkdir(exist_ok=True)
         with zipfile.ZipFile(helper, "w", zipfile.ZIP_DEFLATED) as archive:
             archive.write(output / "classes.dex", "classes.dex")
@@ -55,10 +56,13 @@ def main():
              ROOT / "app/src/main/java/local/mitv/launcher/LauncherPolicy.java",
              ROOT / "app/src/main/java/local/mitv/launcher/ForegroundState.java",
              ROOT / "app/src/main/java/local/mitv/launcher/DashboardPolicy.java",
+             ROOT / "app/src/main/java/local/mitv/launcher/SaverPolicy.java",
+             ROOT / "tests/SaverPolicyTest.java",
              ROOT / "tests/DashboardPolicyTest.java",
              ROOT / "tests/LauncherPolicyTest.java"])
         run([JDK / "bin/java.exe", "-cp", target, "local.mitv.launcher.LauncherPolicyTest"])
         run([JDK / "bin/java.exe", "-cp", target, "local.mitv.launcher.DashboardPolicyTest"])
+        run([JDK / "bin/java.exe", "-cp", target, "local.mitv.launcher.SaverPolicyTest"])
         return
     generated = build / "generated"
     classes = build / "classes"

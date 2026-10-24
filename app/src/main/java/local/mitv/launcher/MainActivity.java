@@ -54,6 +54,14 @@ public final class MainActivity extends Activity {
     private TextView clock;
     private Ui.Icon networkIcon;
     private DashboardPanel dashboard;
+    private SaverSettings saverSettings;
+    private boolean desktopResumed;
+    private final Runnable idleSaver = () -> {
+        android.os.PowerManager power = (android.os.PowerManager)getSystemService(POWER_SERVICE);
+        if (desktopResumed && hasWindowFocus() && power.isInteractive() && prefs.getBoolean("saver_enabled",true)) {
+            startActivity(new Intent(this,ScreensaverActivity.class));
+        }
+    };
     private TextView previewTitle;
     private LinearLayout dock;
     private FrameLayout previewBox;
@@ -85,6 +93,7 @@ public final class MainActivity extends Activity {
         registerReceiver(packageChanges, changes);
         actions = new DeviceActions(this);
         dashboard = new DashboardPanel(this, prefs, () -> launchPackage("com.xiaomi.tweather"));
+        saverSettings = new SaverSettings(this,prefs);
         buildLayout();
     }
 
@@ -283,7 +292,7 @@ public final class MainActivity extends Activity {
     }
 
     private void showSettings() {
-        String[] choices = {"配置首页应用", "调整应用顺序", "电视设置", "网络与连接", "蓝牙", "图像", "声音", "文件管理 / 小米路由", "无线投屏", "桌面接管与恢复", "返回原厂桌面", "天气位置与新闻刷新"};
+        String[] choices = {"配置首页应用", "调整应用顺序", "电视设置", "网络与连接", "蓝牙", "图像", "声音", "文件管理 / 小米路由", "无线投屏", "桌面接管与恢复", "返回原厂桌面", "天气位置与新闻刷新", "本地图片屏保"};
         new AlertDialog.Builder(this).setTitle("桌面设置").setItems(choices, (dialog, which) -> {
             switch (which) {
                 case 0: configureFavorites(); break;
@@ -298,6 +307,7 @@ public final class MainActivity extends Activity {
                 case 9: bridgeSettings(); break;
                 case 10: returnFactory(); break;
                 case 11: dashboard.weatherSettings(); break;
+                case 12: saverSettings.show(); break;
                 default: break;
             }
         }).setNegativeButton("关闭", null).show();
@@ -455,6 +465,7 @@ public final class MainActivity extends Activity {
 
     @Override protected void onResume() {
         super.onResume();
+        desktopResumed = true; resetSaverTimer();
         android.util.Log.i("QuietTV", "Desktop resumed at=" + android.os.SystemClock.elapsedRealtime());
         if (preview != null) {
             if (appsDirty) {
@@ -466,6 +477,8 @@ public final class MainActivity extends Activity {
     }
 
     @Override protected void onPause() {
+        desktopResumed = false;
+        handler.removeCallbacks(idleSaver);
         handler.removeCallbacks(statusTick);
         if (preview != null) preview.pause();
         super.onPause();
@@ -475,7 +488,27 @@ public final class MainActivity extends Activity {
         unregisterReceiver(packageChanges);
         handler.removeCallbacks(statusTick);
         dashboard.close();
+        saverSettings.close();
+        handler.removeCallbacks(idleSaver);
         super.onDestroy();
+    }
+
+    private void resetSaverTimer() {
+        handler.removeCallbacks(idleSaver);
+        if (desktopResumed && prefs != null && hasWindowFocus() && prefs.getBoolean("saver_enabled",true)) {
+            handler.postDelayed(idleSaver,SaverPolicy.waitMinutes(prefs.getInt("saver_wait_minutes",12)) * 60_000L);
+        }
+    }
+
+    @Override public void onUserInteraction() { super.onUserInteraction(); resetSaverTimer(); }
+    @Override public void onWindowFocusChanged(boolean focused) { super.onWindowFocusChanged(focused); resetSaverTimer(); }
+    @Override public void onRequestPermissionsResult(int request, String[] permissions, int[] grants) {
+        super.onRequestPermissionsResult(request,permissions,grants);
+        if (request == SaverSettings.READ_IMAGES) saverSettings.permissionResult(grants);
+    }
+    @Override protected void onActivityResult(int request, int result, Intent data) {
+        super.onActivityResult(request,result,data);
+        if (request == SaverSettings.PICK_IMAGES && result == RESULT_OK) saverSettings.pickerResult(data);
     }
 
     @Override public boolean onKeyDown(int keyCode, KeyEvent event) {
