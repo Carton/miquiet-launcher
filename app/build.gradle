@@ -1,0 +1,29 @@
+apply plugin: 'com.android.application'
+
+android {
+    namespace 'local.mitv.launcher'
+    compileSdk 32
+    defaultConfig {
+        applicationId 'local.mitv.launcher'
+        minSdk 23
+        targetSdk 23
+        versionCode 7
+        versionName '0.3.2'
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    signingConfigs {
+        local {
+            storeFile rootProject.file('nor/.local/launcher.keystore')
+            storePassword 'android'
+            keyAlias 'quiet-tv'
+            keyPassword 'android'
+        }
+    }
+    buildTypes {
+        debug { signingConfig signingConfigs.local }
+        release { signingConfig signingConfigs.local; minifyEnabled false }
+    }
+}

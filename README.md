@@ -1,0 +1,73 @@
+# 简净桌面
+
+为这台 MiTV4-ANSM0（Android 6.0.1 / API 23）制作的精简桌面。按用户圈选图去掉账户、订购、频道导航、推广和 GITV 标识，保留信号源区域、底部应用栏和常用设置。
+
+## 使用
+
+- 遥控器方向键移动，确定打开；预览区域确定进入原厂全屏信号源。
+- 遥控器菜单键或右上角齿轮打开设置。
+- “配置首页应用”：勾选要显示的应用并保存。“我的应用”始终保留。
+- 长按首页应用可左移、右移或从首页移除；也可用“调整应用顺序”。移除首页入口不卸载应用。
+- 搜索覆盖本机已安装应用。
+- “返回原厂桌面”暂停接管并打开原厂；从应用列表重新打开简净桌面后恢复此前开启的接管。
+- 天气按钮打开原厂天气。温度数据受原厂 Provider 白名单限制，首版不直接展示温度。
+
+## Home 接管
+
+这台固件未提供标准无障碍设置页，“帐号与安全”中也没有该入口。首次启用或恢复接管，在电脑运行：
+
+```powershell
+python tools/enable_home.py
+```
+
+工具先保存现有授权，再通过应用自己的系统受限入口启用服务，向系统服务名单追加本项目，并检查实际绑定及原有两项小米服务是否仍在。它同时仅为本项目开启 GET_USAGE_STATS，用于弥补原厂主页缺失的窗口事件。应用没有 WRITE_SECURE_SETTINGS 权限。
+
+服务监听原厂主桌面的窗口事件，并在独立线程每 400ms 检查最近 3 秒的应用前台/后台事件。内存中只保留当前包名和页面类名，仅在确认原厂主页且接管未暂停时打开新桌面；不读取屏幕文字，不保存应用使用历史。返回原厂、暂停或服务解绑后，最终切换决定会在主线程再次检查状态。另有开机广播恢复路径。是否已通过实际重启验收，以 docs/verification.md 为准。
+
+## 安装与构建
+
+现有环境：Android Studio 位于 `ANDROID_STUDIO_HOME`，SDK 位于 `%LOCALAPPDATA%\Android\Sdk`，Java 11、SDK 32、Build Tools 32.0.0 已验证可构建。
+
+```powershell
+python tools/build.py --test
+python -m unittest discover -s tests -p test_restore.py -v
+python tools/build.py
+adb -s TV_IP:5555 install -r nor/dist/quiet-tv.apk
+adb -s TV_IP:5555 shell am start -n local.mitv.launcher/.MainActivity
+```
+
+构建脚本直接使用现有 SDK，不依赖 Gradle 下载。APK 在 `nor/dist/quiet-tv.apk`，本机开发签名密钥在 `nor/.local/launcher.keystore`；保留该密钥才能无卸载更新。可设置环境变量 `ANDROID_HOME`、`QUIET_TV_JDK` 改变路径。
+
+也提供 Android Studio Gradle 工程配置（AGP 7.4.2，需 Gradle 7.5 或兼容版本）；先用上述脚本生成本机签名密钥。Gradle 导入路径未代替已验证的直接构建流程。
+
+## 恢复
+
+正常回原厂：桌面菜单的“返回原厂桌面”。电脑端恢复：
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File tools/restore_tv.ps1
+```
+
+本固件不允许 shell 用 `pm disable-user` 修改应用状态；脚本调用自建桌面的恢复入口，由应用禁用自己的 Home 服务并返回原厂，只有具备系统 DUMP 权限的调用方（ADB shell）可触发该入口。随后只从服务名单移除本项目，并撤销本项目的前台应用检测授权，保留其他服务和其他应用的权限。不会卸载或修改原厂包。
+
+再次打开新桌面：
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File tools/restore_tv.ps1 -EnableNewLauncher
+```
+
+该命令只打开桌面。若要重新启用 Home 接管，运行 `python tools/enable_home.py`。设备重启可能关闭网络 ADB，需在电视设置中重新开启。
+
+## 备份与边界
+
+`nor/backups/2026-10-22/manifest.json` 记录 20 个 APK（约 308.7 MiB），包括当前原厂桌面和出厂版、设置、信号源、系统 UI、媒体管理、投屏及五个常用应用。每个文件已核对远端/本地 SHA-256、字节数和 ZIP CRC。备份还有包状态、系统设置和截图；这不是整机镜像，不包含完整应用私有数据。
+
+原厂桌面和系统包均保留。HDMI 真实视频依赖外部设备提供信号；没有信号时显示明确状态和原厂蓝色背景。当前固件只注册了 HDMI3 的 TvInputInfo，HDMI1/2 走与原厂一致的播放器入口，但系统缺失输入时无法保证完成切换；具体实测记录见 docs/verification.md。
+
+2026-10-24 已部署0.3.2，并通过同一APK连续两次完整重启：自动进入新桌面、服务和授权均保留。第二次重启后Home三次为2.33/1.44/1.73秒；视频应用、原厂HDMI播放器和网络设置没有被误切走，返回原厂/暂停/重新打开也已验证。严格3秒性能检查仍有偶发超限，外部应用退出时可能更慢，不承诺所有场景3秒内。完整证据见 docs/verification.md。
+
+取证文档在 nor/research/，涉及本机状态和原厂反汇编，不应整目录公开上传。
+
+## 本地资料
+
+Git 记录源码、工具、测试和文档；`nor/` 保存不提交的构建产物、原厂 APK 备份、签名密钥和取证资料。历史取证记录中的旧根目录路径均对应 `nor/` 下的同名目录。请单独备份 `nor/.local/launcher.keystore` 与原厂 APK；Git 不含这些文件。

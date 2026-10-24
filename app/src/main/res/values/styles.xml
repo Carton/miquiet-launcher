@@ -1,0 +1,12 @@
+<resources>
+    <style name="AppTheme" parent="android:style/Theme.Material.NoActionBar">
+        <item name="android:fontFamily">sans</item>
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowActionModeOverlay">true</item>
+        <item name="android:colorAccent">#62DDBB</item>
+        <item name="android:windowBackground">#1A1C20</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowSoftInputMode">adjustNothing</item>
+    </style>
+    <string name="accessibility_description">仅在原厂主桌面出现时打开简净桌面。不读取屏幕内容。可在桌面设置中暂停接管并返回原厂。</string>
+</resources>
