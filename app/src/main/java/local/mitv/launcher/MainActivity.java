@@ -13,6 +13,8 @@ import android.media.AudioManager;
 import android.media.tv.TvView;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.Settings;
@@ -50,7 +52,8 @@ public final class MainActivity extends Activity {
     private PreviewController preview;
     private FrameLayout root;
     private TextView clock;
-    private TextView connection;
+    private Ui.Icon networkIcon;
+    private DashboardPanel dashboard;
     private TextView previewTitle;
     private LinearLayout dock;
     private FrameLayout previewBox;
@@ -81,6 +84,7 @@ public final class MainActivity extends Activity {
         changes.addDataScheme("package");
         registerReceiver(packageChanges, changes);
         actions = new DeviceActions(this);
+        dashboard = new DashboardPanel(this, prefs, () -> launchPackage("com.xiaomi.tweather"));
         buildLayout();
     }
 
@@ -103,15 +107,11 @@ public final class MainActivity extends Activity {
         topButton(page, "搜索", "search", 178, 90, this::searchApps);
 
         FrameLayout sound = iconButton("声音设置", "sound", () -> actions.panel("sound_settings"));
-        Ui.place(page, sound, 38, 34, 657, 17);
+        Ui.place(page, sound, 38, 34, 568, 17);
         FrameLayout network = iconButton("网络设置", "wifi", () -> actions.panel("connect_settings"));
-        Ui.place(page, network, 38, 34, 701, 17);
-        connection = Ui.text(this, "天气", 14, Ui.MUTED);
-        connection.setGravity(Gravity.CENTER);
-        connection.setContentDescription("打开原厂天气");
-        Ui.focusable(connection, Color.TRANSPARENT, 7);
-        connection.setOnClickListener(v -> launchPackage("com.xiaomi.tweather"));
-        Ui.place(page, connection, 55, 34, 744, 17);
+        networkIcon = (Ui.Icon)network.getChildAt(0);
+        Ui.place(page, network, 38, 34, 612, 17);
+        Ui.place(page, dashboard.weather, 146, 34, 654, 17);
         clock = Ui.text(this, "", 19, Color.WHITE);
         clock.setGravity(Gravity.CENTER);
         Ui.place(page, clock, 64, 34, 800, 17);
@@ -120,15 +120,16 @@ public final class MainActivity extends Activity {
         FrameLayout hero = new FrameLayout(this);
         hero.setBackground(Ui.shape(this, Ui.PANEL, 0, 8));
         Ui.place(page, hero, 840, 282, 60, 82);
+        Ui.place(hero, dashboard.news, 190, 282, 0, 0);
 
         previewBox = new FrameLayout(this);
         Ui.focusable(previewBox, 0xff222b3c, 8);
         previewBox.setContentDescription("信号源预览，确定进入全屏");
-        Ui.place(hero, previewBox, 610, 282, 0, 0);
+        Ui.place(hero, previewBox, 406, 282, 204, 0);
         TvView tv = new TvView(this);
         tv.setFocusable(false);
         tv.setClickable(false);
-        Ui.place(previewBox, tv, 602, 274, 4, 4);
+        Ui.place(previewBox, tv, 398, 274, 4, 4);
         ImageView fallback = new ImageView(this);
         fallback.setScaleType(ImageView.ScaleType.FIT_XY);
         fallback.setBackgroundColor(0xff4061ce);
@@ -139,13 +140,13 @@ public final class MainActivity extends Activity {
         } catch (android.content.pm.PackageManager.NameNotFoundException ignored) {
             // The solid blue background remains usable if the original launcher is unavailable.
         }
-        Ui.place(previewBox, fallback, 602, 274, 4, 4);
+        Ui.place(previewBox, fallback, 398, 274, 4, 4);
         TextView hint = Ui.text(this, "正在连接信号源…", 16, 0xffd6dce7);
         hint.setGravity(Gravity.CENTER);
-        Ui.place(previewBox, hint, 590, 220, 10, 10);
+        Ui.place(previewBox, hint, 386, 220, 10, 10);
         previewTitle = Ui.text(this, "HDMI" + selectedPort, 18, Color.WHITE);
         previewTitle.setShadowLayer(4, 0, 1, Color.BLACK);
-        Ui.place(previewBox, previewTitle, 480, 30, 16, 240);
+        Ui.place(previewBox, previewTitle, 374, 30, 16, 240);
         preview = new PreviewController(this, tv, hint, fallback);
         previewBox.setOnClickListener(v -> actions.fullscreen(selectedPort));
 
@@ -265,11 +266,24 @@ public final class MainActivity extends Activity {
         clock.setText(new SimpleDateFormat("HH:mm", Locale.CHINA).format(new java.util.Date()));
         ConnectivityManager manager = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
         NetworkInfo info = manager.getActiveNetworkInfo();
-        connection.setContentDescription("打开原厂天气；网络" + (info != null && info.isConnected() ? "已连接" : "未连接"));
+        boolean connected = info != null && info.isConnected();
+        boolean wifi = connected && info.getType() == ConnectivityManager.TYPE_WIFI;
+        int level = -1;
+        if (wifi) {
+            WifiManager wifiManager = (WifiManager)getApplicationContext().getSystemService(WIFI_SERVICE);
+            WifiInfo signal = wifiManager.getConnectionInfo();
+            if (signal != null && signal.getRssi() > -127 && signal.getRssi() < 0) {
+                level = WifiManager.calculateSignalLevel(signal.getRssi(), 4);
+            }
+        }
+        networkIcon.setNetwork(wifi, connected, level);
+        ((View)networkIcon.getParent()).setContentDescription(!connected ? "网络未连接，打开网络设置" :
+            wifi ? "Wi-Fi 已连接，" + (level < 0 ? "信号强度未知" : "信号 " + (level + 1) + "/4") + "，打开网络设置" : "有线网络已连接，打开网络设置");
+        dashboard.tick();
     }
 
     private void showSettings() {
-        String[] choices = {"配置首页应用", "调整应用顺序", "电视设置", "网络与连接", "蓝牙", "图像", "声音", "文件管理 / 小米路由", "无线投屏", "桌面接管与恢复", "返回原厂桌面"};
+        String[] choices = {"配置首页应用", "调整应用顺序", "电视设置", "网络与连接", "蓝牙", "图像", "声音", "文件管理 / 小米路由", "无线投屏", "桌面接管与恢复", "返回原厂桌面", "天气位置与新闻刷新"};
         new AlertDialog.Builder(this).setTitle("桌面设置").setItems(choices, (dialog, which) -> {
             switch (which) {
                 case 0: configureFavorites(); break;
@@ -283,6 +297,7 @@ public final class MainActivity extends Activity {
                 case 8: launchPackage("com.xiaomi.mitv.smartshare"); break;
                 case 9: bridgeSettings(); break;
                 case 10: returnFactory(); break;
+                case 11: dashboard.weatherSettings(); break;
                 default: break;
             }
         }).setNegativeButton("关闭", null).show();
@@ -458,6 +473,8 @@ public final class MainActivity extends Activity {
 
     @Override protected void onDestroy() {
         unregisterReceiver(packageChanges);
+        handler.removeCallbacks(statusTick);
+        dashboard.close();
         super.onDestroy();
     }
 

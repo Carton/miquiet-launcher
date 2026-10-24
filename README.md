@@ -1,6 +1,6 @@
 # 简净桌面
 
-为这台 MiTV4-ANSM0（Android 6.0.1 / API 23）制作的精简桌面。按用户圈选图去掉账户、订购、频道导航、推广和 GITV 标识，保留信号源区域、底部应用栏和常用设置。
+为这台 MiTV4-ANSM0（Android 6.0.1 / API 23）从头编写的原生精简桌面。去掉账户、订购、频道导航、推广和 GITV 标识，保留信号源区域、底部应用栏和常用设置。当前版本 0.4.0 增加天气、国内／国际新闻，并向右收窄预览，为左侧信息栏留出空间。
 
 ## 使用
 
@@ -10,7 +10,9 @@
 - 长按首页应用可左移、右移或从首页移除；也可用“调整应用顺序”。移除首页入口不卸载应用。
 - 搜索覆盖本机已安装应用。
 - “返回原厂桌面”暂停接管并打开原厂；从应用列表重新打开简净桌面后恢复此前开启的接管。
-- 天气按钮打开原厂天气。温度数据受原厂 Provider 白名单限制，首版不直接展示温度。
+- 天气栏显示摄氏度、简短描述和天气图标，不显示城市。确定打开天气设置，可按网络自动定位或搜索城市，原厂天气入口也在这里。
+- 左侧“国内／国际”切换央视网新闻；确定标题查看摘要，底部翻页，长按页码刷新。每栏最多 12 条。
+- 天气约每 15 分钟、新闻约每 10 分钟刷新；更新失败标记缓存，天气超过 6 小时、新闻超过 48 小时停止显示。位置可因运营商出口或代理而偏移，能在天气设置中手动更改。
 
 ## Home 接管
 
@@ -29,9 +31,9 @@ python tools/enable_home.py
 现有环境：Android Studio 位于 `ANDROID_STUDIO_HOME`，SDK 位于 `%LOCALAPPDATA%\Android\Sdk`，Java 11、SDK 32、Build Tools 32.0.0 已验证可构建。
 
 ```powershell
-python tools/build.py --test
-python -m unittest discover -s tests -p test_restore.py -v
-python tools/build.py
+python -B tools/build.py --test
+python -B -m unittest discover -s tests -p test_restore.py -v
+python -B tools/build.py
 adb -s TV_IP:5555 install -r nor/dist/quiet-tv.apk
 adb -s TV_IP:5555 shell am start -n local.mitv.launcher/.MainActivity
 ```
@@ -64,10 +66,23 @@ powershell -NoProfile -ExecutionPolicy Bypass -File tools/restore_tv.ps1 -Enable
 
 原厂桌面和系统包均保留。HDMI 真实视频依赖外部设备提供信号；没有信号时显示明确状态和原厂蓝色背景。当前固件只注册了 HDMI3 的 TvInputInfo，HDMI1/2 走与原厂一致的播放器入口，但系统缺失输入时无法保证完成切换；具体实测记录见 docs/verification.md。
 
-2026-10-24 已部署0.3.2，并通过同一APK连续两次完整重启：自动进入新桌面、服务和授权均保留。第二次重启后Home三次为2.33/1.44/1.73秒；视频应用、原厂HDMI播放器和网络设置没有被误切走，返回原厂/暂停/重新打开也已验证。严格3秒性能检查仍有偶发超限，外部应用退出时可能更慢，不承诺所有场景3秒内。完整证据见 docs/verification.md。
+2026-10-24 的 0.3.2 通过了同一 APK 连续两次完整重启：自动进入新桌面、服务和授权均保留。当前 0.4.0 沿用同一接管实现，新增界面与数据功能的验收见 [本次记录](docs/dashboard-20261024.md)。严格 3 秒性能检查仍有偶发超限，外部应用退出时可能更慢，不承诺所有场景 3 秒内。完整接管记录见 docs/verification.md。
 
 取证文档在 nor/research/，涉及本机状态和原厂反汇编，不应整目录公开上传。
 
 ## 本地资料
 
 Git 记录源码、工具、测试和文档；`nor/` 保存不提交的构建产物、原厂 APK 备份、签名密钥和取证资料。历史取证记录中的旧根目录路径均对应 `nor/` 下的同名目录。请单独备份 `nor/.local/launcher.keystore` 与原厂 APK；Git 不含这些文件。
+
+## 数据源与开源复用
+
+实际复用 MIT 许可的 Tabler Icons 天气图标，已保留原始 SVG、许可、版本及转换脚本。天气用 Open-Meteo API，位置搜索用 Open-Meteo / GeoNames；新闻直接读取央视网国内／国际页面的数据。新闻内容不属于开源代码。详见 [第三方说明](THIRD_PARTY_NOTICES.md)。
+
+实机数据和 TLS 校验测试（先构建 APK，电视需开启 ADB）：
+
+```powershell
+python -B tools/check_dashboard.py
+python -B tools/check_home.py --max-seconds 8
+```
+
+Android 6 缺少较新的天气服务根证书，应用仅对三个固定数据服务补充公开 CA；保留系统链校验、主机名校验和 HTTPS。实机测试同时检查正常连接和三类无效证书拒绝。测试只运行临时 shell 程序，不安装测试应用。

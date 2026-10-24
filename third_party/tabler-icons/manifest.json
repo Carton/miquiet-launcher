@@ -1,0 +1,13 @@
+{
+  "source": "https://raw.githubusercontent.com/tabler/tabler-icons/v3.31.0/",
+  "sha256": {
+    "sun.svg": "6eaf26aaf098f0acd1e7f5c3ea616f14c55576577e83f5f53a97990f25183272",
+    "moon.svg": "a0ae8e9b875db0f914d5d7702afaf87b1ae78fcc09acc1ae4dca63c930e49b43",
+    "cloud.svg": "62d1495b2ff0fe56f7ff84883dc961ac82fd9fb7ac2c18606bb608416c5eb03d",
+    "mist.svg": "fe517153eb68649f9e71ed867ec515e7b897b6b5321c2b82751fd507ae60d171",
+    "cloud-rain.svg": "cfd50d428e63330a944c009d5c2cfebc0c8cbd87c7b8d3272af3c230f42b9c23",
+    "cloud-snow.svg": "01e0d1bcdf6e51a22c446f3c5f5f49f7e99b1af45e28d34ef3ba83a8d62395de",
+    "cloud-storm.svg": "cc850230e53c58fac11fa7a395a21336b181ed5510181a28a473626e46344a29",
+    "cloud-question.svg": "de947b883bf44a3f8d398bad9eeac70e0cee1364268a4024369d74dfa4b66aa6"
+  }
+}

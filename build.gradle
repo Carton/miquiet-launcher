@@ -3,5 +3,6 @@ buildscript {
     dependencies { classpath 'com.android.tools.build:gradle:7.4.2' }
 }
 allprojects {
+    buildDir = rootProject.file("nor/gradle/${project.name}")
     repositories { google(); mavenCentral() }
 }

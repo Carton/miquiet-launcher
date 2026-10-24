@@ -1,0 +1,10 @@
+{
+  "isrg_root_x1": {
+    "source": "https://letsencrypt.org/certs/isrgrootx1.pem",
+    "certificate_sha256": "96bcec06264976f37460779acf28c5a7cfe8a3c0aae11a8ffcee05c0bddf08c6"
+  },
+  "gts_root_r4": {
+    "source": "https://pki.goog/repo/certs/gtsr4.pem",
+    "certificate_sha256": "349dfa4058c5e263123b398ae795573c4e1313c83fe68f93556cd5e8031b3c7d"
+  }
+}

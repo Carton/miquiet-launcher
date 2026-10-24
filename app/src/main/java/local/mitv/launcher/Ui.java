@@ -54,7 +54,12 @@ final class Ui {
         private final String kind;
         private final Paint paint = new Paint(3);
         private final int color;
+        private int wifiLevel = -1;
+        private boolean wifi = true, connected;
         Icon(Context context, String kind, int color) { super(context); this.kind = kind; this.color = color; setImportantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_NO); }
+        void setNetwork(boolean wifi, boolean connected, int level) {
+            this.wifi = wifi; this.connected = connected; this.wifiLevel = level; invalidate();
+        }
         @Override protected void onDraw(Canvas canvas) {
             canvas.save();
             canvas.scale(getWidth() / 32f, getHeight() / 32f);
@@ -66,9 +71,22 @@ final class Ui {
             } else if (kind.equals("search")) {
                 canvas.drawCircle(13, 13, 8, paint); canvas.drawLine(19, 19, 27, 27, paint);
             } else if (kind.equals("wifi")) {
-                canvas.drawArc(new RectF(1, 5, 31, 31), 225, 90, false, paint);
-                canvas.drawArc(new RectF(7, 11, 25, 29), 225, 90, false, paint);
-                canvas.drawCircle(16, 24, 1, paint);
+                if (connected && !wifi) {
+                    canvas.drawRoundRect(new RectF(4, 7, 28, 23), 2, 2, paint);
+                    canvas.drawLine(16, 23, 16, 28, paint); canvas.drawLine(10, 28, 22, 28, paint);
+                } else {
+                    for (int i = 1; i <= 3; i++) {
+                        int radius = i * 5 + 1;
+                        paint.setColor(connected && wifiLevel >= i ? 0xffe2e4e8 : 0xff51545b);
+                        canvas.drawArc(new RectF(16 - radius, 28 - radius, 16 + radius, 28 + radius), 225, 90, false, paint);
+                    }
+                    paint.setColor(connected ? 0xffe2e4e8 : 0xff51545b);
+                    paint.setStyle(Paint.Style.FILL); canvas.drawCircle(16, 28, 1.8f, paint);
+                    if (!connected) {
+                        paint.setStyle(Paint.Style.STROKE); paint.setColor(0xffe2e4e8);
+                        canvas.drawLine(7, 6, 27, 28, paint);
+                    }
+                }
             } else if (kind.equals("router")) {
                 canvas.drawRoundRect(new RectF(4, 16, 28, 27), 2, 2, paint);
                 canvas.drawLine(8, 16, 6, 3, paint); canvas.drawLine(24, 16, 26, 3, paint);

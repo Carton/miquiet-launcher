@@ -1,0 +1,4 @@
+<!-- Adapted from Tabler Icons v3.31.0, MIT; see third_party/tabler-icons/LICENSE. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android" android:width="32dp" android:height="32dp" android:viewportWidth="24" android:viewportHeight="24">
+  <path android:pathData="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" android:fillColor="#00000000" android:strokeColor="#8ECFFF" android:strokeWidth="1.6" android:strokeLineCap="round" android:strokeLineJoin="round" />
+</vector>
