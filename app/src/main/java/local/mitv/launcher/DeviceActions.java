@@ -40,9 +40,10 @@ final class DeviceActions {
     void sources() { panel("INPUTSOURCE_POPUP"); }
 
     void media() {
-        Intent intent = activity.getPackageManager().getLaunchIntentForPackage("com.xiaomi.mitv.mediaexplorer");
-        if (intent != null) start(intent);
-        else Toast.makeText(activity, "文件管理未安装", Toast.LENGTH_SHORT).show();
+        // This firmware declares BROWSE_DEVICE_LIST but never handles it. WITH_PATH selects tab 0.
+        start(new Intent("duokan.mediaexplorer.intent.action.BROWSE_WITH_PATH")
+            .setClassName("com.xiaomi.mitv.mediaexplorer", "com.xiaomi.mitv.mediaexplorer.NewScraperMainEntryActivity")
+            .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK));
     }
 
     void accessibility() {

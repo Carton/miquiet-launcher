@@ -61,11 +61,35 @@ public final class DashboardDataTest {
         check(!DashboardRepository.validCoordinates(Double.NaN, 0));
         check(!DashboardRepository.validCoordinates(91, 0));
         check(DashboardRepository.validCoordinates(-90, 180));
+        String body = "这是一条用于验证解析的内容。";
+        StringBuilder longer = new StringBuilder(); for (int i = 0; i < 60; i++) longer.append(body);
+        JSONObject flash = new JSONObject().put("title","财经 &amp; 快讯").put("content_text",longer.toString())
+            .put("uri","http://wallstreetcn.com/livenews/123").put("display_time",now/1000-30);
+        JSONObject invalidFlash = new JSONObject(flash.toString()).put("uri","https://wallstreetcn.com.attacker.test/123");
+        List<DashboardRepository.Story> finance = DashboardRepository.parseFeed(new JSONObject().put("data",new JSONObject()
+            .put("items",new JSONArray().put(flash).put(flash).put(invalidFlash))).toString(),2);
+        check(finance.size() == 1 && finance.get(0).publisher.equals("华尔街见闻"));
+        check(finance.get(0).title.equals("财经 & 快讯") && finance.get(0).url.startsWith("https://"));
+        check(finance.get(0).brief.length() == 361 && finance.get(0).body.contains(body));
+        SimpleDateFormat rssDate = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss Z",Locale.US);
+        rssDate.setTimeZone(TimeZone.getTimeZone("GMT"));
+        String rssItem = "<item><title>科技 &amp; 中文</title><link>https://www.ithome.com/1/2/3.htm</link><pubDate>"
+            + rssDate.format(new Date(now-30_000)) + "</pubDate><description><![CDATA[<p>" + longer + "</p>]]></description></item>";
+        String rss = "<rss><channel>" + rssItem + rssItem + rssItem.replace("www.ithome.com/1", "www.ithome.com.attacker.test/1") + "</channel></rss>";
+        List<DashboardRepository.Story> tech = DashboardRepository.parseFeed(rss,3);
+        check(tech.size() == 1 && tech.get(0).publisher.equals("IT之家"));
+        check(tech.get(0).title.equals("科技 & 中文") && tech.get(0).body.contains("<p>"));
+        check(DashboardRepository.parseFeed(rss.replace("科技 &amp; 中文","京东补贴优惠券"),3).isEmpty());
+        check(DashboardRepository.parseFeed(rss.replace(rssDate.format(new Date(now-30_000)),rssDate.format(new Date(now-49*60*60_000L))),3).isEmpty());
+        check(DashboardRepository.parseFeed(rss,4).isEmpty());
         System.out.println("PASS: " + assertions + " Android data assertions");
-        if (args.length == 2) {
+        if (args.length >= 2) {
             SSLSocketFactory sockets;
             try (FileInputStream isrg = new FileInputStream(args[0]); FileInputStream google = new FileInputStream(args[1])) {
                 sockets = LegacyTls.factory(isrg, google);
+            }
+            if (args.length == 3 && args[2].equals("--news")) {
+                liveNews(sockets); return;
             }
             for (String host : new String[]{"ipwho.is", "api.open-meteo.com", "geocoding-api.open-meteo.com"}) {
                 HttpsURLConnection connection = (HttpsURLConnection)new URL("https://" + host + "/").openConnection();
@@ -80,6 +104,28 @@ public final class DashboardDataTest {
                 catch (SSLHandshakeException | SSLPeerUnverifiedException expected) { System.out.println("TLS REJECTED: " + host); }
                 finally { connection.disconnect(); }
             }
+        }
+    }
+
+    private static void liveNews(SSLSocketFactory sockets) throws Exception {
+        for (int i = 0; i < NewsSources.IDS.length; i++) {
+            HttpsURLConnection connection = (HttpsURLConnection)new URL(NewsSources.URLS[i]).openConnection();
+            connection.setSSLSocketFactory(sockets); connection.setConnectTimeout(8000); connection.setReadTimeout(8000);
+            connection.setInstanceFollowRedirects(false); connection.setRequestProperty("User-Agent","QuietTV/0.7");
+            try {
+                if (connection.getResponseCode() != 200) throw new AssertionError("HTTP " + connection.getResponseCode() + " " + NewsSources.IDS[i]);
+                java.io.ByteArrayOutputStream output = new java.io.ByteArrayOutputStream();
+                try (java.io.InputStream input = connection.getInputStream()) {
+                    byte[] buffer = new byte[8192]; int count;
+                    while ((count = input.read(buffer)) != -1) {
+                        if (output.size() + count > 512*1024) throw new AssertionError("Oversize feed");
+                        output.write(buffer,0,count);
+                    }
+                }
+                List<DashboardRepository.Story> stories = DashboardRepository.parseFeed(output.toString("UTF-8"),i);
+                if (stories.isEmpty()) throw new AssertionError("No recent " + NewsSources.IDS[i] + " stories");
+                System.out.println("NEWS LIVE: " + NewsSources.IDS[i] + " count=" + stories.size() + " newest=" + stories.get(0).time);
+            } finally { connection.disconnect(); }
         }
     }
 }

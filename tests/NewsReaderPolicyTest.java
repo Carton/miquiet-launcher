@@ -16,6 +16,12 @@ public final class NewsReaderPolicyTest {
         check(NewsReaderPolicy.address("intent://news.cctv.com/a") == null);
         check(NewsReaderPolicy.address(null) == null);
         check(NewsReaderPolicy.address("bad url") == null);
+        check(NewsReaderPolicy.address("https://www.ithome.com/1/2/3.htm") != null);
+        check(NewsReaderPolicy.address("http://www.qbitai.com/2026/10/story.html").startsWith("https://"));
+        check(NewsReaderPolicy.address("https://www.gcores.com/articles/123") != null);
+        check(NewsReaderPolicy.address("https://wallstreetcn.com/livenews/123") != null);
+        check(NewsReaderPolicy.address("https://www.qbitai.com.attacker.test/") == null);
+        check(NewsReaderPolicy.address("https://www.gcores.com:443/articles/123") == null);
         System.out.println("PASS: " + assertions + " news reader URL assertions");
     }
 }

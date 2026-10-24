@@ -24,7 +24,7 @@ final class SaverImages {
     }
 
     /** Copy into app-private storage so removing a USB drive cannot break a saved slideshow. */
-    static void add(Context context, InputStream source) throws Exception {
+    static synchronized void add(Context context, InputStream source) throws Exception {
         if (list(context).size() >= SaverPolicy.MAX_IMAGES) throw new java.io.IOException("最多保存24张图片");
         File dir = directory(context);
         if (!dir.isDirectory() && !dir.mkdirs()) throw new java.io.IOException("无法创建图片目录");
@@ -44,6 +44,10 @@ final class SaverImages {
             if (bounds.outWidth < 1 || bounds.outHeight < 1 || bounds.outWidth > 50000 || bounds.outHeight > 50000) {
                 throw new java.io.IOException("图片格式无效或尺寸过大");
             }
+            // A header alone is insufficient: reject images that cannot produce pixels.
+            Bitmap probe = decode(target,256,256);
+            if (probe == null) throw new java.io.IOException("图片已损坏或电视不支持此格式");
+            probe.recycle();
             File ready = new File(dir, target.getName().replace(".tmp", ".img"));
             if (!target.renameTo(ready)) throw new java.io.IOException("保存图片失败");
         } finally { if (target.exists()) target.delete(); }

@@ -20,9 +20,10 @@ final class LegacyTls {
 
     static void configure(HttpsURLConnection connection, Resources resources) throws Exception {
         String host = connection.getURL().getHost();
-        // Extra trust applies only to the three data service hosts, not arbitrary article links.
+        // Extra trust applies only to these data service hosts, not arbitrary article links.
         if (!(host.equals("ipwho.is") || host.equals("api.open-meteo.com")
-            || host.equals("geocoding-api.open-meteo.com"))) return;
+            || host.equals("geocoding-api.open-meteo.com") || host.equals("api-one.wallstcn.com")
+            || host.equals("www.ithome.com") || host.equals("www.gcores.com") || host.equals("www.qbitai.com"))) return;
         synchronized (LegacyTls.class) {
             if (sockets == null) {
                 try (InputStream isrg = resources.openRawResource(R.raw.isrg_root_x1);

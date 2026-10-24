@@ -41,10 +41,14 @@ final class DashboardRepository {
     }
 
     static final class Story {
-        final String title, brief, url;
+        final String title, brief, url, publisher, body;
         final long time;
         Story(String title, String brief, String url, long time) {
+            this(title, brief, url, time, "央视网", "");
+        }
+        Story(String title, String brief, String url, long time, String publisher, String body) {
             this.title = title; this.brief = brief; this.url = url; this.time = time;
+            this.publisher = publisher; this.body = body;
         }
     }
 
@@ -63,32 +67,49 @@ final class DashboardRepository {
     private final ExecutorService worker = Executors.newFixedThreadPool(3);
     private final Runnable changed;
     private volatile boolean closed;
-    private long nextWeather, nextChina, nextWorld;
-    private boolean weatherBusy, chinaBusy, worldBusy;
+    private long nextWeather;
+    private boolean weatherBusy;
+    private final long[] nextNews = new long[NewsSources.IDS.length];
+    private final boolean[] newsBusy = new boolean[NewsSources.IDS.length], newsFailed = new boolean[NewsSources.IDS.length];
+    private final List<List<Story>> news = new ArrayList<>();
     private int locationGeneration;
     Weather weather;
-    List<Story> china = Collections.emptyList(), world = Collections.emptyList();
-    boolean weatherFailed, chinaFailed, worldFailed;
+    boolean weatherFailed;
 
     DashboardRepository(Context context, SharedPreferences prefs, Runnable changed) {
         this.context = context.getApplicationContext(); this.prefs = prefs; this.changed = changed;
         try { weather = parseWeather(new JSONObject(prefs.getString("weather_cache", "{}"))); }
         catch (Exception ignored) {}
-        try { china = parseStories(prefs.getString("news_china_cache", ""), "china"); }
-        catch (Exception ignored) {}
-        try { world = parseStories(prefs.getString("news_world_cache", ""), "world"); }
-        catch (Exception ignored) {}
+        for (int i = 0; i < NewsSources.IDS.length; i++) {
+            news.add(Collections.emptyList());
+            final int category = i;
+            worker.execute(() -> {
+                try {
+                    List<Story> cached = parseFeed(prefs.getString("news_" + NewsSources.IDS[category] + "_cache", ""),category);
+                    deliver(() -> {
+                        // A live response may already have won the race. Never replace it with cache.
+                        if (news.get(category).isEmpty()) { news.set(category,cached); changed.run(); }
+                    });
+                } catch (Exception ignored) { /* Empty or old-format cache is harmless. */ }
+            });
+        }
     }
 
     private void deliver(Runnable action) {
         if (!closed) main.post(() -> { if (!closed) action.run(); });
     }
 
-    void refresh(boolean force) {
-        long now = System.currentTimeMillis();
-        if (!weatherBusy && (force || now >= nextWeather)) fetchWeather();
-        if (!chinaBusy && (force || now >= nextChina)) fetchNews("china");
-        if (!worldBusy && (force || now >= nextWorld)) fetchNews("world");
+    void refresh(int category) { refreshWeather(false); refreshNews(category, false); }
+    List<Story> stories(int category) { return news.get(NewsSources.index(category)); }
+    boolean failed(int category) { return newsFailed[NewsSources.index(category)]; }
+    boolean busy(int category) { return newsBusy[NewsSources.index(category)]; }
+    void refreshWeather(boolean force) {
+        if (!closed && !weatherBusy && (force || System.currentTimeMillis() >= nextWeather)) fetchWeather();
+    }
+    boolean refreshNews(int category, boolean force) {
+        int index = NewsSources.index(category);
+        if (closed || newsBusy[index] || (!force && System.currentTimeMillis() < nextNews[index])) return false;
+        fetchNews(index); return true;
     }
 
     private void fetchWeather() {
@@ -136,28 +157,25 @@ final class DashboardRepository {
         });
     }
 
-    private void fetchNews(String category) {
-        boolean domestic = category.equals("china");
-        if (domestic) { chinaBusy = true; nextChina = System.currentTimeMillis() + 10 * 60_000L; }
-        else { worldBusy = true; nextWorld = System.currentTimeMillis() + 10 * 60_000L; }
+    private void fetchNews(int category) {
+        newsBusy[category] = true;
+        nextNews[category] = System.currentTimeMillis() + 10 * 60_000L;
         worker.execute(() -> {
             try {
-                String data = get(NEWS_BASE + category + "_1.jsonp");
-                List<Story> stories = parseStories(data, category);
+                String response = get(NewsSources.URLS[category]);
+                List<Story> stories = parseFeed(response, category);
                 if (stories.isEmpty()) throw new IllegalArgumentException("No recent headlines");
                 deliver(() -> {
-                    if (domestic) { chinaBusy = false; china = stories; chinaFailed = false; }
-                    else { worldBusy = false; world = stories; worldFailed = false; }
-                    prefs.edit().putString("news_" + category + "_cache", data).apply();
-                    Log.i("QuietTVData", category + " updated count=" + stories.size() + " newest=" + stories.get(0).time);
+                    newsBusy[category] = false; news.set(category, stories); newsFailed[category] = false;
+                    prefs.edit().putString("news_" + NewsSources.IDS[category] + "_cache", response).apply();
+                    Log.i("QuietTVData", NewsSources.IDS[category] + " updated count=" + stories.size() + " newest=" + stories.get(0).time);
                     changed.run();
                 });
             } catch (Exception error) {
                 deliver(() -> {
-                    long retry = System.currentTimeMillis() + 2 * 60_000L;
-                    if (domestic) { chinaBusy = false; chinaFailed = true; nextChina = retry; }
-                    else { worldBusy = false; worldFailed = true; nextWorld = retry; }
-                    Log.w("QuietTVData", category + ": " + error.getClass().getSimpleName() + ": " + error.getMessage());
+                    newsBusy[category] = false; newsFailed[category] = true;
+                    nextNews[category] = System.currentTimeMillis() + 2 * 60_000L;
+                    Log.w("QuietTVData", NewsSources.IDS[category] + ": " + error.getClass().getSimpleName() + ": " + error.getMessage());
                     changed.run();
                 });
             }
@@ -234,10 +252,57 @@ final class DashboardRepository {
         return Collections.unmodifiableList(new ArrayList<>(result.subList(0, Math.min(12, result.size()))));
     }
 
+    static List<Story> parseFeed(String response, int category) throws Exception {
+        if (category < 2) return parseStories(response, NewsSources.IDS[category]);
+        List<Story> result = new ArrayList<>();
+        HashSet<String> seen = new HashSet<>();
+        long now = System.currentTimeMillis();
+        if (category == 2) {
+            JSONArray rows = new JSONObject(response).getJSONObject("data").getJSONArray("items");
+            for (int i = 0; i < rows.length(); i++) {
+                try {
+                    JSONObject row = rows.getJSONObject(i);
+                    String text = plain(row.optString("content_text"));
+                    String title = plain(row.optString("title"));
+                    if (title.isEmpty()) title = text;
+                    addStory(result, seen, category, title, text, row.getString("uri"), row.getLong("display_time") * 1000L,
+                        "<p>" + Html.escapeHtml(text).replace("\n", "</p><p>") + "</p>", now);
+                } catch (Exception ignored) { /* Individual malformed flash. */ }
+            }
+        } else {
+            for (RssFeed.Item item : RssFeed.parse(response)) {
+                String title = plain(item.title);
+                // Avoid shopping coupons in a technology headline slot.
+                if (category == 3 && (title.contains("神券") || title.contains("优惠券") || title.contains("京东补贴"))) continue;
+                addStory(result, seen, category, title, plain(item.body()), item.url, RssFeed.date(item.date), item.body(), now);
+            }
+        }
+        Collections.sort(result, (a, b) -> Long.compare(b.time, a.time));
+        return Collections.unmodifiableList(new ArrayList<>(result.subList(0, Math.min(12, result.size()))));
+    }
+
+    private static String plain(String html) { return Html.fromHtml(html).toString().replace('\u00a0', ' ').trim(); }
+    private static void addStory(List<Story> result, HashSet<String> seen, int category, String title,
+                                 String text, String url, long time, String body, long now) {
+        String address = NewsReaderPolicy.address(url);
+        try {
+            if (address == null || !NewsSources.articleHost(category, new URL(address).getHost())
+                || title.isEmpty() || !DashboardPolicy.fresh(time, now, NEWS_MAX_AGE) || !seen.add(address)) return;
+            String brief = text.length() > 360 ? text.substring(0, 360) + "…" : text;
+            // A short feed excerpt stays a summary; the reader loads the publisher's page instead.
+            String article = (category == 2 || text.length() >= 500) && body.length() <= 60_000 ? body : "";
+            result.add(new Story(title.length() > 160 ? title.substring(0, 160) + "…" : title,
+                brief, address, time, NewsSources.PUBLISHERS[category], article));
+        } catch (java.net.MalformedURLException ignored) {}
+    }
+
     private String get(String address) throws Exception {
+        return request(context,address);
+    }
+    static String request(Context context,String address) throws Exception {
         HttpURLConnection connection = (HttpURLConnection)new URL(address).openConnection();
         connection.setConnectTimeout(8000); connection.setReadTimeout(8000);
-        connection.setRequestProperty("User-Agent", "QuietTV/0.4 (personal Android TV launcher)");
+        connection.setRequestProperty("User-Agent", "QuietTV/0.7 (personal Android TV launcher)");
         connection.setInstanceFollowRedirects(false);
         try {
             if (connection instanceof javax.net.ssl.HttpsURLConnection) {

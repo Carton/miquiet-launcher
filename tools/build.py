@@ -3,8 +3,10 @@
 import argparse
 import os
 import pathlib
+import shutil
 import subprocess
 import zipfile
+from check_api import check as check_api
 
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
@@ -16,6 +18,17 @@ ANDROID_JAR = SDK / "platforms/android-32/android.jar"
 
 def run(args):
     subprocess.run([str(item) for item in args], check=True, cwd=ROOT)
+
+
+def reset_generated(path):
+    """Drop stale compiler outputs, only inside this workspace's explicit build directory."""
+    intended = (ROOT / "nor/build").absolute()
+    resolved = path.resolve()
+    if resolved == intended or not resolved.is_relative_to(intended) or path.is_symlink():
+        raise RuntimeError(f"Unexpected generated output path: {resolved}")
+    if path.exists():
+        shutil.rmtree(path)
+    path.mkdir(parents=True)
 
 
 def main():
@@ -31,8 +44,8 @@ def main():
         folder = build / ("saver-test" if args.saver_test else "data-test" if args.data_test else "home-tool")
         target = folder / "classes"
         output = folder / "dex"
-        target.mkdir(parents=True, exist_ok=True)
-        output.mkdir(parents=True, exist_ok=True)
+        reset_generated(target)
+        reset_generated(output)
         source = ROOT / ("tests/SaverDataTest.java" if args.saver_test else "tests/DashboardDataTest.java" if args.data_test else "tools/android/HomeTool.java")
         run([JDK / "bin/javac.exe", "-source", "8", "-target", "8", "-Xlint:-options", "-encoding", "UTF-8",
              "-bootclasspath", ANDROID_JAR, "-classpath", build / "classes", "-d", target, source])
@@ -51,7 +64,7 @@ def main():
         return
     if args.test:
         target = build / "test-classes"
-        target.mkdir(exist_ok=True)
+        reset_generated(target)
         run([JDK / "bin/javac.exe", "--release", "8", "-encoding", "UTF-8", "-d", target,
              ROOT / "app/src/main/java/local/mitv/launcher/LauncherPolicy.java",
              ROOT / "app/src/main/java/local/mitv/launcher/ForegroundState.java",
@@ -59,6 +72,15 @@ def main():
              ROOT / "app/src/main/java/local/mitv/launcher/SaverPolicy.java",
              ROOT / "tests/SaverPolicyTest.java",
              ROOT / "app/src/main/java/local/mitv/launcher/NewsReaderPolicy.java",
+             ROOT / "app/src/main/java/local/mitv/launcher/NewsSources.java",
+             ROOT / "app/src/main/java/local/mitv/launcher/RssFeed.java",
+             ROOT / "app/src/main/java/local/mitv/launcher/ArticleHtml.java",
+             ROOT / "app/src/main/java/local/mitv/launcher/SaverBrowser.java",
+             ROOT / "app/src/main/java/local/mitv/launcher/PhotoUploadServer.java",
+             ROOT / "tests/RssFeedTest.java",
+             ROOT / "tests/ArticleHtmlTest.java",
+             ROOT / "tests/SaverBrowserTest.java",
+             ROOT / "tests/PhotoUploadServerTest.java",
              ROOT / "tests/NewsReaderPolicyTest.java",
              ROOT / "tests/DashboardPolicyTest.java",
              ROOT / "tests/LauncherPolicyTest.java"])
@@ -66,13 +88,18 @@ def main():
         run([JDK / "bin/java.exe", "-cp", target, "local.mitv.launcher.DashboardPolicyTest"])
         run([JDK / "bin/java.exe", "-cp", target, "local.mitv.launcher.SaverPolicyTest"])
         run([JDK / "bin/java.exe", "-cp", target, "local.mitv.launcher.NewsReaderPolicyTest"])
+        run([JDK / "bin/java.exe", "-cp", target, "local.mitv.launcher.RssFeedTest"])
+        run([JDK / "bin/java.exe", "-cp", target, "local.mitv.launcher.ArticleHtmlTest"])
+        run([JDK / "bin/java.exe", "-cp", target, "local.mitv.launcher.SaverBrowserTest"])
+        run([JDK / "bin/java.exe", "-cp", target, "local.mitv.launcher.PhotoUploadServerTest"])
         return
     generated = build / "generated"
     classes = build / "classes"
     dex = build / "dex"
     dist = ROOT / "nor/dist"
-    for path in [generated, classes, dex, dist]:
-        path.mkdir(exist_ok=True)
+    for path in [generated, classes, dex]:
+        reset_generated(path)
+    dist.mkdir(exist_ok=True)
     resources = build / "resources.apk"
     run([TOOLS / "aapt.exe", "package", "-f", "-m", "-J", generated,
          "-M", ROOT / "app/src/main/AndroidManifest.xml",
@@ -83,6 +110,7 @@ def main():
     run([JDK / "bin/javac.exe", "-source", "8", "-target", "8", "-Xlint:-options", "-encoding", "UTF-8",
          "-bootclasspath", str(ANDROID_JAR) + os.pathsep + str(TOOLS / "core-lambda-stubs.jar"),
          "-d", classes, "@" + str(source_list)])
+    check_api(classes)
     class_jar = build / "classes.jar"
     with zipfile.ZipFile(class_jar, "w", zipfile.ZIP_DEFLATED) as archive:
         for file in sorted(classes.rglob("*.class")):

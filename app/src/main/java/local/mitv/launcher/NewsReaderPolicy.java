@@ -9,7 +9,9 @@ final class NewsReaderPolicy {
         try {
             URI uri = new URI(value);
             String host = uri.getHost(), scheme = uri.getScheme();
-            if (!("news.cctv.com".equalsIgnoreCase(host) || "m.news.cctv.com".equalsIgnoreCase(host))
+            boolean allowed = false;
+            for (int i = 0; i < NewsSources.IDS.length; i++) allowed |= NewsSources.articleHost(i, host);
+            if (!allowed
                 || !("https".equalsIgnoreCase(scheme) || "http".equalsIgnoreCase(scheme))
                 || uri.getRawUserInfo() != null || uri.getPort() != -1) return null;
             return "http".equalsIgnoreCase(scheme) ? "https" + value.substring(value.indexOf(':')) : value;

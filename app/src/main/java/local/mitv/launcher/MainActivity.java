@@ -162,8 +162,8 @@ public final class MainActivity extends Activity {
         preview = new PreviewController(this, tv, hint, fallback);
         previewBox.setOnClickListener(v -> actions.fullscreen(selectedPort));
 
-        String[] labels = {"HDMI3", "小米路由", "HDMI1", "HDMI2", "全部"};
-        String[] icons = {"hdmi", "router", "hdmi", "hdmi", "arrow"};
+        String[] labels = {"HDMI3", "文件管理", "HDMI1", "HDMI2", "全部"};
+        String[] icons = {"hdmi", "folder", "hdmi", "hdmi", "arrow"};
         int[] ports = {3, 0, 1, 2, 0};
         for (int i = 0; i < labels.length; i++) {
             final int index = i;
@@ -305,25 +305,22 @@ public final class MainActivity extends Activity {
     }
 
     private void showSettings() {
-        String[] choices = {"配置首页应用", "调整应用顺序", "电视设置", "网络与连接", "蓝牙", "图像", "声音", "文件管理 / 小米路由", "无线投屏", "桌面接管与恢复", "返回原厂桌面", "天气位置与新闻刷新", "本地图片屏保"};
+        String[] choices = {"电视设置", "配置首页应用", "网络与连接", "蓝牙", "图像", "声音", "文件管理", "无线投屏", "桌面接管与恢复", "本地图片屏保"};
         new AlertDialog.Builder(this).setTitle("桌面设置").setItems(choices, (dialog, which) -> {
             switch (which) {
-                case 0: configureFavorites(); break;
-                case 1: orderFavorites(); break;
-                case 2: actions.settings(); break;
-                case 3: actions.panel("connect_settings"); break;
-                case 4: actions.panel("bluetooth_settings"); break;
-                case 5: actions.panel("display_settings"); break;
-                case 6: actions.panel("sound_settings"); break;
-                case 7: actions.media(); break;
-                case 8: launchPackage("com.xiaomi.mitv.smartshare"); break;
-                case 9: bridgeSettings(); break;
-                case 10: returnFactory(); break;
-                case 11: dashboard.weatherSettings(); break;
-                case 12: saverSettings.show(); break;
+                case 0: actions.settings(); break;
+                case 1: configureFavorites(); break;
+                case 2: actions.panel("connect_settings"); break;
+                case 3: actions.panel("bluetooth_settings"); break;
+                case 4: actions.panel("display_settings"); break;
+                case 5: actions.panel("sound_settings"); break;
+                case 6: actions.media(); break;
+                case 7: launchPackage("com.xiaomi.mitv.smartshare"); break;
+                case 8: bridgeSettings(); break;
+                case 9: saverSettings.show(); break;
                 default: break;
             }
-        }).setNegativeButton("关闭", null).show();
+        }).setNegativeButton("关闭", null).setNeutralButton("数据与开源说明", (d,w) -> dashboard.showCredits()).show();
     }
 
     private void launchPackage(String pkg) {
@@ -354,15 +351,6 @@ public final class MainActivity extends Activity {
                 previewBox.requestFocus();
             }).setNegativeButton("取消", null).create();
         dialog.show();
-    }
-
-    private void orderFavorites() {
-        List<String> favorites = apps.favorites();
-        if (favorites.isEmpty()) { configureFavorites(); return; }
-        String[] names = new String[favorites.size()];
-        for (int i = 0; i < names.length; i++) names[i] = apps.all.get(favorites.get(i)).label;
-        new AlertDialog.Builder(this).setTitle("选择要调整的应用").setItems(names, (d, which) -> editFavorite(apps.all.get(favorites.get(which))))
-            .setNegativeButton("关闭", null).show();
     }
 
     private void editFavorite(Apps.App app) {
@@ -501,7 +489,6 @@ public final class MainActivity extends Activity {
         unregisterReceiver(packageChanges);
         handler.removeCallbacks(statusTick);
         dashboard.close();
-        saverSettings.close();
         handler.removeCallbacks(idleSaver);
         super.onDestroy();
     }
@@ -515,14 +502,6 @@ public final class MainActivity extends Activity {
 
     @Override public void onUserInteraction() { super.onUserInteraction(); resetSaverTimer(); }
     @Override public void onWindowFocusChanged(boolean focused) { super.onWindowFocusChanged(focused); resetSaverTimer(); }
-    @Override public void onRequestPermissionsResult(int request, String[] permissions, int[] grants) {
-        super.onRequestPermissionsResult(request,permissions,grants);
-        if (request == SaverSettings.READ_IMAGES) saverSettings.permissionResult(grants);
-    }
-    @Override protected void onActivityResult(int request, int result, Intent data) {
-        super.onActivityResult(request,result,data);
-        if (request == SaverSettings.PICK_IMAGES && result == RESULT_OK) saverSettings.pickerResult(data);
-    }
 
     @Override public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_MENU) { showSettings(); return true; }

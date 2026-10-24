@@ -88,6 +88,10 @@ final class Ui {
                         canvas.drawLine(7, 6, 27, 28, paint);
                     }
                 }
+            } else if (kind.equals("folder")) {
+                Path path = new Path(); path.moveTo(3,8); path.lineTo(12,8); path.lineTo(15,12);
+                path.lineTo(29,12); path.lineTo(29,27); path.lineTo(3,27); path.close(); canvas.drawPath(path,paint);
+                canvas.drawLine(3,16,29,16,paint);
             } else if (kind.equals("router")) {
                 canvas.drawRoundRect(new RectF(4, 16, 28, 27), 2, 2, paint);
                 canvas.drawLine(8, 16, 6, 3, paint); canvas.drawLine(24, 16, 26, 3, paint);
