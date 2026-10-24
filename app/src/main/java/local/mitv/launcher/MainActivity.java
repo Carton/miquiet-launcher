@@ -112,35 +112,38 @@ public final class MainActivity extends Activity {
         FrameLayout page = new FrameLayout(this);
         FrameLayout.LayoutParams pageParams = new FrameLayout.LayoutParams(dp(960), dp(540), Gravity.CENTER);
         root.addView(page, pageParams);
-        topButton(page, "信号源", "hdmi", 60, 110, () -> actions.sources());
-        topButton(page, "搜索", "search", 178, 90, this::searchApps);
+        topButton(page, "信号源", "hdmi", 12, 110, () -> actions.sources());
+        topButton(page, "搜索", "search", 130, 90, this::searchApps);
 
         FrameLayout sound = iconButton("声音设置", "sound", () -> actions.panel("sound_settings"));
-        Ui.place(page, sound, 38, 34, 568, 17);
+        Ui.place(page, sound, 38, 34, 610, 8);
         FrameLayout network = iconButton("网络设置", "wifi", () -> actions.panel("connect_settings"));
         networkIcon = (Ui.Icon)network.getChildAt(0);
-        Ui.place(page, network, 38, 34, 612, 17);
-        Ui.place(page, dashboard.weather, 146, 34, 654, 17);
+        Ui.place(page, network, 38, 34, 654, 8);
+        Ui.place(page, dashboard.weather, 146, 34, 696, 8);
         clock = Ui.text(this, "", 19, Color.WHITE);
         clock.setGravity(Gravity.CENTER);
-        Ui.place(page, clock, 64, 34, 800, 17);
-        Ui.place(page, iconButton("桌面设置", "settings", this::showSettings), 38, 34, 868, 17);
+        Ui.place(page, clock, 64, 34, 846, 8);
+        Ui.place(page, iconButton("桌面设置", "settings", this::showSettings), 38, 34, 910, 8);
 
         FrameLayout hero = new FrameLayout(this);
         hero.setBackground(Ui.shape(this, Ui.PANEL, 0, 8));
-        Ui.place(page, hero, 840, 282, 60, 82);
-        Ui.place(hero, dashboard.news, 190, 282, 0, 0);
+        Ui.place(page, hero, 936, 332, 12, 54);
+        Ui.place(hero, dashboard.news, 200, 332, 0, 0);
 
         previewBox = new FrameLayout(this);
         Ui.focusable(previewBox, 0xff222b3c, 8);
         previewBox.setContentDescription("信号源预览，确定进入全屏");
-        Ui.place(hero, previewBox, 406, 282, 204, 0);
+        Ui.place(hero, previewBox, 584, 332, 208, 0);
+        FrameLayout videoViewport = new FrameLayout(this);
+        videoViewport.setClipChildren(true);
+        Ui.place(previewBox, videoViewport, 576, 324, 4, 4);
         TvView tv = new TvView(this);
         tv.setFocusable(false);
         tv.setClickable(false);
-        Ui.place(previewBox, tv, 398, 274, 4, 4);
+        videoViewport.addView(tv, new FrameLayout.LayoutParams(-1, -1, Gravity.CENTER));
         ImageView fallback = new ImageView(this);
-        fallback.setScaleType(ImageView.ScaleType.FIT_XY);
+        fallback.setScaleType(ImageView.ScaleType.FIT_CENTER);
         fallback.setBackgroundColor(0xff4061ce);
         try {
             android.content.res.Resources original = getPackageManager().getResourcesForApplication("com.mitv.tvhome");
@@ -149,13 +152,13 @@ public final class MainActivity extends Activity {
         } catch (android.content.pm.PackageManager.NameNotFoundException ignored) {
             // The solid blue background remains usable if the original launcher is unavailable.
         }
-        Ui.place(previewBox, fallback, 398, 274, 4, 4);
+        Ui.place(previewBox, fallback, 576, 324, 4, 4);
         TextView hint = Ui.text(this, "正在连接信号源…", 16, 0xffd6dce7);
         hint.setGravity(Gravity.CENTER);
-        Ui.place(previewBox, hint, 386, 220, 10, 10);
+        Ui.place(previewBox, hint, 556, 260, 14, 12);
         previewTitle = Ui.text(this, "HDMI" + selectedPort, 18, Color.WHITE);
         previewTitle.setShadowLayer(4, 0, 1, Color.BLACK);
-        Ui.place(previewBox, previewTitle, 374, 30, 16, 240);
+        Ui.place(previewBox, previewTitle, 550, 30, 16, 288);
         preview = new PreviewController(this, tv, hint, fallback);
         previewBox.setOnClickListener(v -> actions.fullscreen(selectedPort));
 
@@ -167,11 +170,11 @@ public final class MainActivity extends Activity {
             FrameLayout row = new FrameLayout(this);
             Ui.focusable(row, Ui.PANEL, 5);
             row.setContentDescription(labels[i]);
-            Ui.place(row, new Ui.Icon(this, icons[i], Color.WHITE), 27, 27, 20, 15);
+            Ui.place(row, new Ui.Icon(this, icons[i], Color.WHITE), 25, 25, 10, 20);
             TextView label = Ui.text(this, labels[i], 18, Color.WHITE);
             label.setGravity(Gravity.CENTER_VERTICAL);
-            Ui.place(row, label, 142, 56, 67, 0);
-            Ui.place(hero, row, 226, 56, 612, i * 56);
+            Ui.place(row, label, 94, 66, 45, 0);
+            Ui.place(hero, row, 144, 66, 792, i * 66 + 1);
             row.setOnFocusChangeListener((v, focused) -> {
                 if (focused && ports[index] > 0) selectPort(ports[index]);
             });
@@ -190,7 +193,7 @@ public final class MainActivity extends Activity {
         dock.setOrientation(LinearLayout.HORIZONTAL);
         dock.setPadding(dp(6), dp(6), dp(6), 0);
         scroll.addView(dock, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT));
-        Ui.place(page, scroll, 864, 132, 48, 388);
+        Ui.place(page, scroll, 936, 130, 12, 398);
         renderDock();
         previewBox.requestFocus();
     }
@@ -204,7 +207,7 @@ public final class MainActivity extends Activity {
         text.setGravity(Gravity.CENTER_VERTICAL);
         Ui.place(view, text, width - 42, 34, 38, 0);
         view.setOnClickListener(v -> action.run());
-        Ui.place(page, view, width, 34, x, 17);
+        Ui.place(page, view, width, 34, x, 8);
     }
 
     private FrameLayout iconButton(String description, String kind, Runnable action) {
@@ -233,19 +236,29 @@ public final class MainActivity extends Activity {
             tile.setOnFocusChangeListener((v, focused) -> { if (focused) lastFocusKey = app.pkg; });
             tile.setOnClickListener(v -> actions.start(new Intent(app.intent)));
             tile.setOnLongClickListener(v -> { editFavorite(app); return true; });
-            dock.addView(tile, new LinearLayout.LayoutParams(dp(140), dp(124)));
+            dock.addView(tile, new LinearLayout.LayoutParams(dp(132), dp(124)));
             if (app.pkg.equals(lastFocusKey)) tile.requestFocus();
         }
+        FrameLayout factory = appTile("原厂桌面", null, true, "factory");
+        factory.setTag("factory");
+        factory.setOnFocusChangeListener((v, focused) -> { if (focused) lastFocusKey = "factory"; });
+        factory.setOnClickListener(v -> returnFactory());
+        dock.addView(factory, new LinearLayout.LayoutParams(dp(132), dp(124)));
+        if ("factory".equals(lastFocusKey)) factory.requestFocus();
         FrameLayout all = appTile("我的应用", null, true);
         all.setTag("all");
         all.setOnFocusChangeListener((v, focused) -> { if (focused) lastFocusKey = "all"; });
         all.setOnClickListener(v -> showApps(new ArrayList<>(apps.all.values()), "我的应用"));
         all.setOnLongClickListener(v -> { configureFavorites(); return true; });
-        dock.addView(all, new LinearLayout.LayoutParams(dp(140), dp(124)));
+        dock.addView(all, new LinearLayout.LayoutParams(dp(132), dp(124)));
         if ("all".equals(lastFocusKey)) all.requestFocus();
     }
 
     private FrameLayout appTile(String label, Apps.App app, boolean allApps) {
+        return appTile(label, app, allApps, "apps");
+    }
+
+    private FrameLayout appTile(String label, Apps.App app, boolean allApps, String iconKind) {
         FrameLayout tile = new FrameLayout(this);
         Ui.focusable(tile, Color.TRANSPARENT, 10);
         tile.setPadding(dp(3), dp(3), dp(3), dp(3));
@@ -253,21 +266,21 @@ public final class MainActivity extends Activity {
         if (allApps) {
             FrameLayout icon = new FrameLayout(this);
             icon.setBackground(Ui.shape(this, 0xff3b3e43, 0, 22));
-            Ui.place(icon, new Ui.Icon(this, "apps", Color.WHITE), 49, 49, 22, 22);
-            Ui.place(tile, icon, 94, 94, 23, 2);
+            Ui.place(icon, new Ui.Icon(this, iconKind, Color.WHITE), 49, 49, 22, 22);
+            Ui.place(tile, icon, 94, 94, 19, 2);
         } else {
             ImageView image = new ImageView(this);
             image.setImageDrawable(app.icon);
             image.setScaleType(ImageView.ScaleType.FIT_CENTER);
             image.setBackground(Ui.shape(this, Ui.PANEL, 0, 20));
             image.setClipToOutline(true);
-            Ui.place(tile, image, 94, 94, 23, 2);
+            Ui.place(tile, image, 94, 94, 19, 2);
         }
         TextView title = Ui.text(this, label, 15, Ui.MUTED);
         title.setGravity(Gravity.CENTER);
         title.setSingleLine(true);
         title.setEllipsize(TextUtils.TruncateAt.END);
-        Ui.place(tile, title, 136, 25, 2, 98);
+        Ui.place(tile, title, 128, 25, 2, 98);
         return tile;
     }
 

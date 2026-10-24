@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="local.mitv.launcher" android:versionCode="9" android:versionName="0.5.0">
+    package="local.mitv.launcher" android:versionCode="10" android:versionName="0.6.0">
     <uses-sdk android:minSdkVersion="23" android:targetSdkVersion="23" />
     <uses-feature android:name="android.software.leanback" android:required="false" />
     <uses-feature android:name="android.hardware.touchscreen" android:required="false" />
@@ -25,6 +25,9 @@
                 <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".NewsReaderActivity" android:exported="false"
+            android:screenOrientation="landscape"
+            android:configChanges="keyboard|keyboardHidden|navigation|orientation|screenSize" />
         <activity android:name=".ScreensaverActivity" android:exported="false"
             android:screenOrientation="landscape" android:excludeFromRecents="true"
             android:configChanges="keyboard|keyboardHidden|navigation|orientation|screenSize" />

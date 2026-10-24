@@ -1,5 +1,15 @@
 # 简净桌面交接（2026-10-24 更新）
 
+## 最新：0.6.0 布局与内置阅读已部署
+
+按标注图缩小边距至12dp，状态栏统一对齐、Wi-Fi上移，预览576×324dp严格16:9、右侧信号源列表收窄，底部加入原厂快捷入口。七个默认格子可同时显示。实际View树为1152×648px；真实HDMI信号仍未提供。
+
+系统WebView66已实测打开央视正文，使用contentdate/content_area提取并排版阅读文档，阅读时关闭脚本；支持方向键滚动和字号调整。没有浏览器也可用。组件不可用或文章确认不可读时隐藏对应入口；仅允许央视新闻域名，证书错误会取消。
+
+73项Java断言、4项恢复测试通过；原厂快捷入口保持在原厂，重开新桌面后Home三次1.48/1.70/2.34秒。屏保仍关闭-2，服务与授权保留。APK83,471字节，versionCode10，SHA-256 `b9fbed0fbf0389764b9f5a9c4bbb2a5ce058678ec76a42289aa51e4586a90d4c` 与安装成品一致。详见docs/layout-reader-20261024.md；最终截图nor/dist/layout-final.png。
+
+以下为0.5.0及更早的历史交接。
+
 ## 最新：0.5.0 本地屏保
 
 0.5.0 / versionCode 9 已增加本地屏保设置、电视／U盘导入及本地轮播；无照片时使用三幅 Canvas 风景与移动时钟。原厂自定义定时器 `system:screen_saver_timeout` 原为 720000，已备份后设为 -2 关闭，标准 Android 屏保开关原本就是 0。原厂相册与 TVSmartScreenSaver APK 均保留并另行备份。原厂屏保恢复命令 `python -B tools/screensaver_tv.py restore`，与 Home 恢复脚本独立。

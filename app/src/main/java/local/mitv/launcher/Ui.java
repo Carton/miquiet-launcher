@@ -75,6 +75,7 @@ final class Ui {
                     canvas.drawRoundRect(new RectF(4, 7, 28, 23), 2, 2, paint);
                     canvas.drawLine(16, 23, 16, 28, paint); canvas.drawLine(10, 28, 22, 28, paint);
                 } else {
+                    canvas.translate(0, -4);
                     for (int i = 1; i <= 3; i++) {
                         int radius = i * 5 + 1;
                         paint.setColor(connected && wifiLevel >= i ? 0xffe2e4e8 : 0xff51545b);
@@ -100,6 +101,11 @@ final class Ui {
                     double a = i * Math.PI / 4;
                     canvas.drawLine(16 + (float)Math.cos(a) * 10, 16 + (float)Math.sin(a) * 10, 16 + (float)Math.cos(a) * 13, 16 + (float)Math.sin(a) * 13, paint);
                 }
+            } else if (kind.equals("factory")) {
+                Path house = new Path(); house.moveTo(3,14); house.lineTo(16,3); house.lineTo(29,14);
+                house.moveTo(7,12); house.lineTo(7,28); house.lineTo(25,28); house.lineTo(25,12);
+                canvas.drawPath(house,paint);
+                canvas.drawLine(21,19,11,19,paint); canvas.drawLine(15,15,11,19,paint); canvas.drawLine(15,23,11,19,paint);
             } else if (kind.equals("apps")) {
                 for (int x : new int[]{5, 18}) for (int y : new int[]{5, 18}) canvas.drawRoundRect(new RectF(x, y, x + 9, y + 9), 1, 1, paint);
             } else {

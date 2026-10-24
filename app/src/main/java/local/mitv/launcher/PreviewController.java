@@ -5,6 +5,9 @@ import android.media.tv.TvContract;
 import android.media.tv.TvInputInfo;
 import android.media.tv.TvInputManager;
 import android.media.tv.TvView;
+import android.media.tv.TvTrackInfo;
+import android.view.Gravity;
+import android.widget.FrameLayout;
 import android.os.Handler;
 import android.util.Log;
 import android.view.View;
@@ -33,6 +36,7 @@ final class PreviewController {
         manager = (TvInputManager) context.getSystemService(Context.TV_INPUT_SERVICE);
         tv.setCallback(new TvView.TvInputCallback() {
             @Override public void onVideoAvailable(String inputId) {
+                fitVideo();
                 status.setVisibility(View.GONE);
                 fallback.setVisibility(View.GONE);
                 Log.i("QuietTV", "Preview video available: " + inputId);
@@ -47,6 +51,10 @@ final class PreviewController {
                 Log.w("QuietTV", "Preview connection failed: " + inputId);
             }
             @Override public void onDisconnected(String inputId) { message("信号已断开"); current = null; }
+            @Override public void onTracksChanged(String inputId, List<TvTrackInfo> tracks) { fitVideo(); }
+            @Override public void onTrackSelected(String inputId, int type, String trackId) {
+                if (type == TvTrackInfo.TYPE_VIDEO) fitVideo();
+            }
         });
     }
 
@@ -80,6 +88,7 @@ final class PreviewController {
             }
             if (input.equals(current)) return;
             tv.reset();
+            tv.setLayoutParams(new FrameLayout.LayoutParams(-1,-1,Gravity.CENTER));
             current = input;
             message("正在连接 HDMI" + port + "…");
             tv.setStreamVolume(0f);
@@ -93,6 +102,22 @@ final class PreviewController {
     }
 
     private void retry() { if (active) { current = null; select(port); } }
+    private void fitVideo() {
+        List<TvTrackInfo> tracks = tv.getTracks(TvTrackInfo.TYPE_VIDEO);
+        if (tracks == null || tracks.isEmpty()) return;
+        String selected = tv.getSelectedTrack(TvTrackInfo.TYPE_VIDEO);
+        TvTrackInfo video = tracks.get(0);
+        for (TvTrackInfo track : tracks) if (track.getId().equals(selected)) video = track;
+        if (video.getVideoWidth() <= 0 || video.getVideoHeight() <= 0) return;
+        View bounds = (View)tv.getParent();
+        int width = bounds.getWidth(), height = bounds.getHeight();
+        if (width <= 0 || height <= 0) return;
+        double pixelAspect = video.getVideoPixelAspectRatio();
+        double ratio = video.getVideoWidth() * (pixelAspect > 0 ? pixelAspect : 1) / video.getVideoHeight();
+        if (width / (double)height > ratio) width = Math.max(1,(int)Math.round(height * ratio));
+        else height = Math.max(1,(int)Math.round(width / ratio));
+        tv.setLayoutParams(new FrameLayout.LayoutParams(width,height,Gravity.CENTER));
+    }
     private void message(String text) {
         status.setText(text); status.setVisibility(View.VISIBLE);
         fallback.setVisibility(View.VISIBLE);

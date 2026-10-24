@@ -26,7 +26,9 @@ Copyright (c) 2020-2024 Paweł Kuna。完整许可见 [LICENSE](third_party/tabl
 
 ## 央视网 — 新闻内容
 
-来自央视网公开 [国内新闻](https://news.cctv.com/china/) 与 [国际新闻](https://news.cctv.com/world/) 页面实际使用的 `cmsdatainterface/page/{china,world}_1.jsonp` 数据。只作为 JSON 文本解析，不执行 JSONP JavaScript。展示标题、摘要、发布时间、来源和原文入口；不下载新闻图片或正文。旧版 RSS 的内容已停更，未使用。
+首页来自央视网公开 [国内新闻](https://news.cctv.com/china/) 与 [国际新闻](https://news.cctv.com/world/) 页面实际使用的 `cmsdatainterface/page/{china,world}_1.jsonp` 数据。只作为 JSON 文本解析，不执行 JSONP JavaScript。首页获取标题、摘要、发布时间、来源。旧版 RSS 的内容已停更，未使用。
+
+0.6.0 起，用户点击“阅读原文”后，通过电视自带 WebView 载入对应央视文章，读取原文并在本机排版为大字号正文，可能加载文章内的图片。保留央视来源，不打包或提交新闻正文。原站模板脚本仅在取正文阶段启用；阅读文档关闭脚本、文件和 Content URI 访问，没有 JavaScript 与本地代码的桥接，证书错误会取消连接。API 行为依据 [Android WebView 文档](https://developer.android.com/develop/ui/views/layout/webapps/webview) 与 [WebViewClient 文档](https://developer.android.com/reference/android/webkit/WebViewClient)。
 
 新闻内容版权归原权利人所有，**不是 MIT 或其他开源许可内容**。这是网页数据接口而非有稳定承诺的开放 API；接口变动时可能需要更新解析器。
 

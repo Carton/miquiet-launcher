@@ -73,17 +73,17 @@ final class DashboardPanel {
             headlines[i].setLineSpacing(Ui.dp(activity, 2), 1);
             Ui.focusable(headlines[i], Color.TRANSPARENT, 5);
             headlines[i].setOnClickListener(v -> { if (index < shown.size()) showStory(shown.get(index)); });
-            Ui.place(news, headlines[i], 174, 62, 8, 48 + i * 65);
+            Ui.place(news, headlines[i], 184, 80, 8, 48 + i * 83);
         }
         newsMeta = Ui.text(activity, "央视网 · 正在更新", 10, Ui.MUTED);
         newsMeta.setGravity(Gravity.CENTER_VERTICAL);
-        Ui.place(news, newsMeta, 128, 25, 14, 250);
+        Ui.place(news, newsMeta, 128, 25, 14, 300);
         next = Ui.text(activity, "更多 ›", 11, Ui.MUTED);
         next.setGravity(Gravity.CENTER);
         Ui.focusable(next, Color.TRANSPARENT, 4);
         next.setOnClickListener(v -> { page++; render(); });
         next.setOnLongClickListener(v -> { data.refresh(true); Toast.makeText(activity, "正在刷新天气和新闻", Toast.LENGTH_SHORT).show(); return true; });
-        Ui.place(news, next, 48, 25, 139, 250);
+        Ui.place(news, next, 48, 25, 146, 300);
         render();
     }
 
@@ -143,15 +143,12 @@ final class DashboardPanel {
     }
 
     private void showStory(DashboardRepository.Story story) {
-        new AlertDialog.Builder(activity).setTitle(story.title)
+        AlertDialog.Builder dialog = new AlertDialog.Builder(activity).setTitle(story.title)
             .setMessage("央视网 · " + format(story.time, "MM月dd日 HH:mm") + "\n\n" + (story.brief.isEmpty() ? "此条新闻暂无摘要。" : story.brief))
-            .setPositiveButton("关闭", null)
-            .setNeutralButton("打开原文", (d, w) -> {
-                try { activity.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(story.url))); }
-                catch (android.content.ActivityNotFoundException error) {
-                    Toast.makeText(activity, "电视未安装可打开网页的浏览器", Toast.LENGTH_LONG).show();
-                }
-            }).show();
+            .setPositiveButton("关闭", null);
+        if (NewsReaderActivity.canRead(activity,story.url)) dialog.setNeutralButton("阅读原文", (d,w) ->
+            activity.startActivity(new Intent(activity, NewsReaderActivity.class).putExtra("url",story.url).putExtra("title",story.title)));
+        dialog.show();
     }
 
     void weatherSettings() {

@@ -58,11 +58,14 @@ def main():
              ROOT / "app/src/main/java/local/mitv/launcher/DashboardPolicy.java",
              ROOT / "app/src/main/java/local/mitv/launcher/SaverPolicy.java",
              ROOT / "tests/SaverPolicyTest.java",
+             ROOT / "app/src/main/java/local/mitv/launcher/NewsReaderPolicy.java",
+             ROOT / "tests/NewsReaderPolicyTest.java",
              ROOT / "tests/DashboardPolicyTest.java",
              ROOT / "tests/LauncherPolicyTest.java"])
         run([JDK / "bin/java.exe", "-cp", target, "local.mitv.launcher.LauncherPolicyTest"])
         run([JDK / "bin/java.exe", "-cp", target, "local.mitv.launcher.DashboardPolicyTest"])
         run([JDK / "bin/java.exe", "-cp", target, "local.mitv.launcher.SaverPolicyTest"])
+        run([JDK / "bin/java.exe", "-cp", target, "local.mitv.launcher.NewsReaderPolicyTest"])
         return
     generated = build / "generated"
     classes = build / "classes"
