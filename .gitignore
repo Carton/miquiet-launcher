@@ -5,3 +5,17 @@ nor/
 **/build/
 local.properties
 __pycache__/
+.env
+.env.*
+!.env.example
+*.keystore
+*.jks
+*.p12
+*.pfx
+*.apk
+*.apks
+*.aab
+*.apk.idsig
+*.log
+*.bundle
+.playwright-mcp/

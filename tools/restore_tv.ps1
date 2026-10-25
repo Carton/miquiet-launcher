@@ -1,10 +1,12 @@
 param(
-    [string]$Serial = 'TV_IP:5555',
+    [string]$Serial,
+    [string]$ExpectedModel = 'MiTV4-ANSM0',
     [switch]$EnableNewLauncher
 )
 $ErrorActionPreference = 'Stop'
+if ([string]::IsNullOrWhiteSpace($Serial)) { throw 'Pass an explicit -Serial (ADB serial or TV_IP:PORT)' }
 $model = (& adb -s $Serial shell getprop ro.product.model).Trim()
-if ($LASTEXITCODE -ne 0 -or $model -ne 'MiTV4-ANSM0') {
+if ($LASTEXITCODE -ne 0 -or $model -ne $ExpectedModel) {
     throw "Device identity mismatch: $Serial / $model"
 }
 if ($EnableNewLauncher) {

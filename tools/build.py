@@ -11,7 +11,21 @@ from check_api import check as check_api
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 SDK = pathlib.Path(os.environ.get("ANDROID_HOME", str(pathlib.Path.home() / "AppData/Local/Android/Sdk")))
-JDK = pathlib.Path(os.environ.get("QUIET_TV_JDK", r"JDK_HOME"))
+def java_home():
+    explicit = os.environ.get("QUIET_TV_JDK") or os.environ.get("JAVA_HOME")
+    if explicit:
+        return pathlib.Path(explicit)
+    compiler = shutil.which("javac")
+    if compiler:
+        return pathlib.Path(compiler).resolve().parent.parent
+    studio = pathlib.Path(os.environ.get("ProgramFiles", "")) / "Android/Android Studio"
+    for runtime in (studio / "jbr", studio / "jre"):
+        if (runtime / "bin/javac.exe").exists():
+            return runtime
+    raise RuntimeError("Set QUIET_TV_JDK or JAVA_HOME to a JDK with javac (tested with JDK 11)")
+
+
+JDK = java_home()
 TOOLS = SDK / "build-tools/32.0.0"
 ANDROID_JAR = SDK / "platforms/android-32/android.jar"
 

@@ -10,7 +10,8 @@ ROOT = pathlib.Path(__file__).resolve().parents[1]
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--serial", default="TV_IP:5555")
+    parser.add_argument("--serial", required=True, help="Explicit adb device serial or TV_IP:PORT")
+    parser.add_argument("--expected-model", default="MiTV4-ANSM0", help="Model confirmed during device inspection")
     parser.add_argument("--news", action="store_true", help="Check all six live publisher feeds on the TV instead of the weather TLS suite")
     args = parser.parse_args()
 
@@ -19,7 +20,7 @@ def main():
                                 capture_output=True, check=True, timeout=120)
         return result.stdout.decode("utf-8", "replace")
 
-    if adb("shell", "getprop", "ro.product.model").strip() != "MiTV4-ANSM0":
+    if adb("shell", "getprop", "ro.product.model").strip() != args.expected_model:
         raise RuntimeError("Device identity mismatch")
     subprocess.run([sys.executable, "-B", ROOT / "tools/build.py", "--data-test"], check=True)
     # Package Installer removes its input APK after install; use a distinct test copy.

@@ -4,6 +4,7 @@ import argparse
 import datetime
 import json
 import pathlib
+import re
 import subprocess
 import sys
 import time
@@ -12,17 +13,22 @@ import time
 def main():
     sys.stdout.reconfigure(encoding="utf-8")
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--serial", default="TV_IP:5555")
+    parser.add_argument("--serial", required=True, help="Explicit adb device serial or TV_IP:PORT")
+    parser.add_argument("--expected-model", default="MiTV4-ANSM0", help="Model confirmed during device inspection")
     args = parser.parse_args()
 
     def adb(*command):
-        result = subprocess.run(["adb", "-s", args.serial, *command], capture_output=True, check=True)
+        result = subprocess.run(["adb", "-s", args.serial, *command], capture_output=True, check=True, timeout=30)
         return result.stdout.decode("utf-8", "replace").strip()
 
-    if adb("shell", "getprop", "ro.product.model") != "MiTV4-ANSM0":
+    if adb("shell", "getprop", "ro.product.model") != args.expected_model:
         raise RuntimeError("Device identity mismatch")
     original = adb("shell", "settings", "get", "secure", "enabled_accessibility_services")
     enabled = adb("shell", "settings", "get", "secure", "accessibility_enabled")
+    if original != "null" and not re.fullmatch(r"[A-Za-z0-9._$]+/[A-Za-z0-9._$]+(?::[A-Za-z0-9._$]+/[A-Za-z0-9._$]+)*", original):
+        raise RuntimeError("Cannot safely read the existing service list; no settings changed")
+    if enabled not in ("0", "1", "null"):
+        raise RuntimeError("Unexpected accessibility state; no settings changed")
     log = pathlib.Path(__file__).resolve().parents[1] / "nor/backups" / "home-activation"
     log.mkdir(parents=True, exist_ok=True)
     (log / (datetime.datetime.now().strftime("%Y%m%d-%H%M%S") + ".json")).write_text(

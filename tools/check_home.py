@@ -8,8 +8,8 @@ import time
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--serial", default="TV_IP:5555")
-    parser.add_argument("--max-seconds", type=float, default=3.0)
+    parser.add_argument("--serial", required=True, help="Explicit adb device serial or TV_IP:PORT")
+    parser.add_argument("--max-seconds", type=float, default=8.0)
     args = parser.parse_args()
 
     def adb(*command):

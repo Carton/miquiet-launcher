@@ -42,6 +42,15 @@ def inspect(source):
         dates = [dt.datetime.fromtimestamp(row["display_time"], dt.timezone.utc) for row in rows]
         if not all(row.get("uri") and (row.get("title") or row.get("content_text")) for row in rows):
             raise RuntimeError("Finance feed has missing story fields")
+    elif category == "game":
+        wrapper = re.fullmatch(r"\s*\((.*)\);\s*", text, re.S)
+        if not wrapper:
+            raise RuntimeError("Unexpected game wrapper")
+        payload = json.loads(wrapper.group(1))
+        if payload.get("status") != "ok":
+            raise RuntimeError("Game source unavailable")
+        rows = re.findall(r'<div\s+class="time">(.*?)</div>', payload["body"], re.S)
+        dates = [dt.datetime.strptime(value.strip(), "%Y-%m-%d %H:%M").replace(tzinfo=SHANGHAI) for value in rows]
     else:
         if "<!DOCTYPE" in text.upper() or "<!ENTITY" in text.upper():
             raise RuntimeError("Unexpected XML declaration")
@@ -53,7 +62,7 @@ def inspect(source):
     recent = [date for date in dates if dt.timedelta(minutes=-5) <= now - date <= dt.timedelta(hours=48)]
     if not recent:
         raise RuntimeError(f"No recent {category} stories")
-    file = DESTINATION / (category + (".xml" if category in ("tech", "game", "ai") else ".json"))
+    file = DESTINATION / (category + (".xml" if category in ("tech", "ai") else ".json"))
     file.write_bytes(data)
     return {"category": category, "url": url, "status": status, "bytes": len(data),
             "sha256": hashlib.sha256(data).hexdigest(), "items": len(rows), "recent_48h": len(recent),
@@ -78,7 +87,7 @@ def main():
     if (classes / "local/mitv/launcher/RssFeedTest.class").exists():
         from build import JDK
         subprocess.run([str(JDK / "bin/java.exe"), "-cp", str(classes), "local.mitv.launcher.RssFeedTest",
-                        *[str(DESTINATION / (category + ".xml")) for category in ("tech", "game", "ai")]], check=True)
+                        *[str(DESTINATION / (category + ".xml")) for category in ("tech", "ai")]], check=True)
 
 
 if __name__ == "__main__":

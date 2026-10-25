@@ -1,5 +1,7 @@
 # 简净桌面
 
+MIT开源。给其他agent的开发入口：[AGENTS.md](AGENTS.md)；为类似小米电视安装、接管和恢复：[完整部署指南](docs/agent-deployment.md)。新型号需先核对固件适配，不能视为通用替换所有电视的系统桌面。
+
 为这台 MiTV4-ANSM0（Android 6.0.1 / API 23）从头编写的原生精简桌面。去掉账户、订购、频道导航、推广和 GITV 标识，保留信号源区域、底部应用栏和常用设置。**0.7.2 已于 2026-10-25 安装**：AI栏目改为AIHOT，游戏改为面向PC的游民星空单机资讯，见 [本次换源记录](docs/news-sources-072.md)。精简菜单、天气点击原厂／长按三项、六分类横向新闻和统一屏保图片管理的完整实机验收见 [0.7.1记录](docs/acceptance-20261025.md)。
 
 ## 使用
@@ -20,7 +22,7 @@
 这台固件未提供标准无障碍设置页，“帐号与安全”中也没有该入口。首次启用或恢复接管，在电脑运行：
 
 ```powershell
-python tools/enable_home.py
+python tools/enable_home.py --serial TV_SERIAL --expected-model MODEL
 ```
 
 工具先保存现有授权，再通过应用自己的系统受限入口启用服务，向系统服务名单追加本项目，并检查实际绑定及原有两项小米服务是否仍在。它同时仅为本项目开启 GET_USAGE_STATS，用于弥补原厂主页缺失的窗口事件。应用没有 WRITE_SECURE_SETTINGS 权限。
@@ -38,24 +40,24 @@ python tools/enable_home.py
 这台固件的原厂广告屏保由 `screen_saver_timeout` 独立触发，标准 Android 的 `screensaver_enabled` 原本已关闭。已备份后将原厂定时器设置为 `-2`，并核对实际读回；未禁用或卸载原厂相册包。
 
 ```powershell
-python -B tools/screensaver_tv.py status
-python -B tools/screensaver_tv.py disable
+python -B tools/screensaver_tv.py status --serial TV_SERIAL --expected-model MODEL
+python -B tools/screensaver_tv.py disable --serial TV_SERIAL --expected-model MODEL --backup nor/backups/DEVICE/screensaver.json
 # 恢复备份中的原厂 12 分钟屏保设置（会恢复原厂广告屏保）
-python -B tools/screensaver_tv.py restore
+python -B tools/screensaver_tv.py restore --serial TV_SERIAL --expected-model MODEL --backup nor/backups/DEVICE/screensaver.json
 ```
 
 备份在 `nor/backups/screensaver-20261024/`，包括原设置和两个原厂 APK。恢复原厂桌面的工具与恢复原厂屏保是两个独立操作；在原厂设置重新选择屏保等待时间也可能覆盖关闭值。详见 [屏保验收](docs/screensaver-20261024.md)。
 
 ## 安装与构建
 
-现有环境：Android Studio 位于 `ANDROID_STUDIO_HOME`，SDK 位于 `%LOCALAPPDATA%\Android\Sdk`，Java 11、SDK 32、Build Tools 32.0.0 已验证可构建。
+已验证JDK11、SDK32、Build Tools32.0.0；电脑端工具需要Python3.11以上。用环境变量`QUIET_TV_JDK`／`JAVA_HOME`指定JDK、`ANDROID_HOME`指定SDK；也会尝试PATH中的javac与标准Android Studio目录。具体准备与设备检查见[部署指南](docs/agent-deployment.md)。`TV_SERIAL`和`MODEL`均为需要替换的占位符。
 
 ```powershell
 python -B tools/build.py --test
 python -B -m unittest discover -s tests -p test_restore.py -v
 python -B tools/build.py
-adb -s TV_IP:5555 install -r nor/dist/quiet-tv.apk
-adb -s TV_IP:5555 shell am start -n local.mitv.launcher/.MainActivity
+adb -s TV_SERIAL install -r nor/dist/quiet-tv.apk
+adb -s TV_SERIAL shell am start -n local.mitv.launcher/.MainActivity
 ```
 
 构建脚本直接使用现有 SDK，不依赖 Gradle 下载。APK 在 `nor/dist/quiet-tv.apk`，本机开发签名密钥在 `nor/.local/launcher.keystore`；保留该密钥才能无卸载更新。可设置环境变量 `ANDROID_HOME`、`QUIET_TV_JDK` 改变路径。
@@ -67,7 +69,7 @@ adb -s TV_IP:5555 shell am start -n local.mitv.launcher/.MainActivity
 正常回原厂：底部“原厂桌面”按钮。电脑端恢复：
 
 ```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File tools/restore_tv.ps1
+powershell -NoProfile -ExecutionPolicy Bypass -File tools/restore_tv.ps1 -Serial TV_SERIAL -ExpectedModel MODEL
 ```
 
 本固件不允许 shell 用 `pm disable-user` 修改应用状态；脚本调用自建桌面的恢复入口，由应用禁用自己的 Home 服务并返回原厂，只有具备系统 DUMP 权限的调用方（ADB shell）可触发该入口。随后只从服务名单移除本项目，并撤销本项目的前台应用检测授权，保留其他服务和其他应用的权限。不会卸载或修改原厂包。
@@ -75,10 +77,10 @@ powershell -NoProfile -ExecutionPolicy Bypass -File tools/restore_tv.ps1
 再次打开新桌面：
 
 ```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File tools/restore_tv.ps1 -EnableNewLauncher
+powershell -NoProfile -ExecutionPolicy Bypass -File tools/restore_tv.ps1 -Serial TV_SERIAL -ExpectedModel MODEL -EnableNewLauncher
 ```
 
-该命令只打开桌面。若要重新启用 Home 接管，运行 `python tools/enable_home.py`。设备重启可能关闭网络 ADB，需在电视设置中重新开启。
+该命令只打开桌面。若要重新启用Home接管，运行`python tools/enable_home.py --serial TV_SERIAL --expected-model MODEL`。设备重启可能关闭网络ADB，需在电视设置中重新开启。
 
 ## 备份与边界
 
@@ -94,6 +96,8 @@ powershell -NoProfile -ExecutionPolicy Bypass -File tools/restore_tv.ps1 -Enable
 
 Git 记录源码、工具、测试和文档；`nor/` 保存不提交的构建产物、原厂 APK 备份、签名密钥和取证资料。历史取证记录中的旧根目录路径均对应 `nor/` 下的同名目录。请单独备份 `nor/.local/launcher.keystore` 与原厂 APK；Git 不含这些文件。
 
+公开源码与Git历史已清理原设备地址和电脑路径，维护者选择保留提交作者姓名及邮箱。每次发布前运行`python -B tools/audit_public.py --history`并人工复核，见[发布前检查](docs/publishing.md)。不要发布`nor/`中的清理前历史恢复副本。
+
 ## 数据源与开源复用
 
 实际复用 MIT 许可的 Tabler Icons 天气图标，已保留原始 SVG、许可、版本及转换脚本。天气用 Open-Meteo API，位置搜索用 Open-Meteo / GeoNames；国内／国际新闻读取央视网页面数据；财经使用华尔街见闻快讯，科技用IT之家RSS，游戏直连游民星空单机列表、筛选PC相关内容，AI使用用户指定的AIHOT RSS。分类聚合与订阅阅读交互参考 NewsNow、Read You，未打包其应用代码。新闻内容不属于开源代码。详见 [第三方说明](THIRD_PARTY_NOTICES.md)。
@@ -101,9 +105,9 @@ Git 记录源码、工具、测试和文档；`nor/` 保存不提交的构建产
 实机数据和 TLS 校验测试（先构建 APK，电视需开启 ADB）：
 
 ```powershell
-python -B tools/check_dashboard.py
-python -B tools/check_dashboard.py --news
-python -B tools/check_home.py --max-seconds 8
+python -B tools/check_dashboard.py --serial TV_SERIAL --expected-model MODEL
+python -B tools/check_dashboard.py --serial TV_SERIAL --expected-model MODEL --news
+python -B tools/check_home.py --serial TV_SERIAL --max-seconds 8
 ```
 
 Android 6 缺少较新的天气服务根证书，应用仅对固定天气／新闻数据服务补充公开 CA；保留系统链校验、主机名校验和 HTTPS。实机测试同时检查正常连接和三类无效证书拒绝。测试只运行临时 shell 程序，不安装测试应用。

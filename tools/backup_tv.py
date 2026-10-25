@@ -29,8 +29,8 @@ FAVORITES = [
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--serial", default="TV_IP:5555")
-    parser.add_argument("--output", default="nor/backups/2026-10-22")
+    parser.add_argument("--serial", required=True, help="Explicit adb device serial or TV_IP:PORT")
+    parser.add_argument("--output", default="nor/backups/" + datetime.datetime.now().strftime("%Y%m%d-%H%M%S"))
     parser.add_argument("--workers", type=int, default=2)
     args = parser.parse_args()
     root = pathlib.Path(args.output).resolve()
