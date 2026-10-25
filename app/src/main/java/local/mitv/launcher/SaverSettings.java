@@ -19,13 +19,13 @@ final class SaverSettings {
         new AlertDialog.Builder(activity).setTitle("本地屏保 · " + (enabled ? "已开启" : "已关闭"))
             .setItems(choices, (d, which) -> {
                 if (which == 0) activity.startActivity(new Intent(activity,SaverLibraryActivity.class));
-                else if (which == 1) activity.startActivity(new Intent(activity,ScreensaverActivity.class));
+                else if (which == 1) activity.startActivity(new Intent(activity,ScreensaverActivity.class).putExtra(ScreensaverActivity.EXTRA_PREVIEW,true));
                 else if (which == 2) chooseTime(true);
                 else if (which == 3) chooseTime(false);
                 else { prefs.edit().putBoolean("saver_enabled", !enabled).apply(); show(); }
             }).setNegativeButton("关闭", null)
             .setNeutralButton("说明", (d,w) -> new AlertDialog.Builder(activity).setTitle("本地图片屏保")
-                .setMessage("仅在新桌面前台静置时启动，按任意键返回。\n\n在图片管理页中，可预览、批量导入或移除照片；也可从电脑或手机的浏览器向电视传图。\n\n照片会复制到电视内，拔掉U盘后仍可播放；移除屏保副本不删除原图。最多24张。\n\n未添加照片时使用三幅内置风景和移动时钟。屏保自身不联网，也不展示广告。")
+                .setMessage("自动屏保仅在新桌面前台静置时启动，按任意键返回。手动预览时，左右键切换图片，返回键退出预览。\n\n在图片管理页中，可预览、批量导入或移除照片；也可从电脑或手机的浏览器向电视传图。\n\n照片会复制到电视内，拔掉U盘后仍可播放；移除屏保副本不删除原图。最多24张。\n\n未添加照片时使用三幅内置风景和移动时钟。屏保自身不联网，也不展示广告。")
                 .setPositiveButton("关闭",null).show()).show();
     }
     private void chooseTime(boolean wait) {

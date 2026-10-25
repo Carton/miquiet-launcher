@@ -20,7 +20,7 @@ The default README and detailed deployment guide are in Simplified Chinese, refl
 
 ## Compatibility comes first
 
-The current version is **0.8.2**, adding a locally generated QR code for photo uploads with the session code filled automatically. It has been tested on **MiTV4-ANSM0 running Android 6.0.1 / API 23**. The minimum runtime API is 23. Other Xiaomi TVs require firmware checks and possibly adaptation; matching the brand or Android version alone does not establish compatibility. See the [QR upload record](docs/qr-upload-082.md), [science-source record](docs/science-news-081.md) and [settings-grid record](docs/settings-grid-080.md).
+The current version is **0.8.3**, adding Left/Right image navigation and Back to exit manual screensaver previews. It has been tested on **MiTV4-ANSM0 running Android 6.0.1 / API 23**. The minimum runtime API is 23. Other Xiaomi TVs require firmware checks and possibly adaptation; matching the brand or Android version alone does not establish compatibility. See the [preview controls record](docs/saver-preview-083.md), [QR upload record](docs/qr-upload-082.md), [science-source record](docs/science-news-081.md) and [settings-grid record](docs/settings-grid-080.md).
 
 ## Screenshots
 
@@ -117,6 +117,8 @@ Weather refreshes approximately every 15 minutes and the active news category ev
 ## Local photo screensaver
 
 Open the local screensaver settings and its photo library/import page. Import from the media library or TV folders, or choose computer/phone upload. Scan the QR code with a phone on the same LAN to open the upload page with its session code filled automatically. The TV generates the QR locally; it uses no external QR service. Manual address and six-digit code entry remain available. Closing the upload dialog or leaving the activity stops the server. Uploads use local HTTP; there is no interface for downloading existing photos.
+
+In a manual screensaver preview, Left/Right cycles through images and Back exits. The control hint and image count remain visible; other directional keys and OK do not exit. Automatic slide rotation continues at the configured interval, which restarts after each manual switch. Both preview entry points use these controls. The idle-triggered screensaver still exits on any key.
 
 Supported formats: JPG, PNG, WebP and BMP, up to 24 photos and 32 MB per photo. Imports are private copies; removing them does not delete the originals. Without selected photos, locally drawn landscapes and a moving clock are used. Defaults are 12 minutes of idle time and a 30-second slide interval, adjustable on the TV. The timer runs only while the launcher is foreground and focused, without interrupting apps, HDMI or settings. Any key exits the screensaver; the power key is left to the system. The screensaver itself has no networking code.
 

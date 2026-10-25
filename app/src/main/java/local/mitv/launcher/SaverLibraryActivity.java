@@ -82,7 +82,7 @@ public final class SaverLibraryActivity extends Activity {
         toolbar.addView(button("‹ 返回",this::onBackPressed),new LinearLayout.LayoutParams(dp(76),dp(36)));
         title = Ui.text(this,"屏保图片",22,Color.WHITE); title.setGravity(Gravity.CENTER_VERTICAL); title.setPadding(dp(16),0,0,0);
         toolbar.addView(title,new LinearLayout.LayoutParams(0,-1,1));
-        toolbar.addView(button("预览屏保",() -> startActivity(new Intent(this,ScreensaverActivity.class))),new LinearLayout.LayoutParams(dp(108),dp(36)));
+        toolbar.addView(button("预览屏保",() -> startActivity(new Intent(this,ScreensaverActivity.class).putExtra(ScreensaverActivity.EXTRA_PREVIEW,true))),new LinearLayout.LayoutParams(dp(108),dp(36)));
         LinearLayout controls = row(); page.addView(controls,new LinearLayout.LayoutParams(-1,dp(46)));
         sourceButton = button("添加图片",() -> { if (mode == LIBRARY) sources(); else leaveSources(); });
         controls.addView(sourceButton,new LinearLayout.LayoutParams(dp(120),dp(36)));

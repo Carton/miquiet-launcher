@@ -28,22 +28,22 @@ import java.util.concurrent.Executors;
 
 /** Local-only slideshow. It has no network path and opens only from the visible desktop. */
 public final class ScreensaverActivity extends Activity {
+    static final String EXTRA_PREVIEW = "preview";
     private final Handler handler = new Handler();
     private final ExecutorService worker = Executors.newSingleThreadExecutor();
     private FrameLayout root;
     private ImageView photo;
     private Ambient ambient;
-    private TextView clock;
+    private TextView clock, hint;
     private List<File> images;
-    private boolean active;
-    private int slide, generation;
-    private final Runnable next = new Runnable() {
-        @Override public void run() { showSlide(); handler.postDelayed(this, SaverPolicy.slideSeconds(
-            getSharedPreferences(Apps.PREFS, MODE_PRIVATE).getInt("saver_slide_seconds", 30)) * 1000L); }
-    };
+    private boolean active, preview;
+    private int slide, generation, clockStep;
+    private java.util.concurrent.Future<?> pending;
+    private final Runnable next = () -> { showSlide(slide+1); scheduleNext(); };
 
     @Override public void onCreate(Bundle state) {
         super.onCreate(state);
+        preview=getIntent().getBooleanExtra(EXTRA_PREVIEW,false);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
         root = new FrameLayout(this); root.setBackgroundColor(Color.BLACK); setContentView(root);
@@ -52,35 +52,46 @@ public final class ScreensaverActivity extends Activity {
         root.addView(photo, new FrameLayout.LayoutParams(-1, -1));
         clock = Ui.text(this, "", 38, 0xaaffffff); clock.setGravity(Gravity.CENTER); clock.setShadowLayer(3, 0, 1, Color.BLACK);
         root.addView(clock);
-        TextView hint = Ui.text(this, "按任意键返回桌面", 16, 0x88ffffff); hint.setGravity(Gravity.CENTER);
+        hint = Ui.text(this, preview ? "左右键切换图片 · 返回键退出预览" : "按任意键返回桌面", 16, 0x88ffffff);
+        hint.setGravity(Gravity.CENTER); hint.setShadowLayer(3,0,1,Color.BLACK);
         FrameLayout.LayoutParams hintParams = new FrameLayout.LayoutParams(-1, Ui.dp(this, 45), Gravity.BOTTOM);
-        root.addView(hint, hintParams); handler.postDelayed(() -> hint.setVisibility(View.GONE), 5000);
+        root.addView(hint, hintParams);
+        if(!preview)handler.postDelayed(() -> hint.setVisibility(View.GONE), 5000);
         images = SaverImages.list(this);
-        android.util.Log.i("QuietTVSaver", "started images=" + images.size());
+        android.util.Log.i("QuietTVSaver", "started images=" + images.size()+" preview="+preview);
     }
 
-    @Override protected void onResume() { super.onResume(); active = true; handler.post(next); }
+    @Override protected void onResume() { super.onResume(); active = true; showSlide(slide); scheduleNext(); }
     @Override protected void onPause() {
         active = false; generation++; handler.removeCallbacksAndMessages(null);
         super.onPause(); if (!isFinishing()) finish();
     }
     @Override protected void onDestroy() { active = false; handler.removeCallbacksAndMessages(null); worker.shutdownNow(); photo.setImageDrawable(null); super.onDestroy(); }
 
-    private void showSlide() {
-        final int index = slide++;
+    private void scheduleNext() {
+        handler.postDelayed(next,SaverPolicy.slideSeconds(
+            getSharedPreferences(Apps.PREFS,MODE_PRIVATE).getInt("saver_slide_seconds",30))*1000L);
+    }
+    private void showSlide(int requested) {
+        int count=images.isEmpty()?3:images.size();
+        slide=(requested%count+count)%count;
+        final int index=slide;
         final int token = ++generation;
+        if(pending!=null)pending.cancel(false);
+        if(preview)hint.setText("左右键切换图片 · "+(index+1)+"/"+count+" · 返回键退出预览");
         ambient.scene = index % 3; ambient.invalidate();
         android.text.SpannableString time = new android.text.SpannableString(new SimpleDateFormat("HH:mm\nMM月dd日 EEEE", Locale.CHINA).format(new Date()));
         time.setSpan(new android.text.style.RelativeSizeSpan(.45f),6,time.length(),android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         clock.setText(time);
         // Move the entire clock every slide rather than keeping bright text fixed on the panel.
+        int clockPosition=clockStep++%6;
         FrameLayout.LayoutParams clockParams = new FrameLayout.LayoutParams(Ui.dp(this, 270), Ui.dp(this, 110));
-        clockParams.leftMargin = Ui.dp(this, 55 + index % 3 * 260);
-        clockParams.topMargin = Ui.dp(this, index % 2 == 0 ? 60 : 355);
+        clockParams.leftMargin = Ui.dp(this, 55 + clockPosition % 3 * 260);
+        clockParams.topMargin = Ui.dp(this, clockPosition % 2 == 0 ? 60 : 355);
         clock.setLayoutParams(clockParams);
         if (images.isEmpty()) { photo.setImageDrawable(null); return; }
         File selected = images.get(index % images.size());
-        worker.execute(() -> {
+        pending=worker.submit(() -> {
             Bitmap bitmap = null;
             try { bitmap = SaverImages.decode(selected, getResources().getDisplayMetrics().widthPixels, getResources().getDisplayMetrics().heightPixels); }
             catch (RuntimeException | OutOfMemoryError error) { android.util.Log.w("QuietTVSaver", "Cannot decode local image"); }
@@ -95,10 +106,21 @@ public final class ScreensaverActivity extends Activity {
 
     @Override public boolean dispatchKeyEvent(KeyEvent event) {
         if (event.getKeyCode() == KeyEvent.KEYCODE_POWER || event.getKeyCode() == KeyEvent.KEYCODE_SLEEP) return super.dispatchKeyEvent(event);
+        if(preview) {
+            if(event.getAction()==KeyEvent.ACTION_DOWN) {
+                int key=event.getKeyCode();
+                if(key==KeyEvent.KEYCODE_BACK)finish();
+                else if(key==KeyEvent.KEYCODE_DPAD_LEFT || key==KeyEvent.KEYCODE_DPAD_RIGHT) {
+                    handler.removeCallbacks(next);
+                    showSlide(slide+(key==KeyEvent.KEYCODE_DPAD_LEFT?-1:1));scheduleNext();
+                }
+            }
+            return true;
+        }
         if (event.getAction() == KeyEvent.ACTION_DOWN) finish();
         return true;
     }
-    @Override public boolean dispatchTouchEvent(MotionEvent event) { if (event.getAction() == MotionEvent.ACTION_DOWN) finish(); return true; }
+    @Override public boolean dispatchTouchEvent(MotionEvent event) { if (!preview && event.getAction() == MotionEvent.ACTION_DOWN) finish(); return true; }
 
     /** Three original geometric landscapes, drawn locally when no photos are selected. */
     private static final class Ambient extends View {

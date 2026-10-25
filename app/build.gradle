@@ -7,8 +7,8 @@ android {
         applicationId 'local.mitv.launcher'
         minSdk 23
         targetSdk 23
-        versionCode 16
-        versionName '0.8.2'
+        versionCode 17
+        versionName '0.8.3'
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
