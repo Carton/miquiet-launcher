@@ -1,8 +1,14 @@
-# 简净桌面
+# 简净桌面 · MiQuiet Launcher
 
-MIT开源。给其他agent的开发入口：[AGENTS.md](AGENTS.md)；为类似小米电视安装、接管和恢复：[完整部署指南](docs/agent-deployment.md)。新型号需先核对固件适配，不能视为通用替换所有电视的系统桌面。
+**简体中文** | [English](README.en.md)
 
-为这台 MiTV4-ANSM0（Android 6.0.1 / API 23）从头编写的原生精简桌面。去掉账户、订购、频道导航、推广和 GITV 标识，保留信号源区域、底部应用栏和常用设置。**0.7.2 已于 2026-10-25 安装**：AI栏目改为AIHOT，游戏改为面向PC的游民星空单机资讯，见 [本次换源记录](docs/news-sources-072.md)。精简菜单、天气点击原厂／长按三项、六分类横向新闻和统一屏保图片管理的完整实机验收见 [0.7.1记录](docs/acceptance-20261025.md)。
+面向**小米电视 / 小米TV（Xiaomi TV / Mi TV）**的轻量开源桌面。保留常用应用、信号源入口和电视设置，配上天气、新闻与本地图片屏保，让首页回到日常需要的内容。
+
+原生Java编写，MIT开源。通过ADB安装，在已适配固件上使用无障碍服务接管Home；保留原厂桌面，支持返回和撤销接管。无需Root，不修改或覆盖小米原厂APK。这是社区项目，与小米官方无关联。
+
+给其他agent的开发入口：[AGENTS.md](AGENTS.md)；为类似小米电视安装、接管和恢复：[完整部署指南](docs/agent-deployment.md)。新型号需先核对固件适配，不能视为通用替换所有电视的系统桌面。
+
+当前版本为 **0.7.2**，已在MiTV4-ANSM0（Android 6.0.1 / API 23）实测。首页去掉账户、订购、频道导航、推广和GITV标识，保留信号源区域、可配置应用栏和常用设置。新闻换源见[0.7.2记录](docs/news-sources-072.md)，菜单、天气、新闻标签与屏保图片管理的完整实机验收见[0.7.1记录](docs/acceptance-20261025.md)。
 
 ## 使用
 
@@ -25,7 +31,7 @@ MIT开源。给其他agent的开发入口：[AGENTS.md](AGENTS.md)；为类似�
 python tools/enable_home.py --serial TV_SERIAL --expected-model MODEL
 ```
 
-工具先保存现有授权，再通过应用自己的系统受限入口启用服务，向系统服务名单追加本项目，并检查实际绑定及原有两项小米服务是否仍在。它同时仅为本项目开启 GET_USAGE_STATS，用于弥补原厂主页缺失的窗口事件。应用没有 WRITE_SECURE_SETTINGS 权限。
+工具先保存现有授权，再通过应用自己的系统受限入口启用服务，向系统服务名单追加本项目，并检查实际绑定及其他原有服务是否仍在。它同时仅为本项目开启 GET_USAGE_STATS，用于弥补原厂主页缺失的窗口事件。应用没有 WRITE_SECURE_SETTINGS 权限。
 
 服务监听原厂主桌面的窗口事件，并在独立线程每 400ms 检查最近 3 秒的应用前台/后台事件。内存中只保留当前包名和页面类名，仅在确认原厂主页且接管未暂停时打开新桌面；不读取屏幕文字，不保存应用使用历史。返回原厂、暂停或服务解绑后，最终切换决定会在主线程再次检查状态。另有开机广播恢复路径。是否已通过实际重启验收，以 docs/verification.md 为准。
 
@@ -54,13 +60,15 @@ python -B tools/screensaver_tv.py restore --serial TV_SERIAL --expected-model MO
 
 ```powershell
 python -B tools/build.py --test
-python -B -m unittest discover -s tests -p test_restore.py -v
+python -B -m unittest discover -s tests -p 'test_*.py' -v
 python -B tools/build.py
 adb -s TV_SERIAL install -r nor/dist/quiet-tv.apk
-adb -s TV_SERIAL shell am start -n local.mitv.launcher/.MainActivity
+adb -s TV_SERIAL shell am start -W -n local.mitv.launcher/.MainActivity
 ```
 
 构建脚本直接使用现有 SDK，不依赖 Gradle 下载。APK 在 `nor/dist/quiet-tv.apk`，本机开发签名密钥在 `nor/.local/launcher.keystore`；保留该密钥才能无卸载更新。可设置环境变量 `ANDROID_HOME`、`QUIET_TV_JDK` 改变路径。
+
+应用包名仍为`local.mitv.launcher`，APK文件名保持`quiet-tv.apk`，公开项目名称不影响现有安装和签名。新克隆会生成自己的开发密钥；更新必须使用与已安装版本相同的签名，不要通过卸载来掩盖签名冲突，以免丢失配置和屏保照片。
 
 也提供 Android Studio Gradle 工程配置（AGP 7.4.2，需 Gradle 7.5 或兼容版本）；先用上述脚本生成本机签名密钥。Gradle 导入路径未代替已验证的直接构建流程。
 
@@ -98,6 +106,27 @@ Git 记录源码、工具、测试和文档；`nor/` 保存不提交的构建产
 
 公开源码与Git历史已清理原设备地址和电脑路径，维护者选择保留提交作者姓名及邮箱。每次发布前运行`python -B tools/audit_public.py --history`并人工复核，见[发布前检查](docs/publishing.md)。不要发布`nor/`中的清理前历史恢复副本。
 
+## 新闻来源可以自己调整
+
+**当前新闻类别、来源及游戏过滤规则，是按作者个人阅读偏好选择的默认配置。你可以按自己的兴趣调整，并不需要沿用这套来源。**
+
+| 类别 | 当前来源 |
+| --- | --- |
+| 国内、国际 | 央视网 |
+| 财经 | 华尔街见闻快讯 |
+| 科技 | IT之家RSS |
+| 游戏 | 游民星空单机资讯，按标题／摘要关键词过滤部分与PC游戏无关的内容 |
+| AI | [AIHOT RSS](https://aihot.news/feed.xml) |
+
+目前更换新闻源需要修改源码，**还没有电视端任意添加RSS的设置界面**。主要修改位置：
+
+- [NewsSources.java](app/src/main/java/local/mitv/launcher/NewsSources.java)：分类、来源名称、请求地址和文章域名。
+- [DashboardRepository.java](app/src/main/java/local/mitv/launcher/DashboardRepository.java)：响应解析、摘要、缓存和阅读内容；不同接口格式需要对应解析，不能只替换URL。
+- [GameNews.java](app/src/main/java/local/mitv/launcher/GameNews.java)：游戏列表解析与关键词过滤，可按喜好修改或取消过滤。
+- [ArticleHtml.java](app/src/main/java/local/mitv/launcher/ArticleHtml.java)、[LegacyTls.java](app/src/main/java/local/mitv/launcher/LegacyTls.java)：必要时适配原站正文与固定主机的旧系统TLS兼容，保留证书和主机名校验。
+
+修改后重建安装，并按需运行`tools/check_dashboard.py --serial TV_SERIAL --expected-model MODEL --news`。当前UI使用六个固定分类，改变分类数量时也要检查标签、数据与布局逻辑。
+
 ## 数据源与开源复用
 
 实际复用 MIT 许可的 Tabler Icons 天气图标，已保留原始 SVG、许可、版本及转换脚本。天气用 Open-Meteo API，位置搜索用 Open-Meteo / GeoNames；国内／国际新闻读取央视网页面数据；财经使用华尔街见闻快讯，科技用IT之家RSS，游戏直连游民星空单机列表、筛选PC相关内容，AI使用用户指定的AIHOT RSS。分类聚合与订阅阅读交互参考 NewsNow、Read You，未打包其应用代码。新闻内容不属于开源代码。详见 [第三方说明](THIRD_PARTY_NOTICES.md)。
@@ -119,3 +148,5 @@ python -B tools/research_news.py
 ```
 
 直接构建会依据 SDK API 历史检查平台方法引用，阻止误用 API 24 以上接口；这不能替代 Android 6 实机验证。
+
+项目源码采用[MIT许可证](LICENSE)。GitHub仓库名称、中文简介和Topics可参考[仓库元信息](docs/github-about.md)；默认文档面向中国大陆地区用户和开发者，英文说明见[English README](README.en.md)。

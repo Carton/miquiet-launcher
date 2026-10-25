@@ -1,6 +1,8 @@
-# 简净桌面：给开发与部署 agent
+# 简净桌面 · MiQuiet Launcher：给开发与部署 agent
 
 本项目是原生 Java 小米电视精简桌面，包名 `local.mitv.launcher`。应用自行编写，不修改、重签或覆盖小米原厂APK。项目源码采用MIT，第三方图标和在线数据边界见 `THIRD_PARTY_NOTICES.md`。
+
+公开名称为“简净桌面 / MiQuiet Launcher”，建议仓库名`miquiet-launcher`；GitHub简介模板见`docs/github-about.md`。默认README使用中文，英文版为`README.en.md`，两版互链，主要功能、兼容范围和部署命令应保持同步。默认新闻源按作者个人偏好选择，说明修改源码的实际调整方式，不将其描述成已有电视端任意RSS配置功能。
 
 ## 首先阅读
 
