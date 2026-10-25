@@ -35,3 +35,5 @@ python -B tools/audit_public.py --history --report nor/research/privacy/latest.j
 - 完整历史重写保留了作者／提交者身份和提交顺序；原本地签名密钥哈希未变。恢复bundle、替换规则与精确审计报告仅在忽略的`nor/`中。
 - 174项Java断言、15项离线Python测试通过；在没有原有`nor/`资料的全新Git克隆中，APK构建、API23引用检查及签名验证通过，15项离线测试再次通过。
 - 未连接或改动实际电视，未创建GitHub仓库或推送。真实电视原有部署结果仍属于相应版本的历史验收，不能冒称本次在其他型号上验证过部署指南。
+
+随后维护者明确授权公开发布，已创建[Carton/miquiet-launcher](https://github.com/Carton/miquiet-launcher)，默认分支为`master`。中文简介、Topics、MIT识别和远端提交均已核对，上传内容仅为Git跟踪的源码、文档和清理后的历史，不包含`nor/`中的本地资料。后续发布仍按上面的检查步骤操作。

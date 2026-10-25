@@ -4,7 +4,9 @@
 
 英文名：**MiQuiet Launcher**
 
-建议仓库名：`miquiet-launcher`
+仓库名：`miquiet-launcher`
+
+公开仓库：[Carton/miquiet-launcher](https://github.com/Carton/miquiet-launcher)，默认分支`master`。
 
 ## 默认简介（中文，复制到 GitHub About）
 
@@ -24,4 +26,4 @@ MiQuiet Launcher: a lightweight, open-source home screen for Xiaomi TV / Mi TV, 
 - 主要面向中国大陆地区用户与开发者，GitHub About默认使用中文，并保留小米电视、小米TV、Xiaomi TV、Mi TV等搜索关键词。
 - 新闻类别、来源和游戏过滤规则是作者个人偏好的默认配置；README明确说明可以修改源码调整，不冒称已有任意RSS配置界面。
 - 包名`local.mitv.launcher`、APK文件名`quiet-tv.apk`与既有签名保持兼容，不因公开名称调整而改动。
-- 这里仅准备仓库元信息，没有创建或修改远端GitHub仓库；名称不是全网唯一性或商标声明。
+- 已按维护者授权创建公开仓库、设置上述中文简介与Topics，并推送清理后的源码及历史。
