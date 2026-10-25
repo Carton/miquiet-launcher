@@ -16,6 +16,12 @@ Copyright (c) 2020-2024 Paweł Kuna。完整许可见 [LICENSE](third_party/tabl
 
 原始SVG、完整上游许可与哈希清单位于`third_party/lucide/`；许可保留Lucide的ISC与其中Feather来源图标的MIT说明，并打包到APK的`lucide_license.txt`。`tools/import_settings_icons.py`转换为Android VectorDrawable并调整描边、颜色；为已验证的Android6渲染兼容，将SVG中M/m后的隐含直线转换成显式L/l，保持几何形状。无需在电视上加载SVG或额外图标运行库，许可可在“数据与开源说明”查看。
 
+## Nayuki QR Code generator — MIT
+
+0.8.2复用[Project Nayuki QR Code generator v1.8.0](https://github.com/nayuki/QR-Code-generator/tree/v1.8.0/java/src/main/java/io/nayuki/qrcodegen)的4个Java编码类，本地生成包含上传地址和本次连接码的二维码，不依赖外部二维码服务。没有引入桌面AWT示例或高级分段模块。
+
+源码在`app/src/main/java/io/nayuki/qrcodegen/`，保留完整MIT头注释，仅规范化行尾空白。原始与打包源码哈希、上游说明及完整许可见`third_party/qrcodegen/`，可通过`tools/import_qr_library.py`重新导入。完整许可同时打包到`qrcodegen_license.txt`并在“数据与开源说明”展示。Copyright © 2022 Project Nayuki。
+
 ## Open-Meteo — 天气数据 CC BY 4.0
 
 使用 [Open-Meteo Forecast API](https://open-meteo.com/en/docs) 的 current temperature_2m、weather_code、is_day；摄氏度由 API 显式指定，按 WMO 编号映射中文描述和图标。这里的“当前天气”来自天气模型，非电视传感器测量。

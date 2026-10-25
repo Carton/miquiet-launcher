@@ -219,7 +219,7 @@ final class DashboardPanel {
     void showCredits() {
         new AlertDialog.Builder(activity).setTitle("数据与开源说明")
             .setMessage(DashboardRepository.WEATHER_CREDIT
-                + "\n\nOpen-Meteo：https://open-meteo.com/\n位置搜索：Open-Meteo / GeoNames（https://www.geonames.org/）\n数据许可：https://creativecommons.org/licenses/by/4.0/\n天气图标：Tabler Icons · MIT\n设置图标：Lucide · ISC / Feather MIT（https://lucide.dev/）\n网络位置：IPWhois（IP 约略定位，可手动更改）\n新闻：央视网、华尔街见闻、科学网、科技日报、游民星空（PC单机）、AIHOT；版权归原权利人，非开源内容。分类与订阅交互参考 NewsNow（MIT）和 Read You（GPL-3.0），未打包其应用代码。\n\n天气约每 15 分钟、新闻约每 10 分钟更新；失败时保留近期缓存并标记。超过 6 小时的天气停止显示；科技新闻保留 7 天，其他新闻保留 48 小时。科技按两家来源交错，保留实际发布时间。\n\n" + licenseText(R.raw.tabler_license) + "\n\n" + licenseText(R.raw.lucide_license))
+                + "\n\nOpen-Meteo：https://open-meteo.com/\n位置搜索：Open-Meteo / GeoNames（https://www.geonames.org/）\n数据许可：https://creativecommons.org/licenses/by/4.0/\n天气图标：Tabler Icons · MIT\n设置图标：Lucide · ISC / Feather MIT（https://lucide.dev/）\n传图二维码：Project Nayuki QR Code generator · MIT（https://www.nayuki.io/page/qr-code-generator-library）\n网络位置：IPWhois（IP 约略定位，可手动更改）\n新闻：央视网、华尔街见闻、科学网、科技日报、游民星空（PC单机）、AIHOT；版权归原权利人，非开源内容。分类与订阅交互参考 NewsNow（MIT）和 Read You（GPL-3.0），未打包其应用代码。\n\n天气约每 15 分钟、新闻约每 10 分钟更新；失败时保留近期缓存并标记。超过 6 小时的天气停止显示；科技新闻保留 7 天，其他新闻保留 48 小时。科技按两家来源交错，保留实际发布时间。\n\n" + licenseText(R.raw.tabler_license) + "\n\n" + licenseText(R.raw.lucide_license) + "\n\n" + licenseText(R.raw.qrcodegen_license))
             .setPositiveButton("关闭", null).show();
     }
 

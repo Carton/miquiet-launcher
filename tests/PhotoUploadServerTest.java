@@ -36,9 +36,12 @@ public final class PhotoUploadServerTest {
         })) {
             port = server.port();
             check(server.code().matches("[0-9]{6}"));
+            check(server.url().equals("http://"+InetAddress.getLoopbackAddress().getHostAddress()+":"+port+"/"));
+            check(server.scanUrl().equals(server.url()+"#code="+server.code()));
             String page = request(port,"GET / HTTP/1.1\r\nHost: localhost\r\n\r\n",null);
             check(page.startsWith("HTTP/1.1 200")); check(page.contains("简净桌面") && page.contains("type='file'"));
             check(page.contains("Cache-Control: no-store") && !page.contains("Access-Control-Allow-Origin"));
+            check(!page.contains("value='"+server.code()+"'")); // The public GET page never embeds this session's code.
             try (Socket idle = new Socket(InetAddress.getLoopbackAddress(),port)) {
                 check(request(port,"GET / HTTP/1.1\r\nHost: localhost\r\n\r\n",null).startsWith("HTTP/1.1 200"));
                 idle.setSoTimeout(7000);

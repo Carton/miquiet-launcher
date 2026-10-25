@@ -1,6 +1,6 @@
 # 维护入口
 
-当前版本为0.8.1，科技类科学网／科技日报组合的实机验收见 [0.8.1记录](science-news-081.md)；设置矩阵与公开产品截图见 [0.8.0记录](settings-grid-080.md)。项目开发规则见 [AGENTS.md](../AGENTS.md)，为其他电视部署见 [部署与适配指南](agent-deployment.md)，发布前隐私检查见 [发布说明](publishing.md)。
+当前版本为0.8.2，扫码传图的实机验收见 [0.8.2记录](qr-upload-082.md)；科技类两源组合见 [0.8.1记录](science-news-081.md)，设置矩阵与公开产品截图见 [0.8.0记录](settings-grid-080.md)。项目开发规则见 [AGENTS.md](../AGENTS.md)，为其他电视部署见 [部署与适配指南](agent-deployment.md)，发布前隐私检查见 [发布说明](publishing.md)。
 
 设备IP、SDK/JDK绝对路径、当前电视状态、授权与休眠安排不保存在公开交接中；每次根据当前用户和目标环境确认。历史设备取证、旧Git恢复备份与本机签名密钥保留在忽略的nor/中。
 

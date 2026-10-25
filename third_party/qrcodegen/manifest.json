@@ -1,0 +1,31 @@
+{
+  "source": "https://raw.githubusercontent.com/nayuki/QR-Code-generator/v1.8.0/",
+  "changes": "Whitespace normalization only; no encoder logic changes",
+  "files": {
+    "QrCode.java": {
+      "upstream_path": "java/src/main/java/io/nayuki/qrcodegen/QrCode.java",
+      "upstream_sha256": "ab2d9f05bef0c2bedfaa888256f09987b2dbef5a4f432c540b9e549801c030ec",
+      "bundled_sha256": "cf414402ec8e0240c1d94644f6749cc72acdd2d77db877fe23e24bb902616232"
+    },
+    "QrSegment.java": {
+      "upstream_path": "java/src/main/java/io/nayuki/qrcodegen/QrSegment.java",
+      "upstream_sha256": "70f10e518d3a8f1a1862e598a249abaac036a9c6fae4e5892c4b6d24995bb8d7",
+      "bundled_sha256": "68e05af3de00f6e6e6c50b05eaa1dd65542a2c097091363d0aceebe49a4df258"
+    },
+    "BitBuffer.java": {
+      "upstream_path": "java/src/main/java/io/nayuki/qrcodegen/BitBuffer.java",
+      "upstream_sha256": "d5496452b435423beead30aa356e10a7c0ba4790b7da37ee4a1b80b4df136447",
+      "bundled_sha256": "8bcbc1d312b672513064ee192b0e91bbb0e59de8427f4e1331d945935ccbaa51"
+    },
+    "DataTooLongException.java": {
+      "upstream_path": "java/src/main/java/io/nayuki/qrcodegen/DataTooLongException.java",
+      "upstream_sha256": "7661186dde4b27334fd94f4950f58522eaab256274388152e5cb8e35ef463e1a",
+      "bundled_sha256": "67e87f07de07a2d0c89756fc21cc9d8fe57427739b27dd8ec6b68bc31c91981d"
+    },
+    "Readme.markdown": {
+      "upstream_path": "Readme.markdown",
+      "upstream_sha256": "0f8441b248157c13e43c8963ffe1af9eabb3287e24871303c8b16395b6cb7a01",
+      "bundled_sha256": "c214469304a5bafd557e518a85653c2b37d0909637e724c61d416c632b62cdd3"
+    }
+  }
+}

@@ -64,6 +64,7 @@ public final class SaverLibraryActivity extends Activity {
     private boolean importing, firstResume = true;
     private PhotoUploadServer upload;
     private AlertDialog uploadDialog;
+    private TextView uploadStatus;
     private ProgressDialog progress;
 
     private static final class Entry {
@@ -289,24 +290,34 @@ public final class SaverLibraryActivity extends Activity {
             if (address == null) { toast("未找到局域网连接，请先连接Wi-Fi或网线"); return; }
             try { upload = new PhotoUploadServer(address,8765,this::receive); }
             catch (java.net.BindException occupied) { upload = new PhotoUploadServer(address,0,this::receive); }
-            String url = "http://" + address.getHostAddress() + ":" + upload.port();
+            LinearLayout content=row();content.setPadding(dp(24),dp(12),dp(24),dp(12));
+            content.setGravity(Gravity.CENTER_VERTICAL);
+            content.addView(new UploadQrView(this,upload.scanUrl()),new LinearLayout.LayoutParams(dp(220),dp(220)));
+            LinearLayout details=new LinearLayout(this);details.setOrientation(LinearLayout.VERTICAL);
+            LinearLayout.LayoutParams detailLayout=new LinearLayout.LayoutParams(0,-2,1);
+            detailLayout.leftMargin=dp(28);content.addView(details,detailLayout);
+            TextView info=Ui.text(this,"手机扫码，直接选择照片\n需要同一Wi-Fi或局域网。\n\n手动打开：\n"+upload.url()
+                +"\n连接码："+upload.code(),16,Color.WHITE);
+            details.addView(info,new LinearLayout.LayoutParams(-1,-2));
+            uploadStatus=Ui.text(this,"已保存 "+SaverImages.list(this).size()+"/24 张",16,Ui.ACCENT);
+            uploadStatus.setPadding(0,dp(12),0,dp(8));details.addView(uploadStatus,new LinearLayout.LayoutParams(-1,-2));
+            details.addView(Ui.text(this,"选好照片后点“保存到电视屏保”。\n关闭窗口或离开本页即停止接收。",13,Ui.MUTED),
+                new LinearLayout.LayoutParams(-1,-2));
             uploadDialog = new AlertDialog.Builder(this).setTitle("从电脑 / 手机传图")
-                .setMessage("在同一Wi-Fi或局域网的浏览器中打开：\n\n" + url + "\n\n连接码：" + upload.code()
-                    + "\n\n选好照片后点击「保存到电视屏保」。\n当前已保存 " + SaverImages.list(this).size() + "/24 张。\n关闭此窗口或离开本页后停止接收。")
+                .setView(content)
                 .setPositiveButton("完成传图",null).create();
             uploadDialog.setOnDismissListener(d -> { uploadDialog = null; stopUpload(); library(); }); uploadDialog.show();
+            if(uploadDialog.getWindow()!=null)uploadDialog.getWindow().setLayout(
+                Math.min(dp(740),getResources().getDisplayMetrics().widthPixels-dp(32)),-2);
         } catch (Exception error) { stopUpload(); toast("暂时无法开启传图，请检查网络后重试"); }
     }
     private void receive(java.io.InputStream input) throws Exception {
         SaverImages.add(this,input);
         post(() -> {
             updateButtons();
-            if (uploadDialog != null && upload != null) uploadDialog.setMessage("浏览器地址：http://" + uploadAddress() + "\n\n连接码：" + upload.code()
-                + "\n\n已保存 " + SaverImages.list(this).size() + "/24 张。\n可继续上传，完成后关闭此窗口。\n离开本页即停止接收。");
+            if (uploadDialog != null && upload != null && uploadStatus!=null)
+                uploadStatus.setText("已保存 " + SaverImages.list(this).size() + "/24 张");
         });
-    }
-    private String uploadAddress() {
-        try { return lanAddress().getHostAddress() + ":" + upload.port(); } catch (Exception error) { return "网络已断开"; }
     }
     private static InetAddress lanAddress() throws java.net.SocketException {
         java.util.Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
@@ -324,6 +335,7 @@ public final class SaverLibraryActivity extends Activity {
     }
     private void stopUpload() {
         if (upload != null) { upload.close(); upload = null; }
+        uploadStatus=null;
     }
     private void toast(String message) { Toast.makeText(this,message,Toast.LENGTH_LONG).show(); }
     @Override public void onRequestPermissionsResult(int request,String[] permissions,int[] results) {
