@@ -61,6 +61,7 @@ final class PhotoUploadServer implements java.io.Closeable {
             // Browser pre-connections must not block another browser's upload.
             connection.setSoTimeout(5000);
             try { serve(connection); }
+            catch (java.net.SocketTimeoutException idle) { /* No request: silently close a browser pre-connection. */ }
             catch (Exception error) { reply(connection.getOutputStream(),400,"text/plain", "图片未保存，请重试"); }
         } catch (IOException ignored) {}
         finally { active.remove(socket); }
@@ -94,24 +95,34 @@ final class PhotoUploadServer implements java.io.Closeable {
         }
         if (!request[1].equals("/upload")) { reply(output,404,"text/plain","没有这个页面"); return; }
         if (!request[0].equals("POST")) { reply(output,405,"text/plain","请选择图片上传"); return; }
-        if (rejected.get() >= 8) { reply(output,429,"text/plain","连接码错误次数过多，请在电视关闭后重新打开传图"); return; }
-        if (!java.security.MessageDigest.isEqual(code.getBytes(StandardCharsets.US_ASCII),
-                value(headers,"x-quiettv-code").getBytes(StandardCharsets.US_ASCII))) {
-            rejected.incrementAndGet(); reply(output,403,"text/plain","连接码不正确，请查看电视上的六位数字"); return;
-        }
         if (headers.containsKey("transfer-encoding")) { reply(output,400,"text/plain","请使用页面上的选择图片按钮"); return; }
         long length;
         try { length = Long.parseLong(value(headers,"content-length")); }
         catch (NumberFormatException error) { length = -1; }
         if (length <= 0 || length > MAX_BYTES) { reply(output,413,"text/plain","单张图片须小于32MB，且不能为空"); return; }
+        Body body = new Body(input,length);
+        if (rejected.get() >= 8) { discard(body); reply(output,429,"text/plain","连接码错误次数过多，请在电视关闭后重新打开传图"); return; }
+        if (!java.security.MessageDigest.isEqual(code.getBytes(StandardCharsets.US_ASCII),
+                value(headers,"x-quiettv-code").getBytes(StandardCharsets.US_ASCII))) {
+            rejected.incrementAndGet(); discard(body);
+            reply(output,403,"text/plain","连接码不正确，请查看电视上的六位数字"); return;
+        }
         try {
             socket.setSoTimeout(30_000);
-            receiver.save(new Body(input,length));
+            receiver.save(body);
             reply(output,200,"text/plain","已保存到电视屏保");
         } catch (Exception error) {
+            // Android resets a socket closed with unread incoming bytes, which can erase the
+            // error response. Drain this bounded request so browsers can read the useful message.
+            discard(body);
             String message = error.getMessage();
             reply(output,400,"text/plain", message == null ? "这张图片无法保存" : message.substring(0,Math.min(message.length(),160)));
         }
+    }
+
+    private static void discard(InputStream input) {
+        try { byte[] bytes = new byte[8192]; while (input.read(bytes) != -1) {} }
+        catch (IOException ignored) { /* A disconnected sender has nothing left to display. */ }
     }
 
     private static String value(Map<String,String> headers,String key) {

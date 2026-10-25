@@ -88,6 +88,14 @@ final class Ui {
                         canvas.drawLine(7, 6, 27, 28, paint);
                     }
                 }
+            } else if (kind.equals("checked") || kind.equals("unchecked")) {
+                canvas.drawCircle(16,16,9,paint);
+                if (kind.equals("checked")) {
+                    Path check = new Path(); check.moveTo(11,16); check.lineTo(15,20); check.lineTo(22,12); canvas.drawPath(check,paint);
+                }
+            } else if (kind.equals("image")) {
+                canvas.drawRoundRect(new RectF(3,4,29,28),2,2,paint); canvas.drawCircle(10,11,2,paint);
+                Path hills = new Path(); hills.moveTo(4,25); hills.lineTo(12,17); hills.lineTo(17,22); hills.lineTo(22,15); hills.lineTo(28,23); canvas.drawPath(hills,paint);
             } else if (kind.equals("folder")) {
                 Path path = new Path(); path.moveTo(3,8); path.lineTo(12,8); path.lineTo(15,12);
                 path.lineTo(29,12); path.lineTo(29,27); path.lineTo(3,27); path.close(); canvas.drawPath(path,paint);

@@ -365,15 +365,16 @@ public final class SaverLibraryActivity extends Activity {
             boolean checked = entry.kind == IMAGE && selected.containsKey(key(entry.file));
             card.setBackground(Ui.shape(SaverLibraryActivity.this,checked ? 0xff264f45 : Ui.PANEL,checked ? Ui.ACCENT : 0,7));
             card.setLayoutParams(new AbsListView.LayoutParams(-1,dp(136)));
-            ImageView photo = new ImageView(SaverLibraryActivity.this); photo.setScaleType(ImageView.ScaleType.CENTER_CROP);
+            ImageView photo = new ImageView(SaverLibraryActivity.this); photo.setScaleType(ImageView.ScaleType.FIT_CENTER);
             FrameLayout.LayoutParams imageLayout = new FrameLayout.LayoutParams(-1,dp(106)); imageLayout.setMargins(dp(4),dp(4),dp(4),0); card.addView(photo,imageLayout);
             TextView name = Ui.text(SaverLibraryActivity.this,entry.name,12,Color.WHITE); name.setSingleLine(true); name.setEllipsize(TextUtils.TruncateAt.MIDDLE); name.setGravity(Gravity.CENTER);
             FrameLayout.LayoutParams label = new FrameLayout.LayoutParams(-1,dp(26),Gravity.BOTTOM); card.addView(name,label);
             if (entry.kind != IMAGE) {
-                TextView icon = Ui.text(SaverLibraryActivity.this,entry.kind == MEDIA ? "▧" : "▱",46,Ui.ACCENT); icon.setGravity(Gravity.CENTER);
-                card.addView(icon,new FrameLayout.LayoutParams(-1,dp(106)));
+                Ui.Icon icon = new Ui.Icon(SaverLibraryActivity.this,entry.kind == MEDIA ? "image" : "folder",Ui.ACCENT);
+                FrameLayout.LayoutParams symbol = new FrameLayout.LayoutParams(dp(58),dp(58),Gravity.TOP | Gravity.CENTER_HORIZONTAL);
+                symbol.topMargin = dp(23); card.addView(icon,symbol);
             } else {
-                TextView check = Ui.text(SaverLibraryActivity.this,checked ? "✓" : "○",19,checked ? Ui.ACCENT : Color.WHITE); check.setGravity(Gravity.CENTER);
+                Ui.Icon check = new Ui.Icon(SaverLibraryActivity.this,checked ? "checked" : "unchecked",checked ? Ui.ACCENT : Color.WHITE);
                 FrameLayout.LayoutParams badge = new FrameLayout.LayoutParams(dp(32),dp(32),Gravity.TOP | Gravity.RIGHT); card.addView(check,badge);
                 String tag = key(entry.file) + ":" + entry.file.lastModified(); photo.setTag(tag);
                 Bitmap ready = cache.get(tag);

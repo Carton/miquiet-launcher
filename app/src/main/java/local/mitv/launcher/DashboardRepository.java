@@ -281,7 +281,9 @@ final class DashboardRepository {
         return Collections.unmodifiableList(new ArrayList<>(result.subList(0, Math.min(12, result.size()))));
     }
 
-    private static String plain(String html) { return Html.fromHtml(html).toString().replace('\u00a0', ' ').trim(); }
+    private static String plain(String html) {
+        return Html.fromHtml(html).toString().replace("\ufffc", "").replace('\u00a0', ' ').replaceAll("\\n{3,}","\n\n").trim();
+    }
     private static void addStory(List<Story> result, HashSet<String> seen, int category, String title,
                                  String text, String url, long time, String body, long now) {
         String address = NewsReaderPolicy.address(url);
@@ -290,7 +292,10 @@ final class DashboardRepository {
                 || title.isEmpty() || !DashboardPolicy.fresh(time, now, NEWS_MAX_AGE) || !seen.add(address)) return;
             String brief = text.length() > 360 ? text.substring(0, 360) + "…" : text;
             // A short feed excerpt stays a summary; the reader loads the publisher's page instead.
-            String article = (category == 2 || text.length() >= 500) && body.length() <= 60_000 ? body : "";
+            // Gcores pages are client-rendered; its publisher RSS is the reliable reader content,
+            // including short posts. Do not send these to a static-HTML extractor.
+            String article = !text.isEmpty() && (category == 2 || category == 4 || text.length() >= 500)
+                && body.length() <= 60_000 ? body : "";
             result.add(new Story(title.length() > 160 ? title.substring(0, 160) + "…" : title,
                 brief, address, time, NewsSources.PUBLISHERS[category], article));
         } catch (java.net.MalformedURLException ignored) {}

@@ -41,10 +41,13 @@ public final class PhotoUploadServerTest {
             check(page.contains("Cache-Control: no-store") && !page.contains("Access-Control-Allow-Origin"));
             try (Socket idle = new Socket(InetAddress.getLoopbackAddress(),port)) {
                 check(request(port,"GET / HTTP/1.1\r\nHost: localhost\r\n\r\n",null).startsWith("HTTP/1.1 200"));
+                idle.setSoTimeout(7000);
+                check(idle.getInputStream().read() == -1); // Do not send an unsolicited 400 on a pre-connection.
             }
             check(upload(port,server.code(),"",fixture,fixture.length).startsWith("HTTP/1.1 200"));
             check(saved.get() == 1);
             check(upload(port,"wrong","",fixture,fixture.length).startsWith("HTTP/1.1 403"));
+            check(upload(port,"wrong","",fixture,fixture.length).contains("连接码不正确"));
             check(saved.get() == 1);
             check(upload(port,server.code(),"",null,PhotoUploadServer.MAX_BYTES+1).startsWith("HTTP/1.1 413"));
             check(upload(port,server.code(),"",null,0).startsWith("HTTP/1.1 413"));
@@ -55,7 +58,7 @@ public final class PhotoUploadServerTest {
             check(saved.get() == 1);
             check(request(port,"GET /../../photos HTTP/1.1\r\nHost: localhost\r\n\r\n",null).startsWith("HTTP/1.1 404"));
             check(request(port,"GET /upload HTTP/1.1\r\nHost: localhost\r\n\r\n",null).startsWith("HTTP/1.1 405"));
-            for (int i = 0; i < 7; i++) upload(port,"wrong","",fixture,4);
+            for (int i = 0; i < 6; i++) upload(port,"wrong","",fixture,4);
             check(upload(port,server.code(),"",fixture,4).startsWith("HTTP/1.1 429"));
         }
         try (Socket ignored = new Socket(InetAddress.getLoopbackAddress(),port)) { throw new AssertionError("Server still accepts after close"); }

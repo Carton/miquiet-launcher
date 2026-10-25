@@ -79,7 +79,7 @@ public final class NewsReaderActivity extends Activity {
         try {
             web = new WebView(this);
             WebSettings settings = web.getSettings();
-            settings.setJavaScriptEnabled(true); settings.setDomStorageEnabled(true);
+            settings.setJavaScriptEnabled(false); settings.setDomStorageEnabled(false);
             settings.setAllowFileAccess(false); settings.setAllowContentAccess(false);
             settings.setAllowFileAccessFromFileURLs(false); settings.setAllowUniversalAccessFromFileURLs(false);
             settings.setMixedContentMode(WebSettings.MIXED_CONTENT_NEVER_ALLOW);
@@ -100,15 +100,10 @@ public final class NewsReaderActivity extends Activity {
                     handler.removeCallbacks(timeout); handler.postDelayed(timeout,25000);
                 }
                 @Override public void onPageFinished(WebView view,String url) {
-                    if (failed) return;
-                    if (!readerDocument) {
-                        // Current CCTV pages keep the article in an inline string and fill an empty div with scripts.
-                        view.evaluateJavascript("(function(){if(typeof contentdate==='string')return contentdate;var q=['#content_area','#paragraph','.article .content','.article','.entry-content','article'];for(var i=0;i<q.length;i++){var a=document.querySelector(q[i]);if(a&&a.textContent.trim().length>=80)return a.innerHTML;}return null;})()", result -> article(result));
-                    } else {
-                        loading = false; handler.removeCallbacks(timeout); unreadable.remove(address);
-                        status.setText(publisher + (suppliedBody.isEmpty() ? " · " : " · 订阅内容 · ") + "方向键上下滚动，返回键退出"); web.requestFocus();
-                        web.postDelayed(() -> android.util.Log.i("QuietTVReader","Reader ready " + address + " height=" + web.getContentHeight()),300);
-                    }
+                    if (failed || !readerDocument) return;
+                    loading = false; handler.removeCallbacks(timeout); unreadable.remove(address);
+                    status.setText(publisher + (suppliedBody.isEmpty() ? " · " : " · 订阅内容 · ") + "方向键上下滚动，返回键退出"); web.requestFocus(); web.scrollTo(0,0);
+                    web.postDelayed(() -> android.util.Log.i("QuietTVReader","Reader ready " + address + " height=" + web.getContentHeight()),300);
                 }
                 @Override public void onReceivedError(WebView view,WebResourceRequest request,WebResourceError error) {
                     if (request.isForMainFrame()) failure("新闻暂时无法打开，请重试或返回摘要");
@@ -120,14 +115,6 @@ public final class NewsReaderActivity extends Activity {
                     ssl.cancel();
                     if (error.getUrl() != null && error.getUrl().equals(view.getUrl())) failure("无法安全连接新闻页面，请返回摘要");
                 }
-            });
-            web.setOnKeyListener((v,key,event) -> {
-                if (key != KeyEvent.KEYCODE_DPAD_DOWN && key != KeyEvent.KEYCODE_DPAD_UP) return false;
-                if (event.getAction() == KeyEvent.ACTION_DOWN) {
-                    if (key == KeyEvent.KEYCODE_DPAD_UP && web.getScrollY() <= 0) back.requestFocus();
-                    else web.scrollBy(0,(key == KeyEvent.KEYCODE_DPAD_DOWN ? 1 : -1) * Math.max(80,web.getHeight()/3));
-                }
-                return true;
             });
             root.addView(web,new LinearLayout.LayoutParams(-1,0,1));
             load();
@@ -147,9 +134,7 @@ public final class NewsReaderActivity extends Activity {
         failed = false; readerDocument = false;
         web.setVisibility(View.VISIBLE); retry.setVisibility(View.GONE);
         if (!suppliedBody.isEmpty()) showArticle(suppliedBody);
-        else if (address.startsWith("https://news.cctv.com/") || address.startsWith("https://m.news.cctv.com/")) {
-            web.getSettings().setJavaScriptEnabled(true); web.loadUrl(address);
-        } else {
+        else {
             web.getSettings().setJavaScriptEnabled(false);
             loading = true; status.setText("正在打开" + publisher + "…");
             handler.removeCallbacks(timeout); handler.postDelayed(timeout,25000);
@@ -170,20 +155,10 @@ public final class NewsReaderActivity extends Activity {
             });
         }
     }
-    private void article(String json) {
-        if (isFinishing() || failed) return;
-        try {
-            Object content = new org.json.JSONTokener(json).nextValue();
-            if (!(content instanceof String) || ((String)content).trim().length() < 20) {
-                failure("这篇新闻暂不支持电视阅读，请返回摘要"); return;
-            }
-            showArticle((String)content);
-        } catch (org.json.JSONException error) { failure("这篇新闻暂时无法显示，请返回摘要"); }
-    }
     private void showArticle(String content) {
         String title = android.text.Html.escapeHtml(getIntent().getStringExtra("title"));
         String document = "<!doctype html><html><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'>"
-            + "<style>body{margin:0;background:#f3f4f5;color:#25282d;font:22px/1.85 sans-serif}article{max-width:880px;padding:24px;margin:auto}h1{font-size:26px;line-height:1.5;margin:0 0 14px}.source{font-size:15px;color:#70757c}p{margin:0 0 20px}img,video{max-width:100%;height:auto}iframe{display:none}a{color:#24725e}</style>"
+            + "<style>body{margin:0;background:#f3f4f5;color:#25282d;font:22px/1.85 sans-serif}article{max-width:880px;padding:24px;margin:auto}h1{font-size:26px;line-height:1.5;margin:0 0 14px}.source{font-size:15px;color:#70757c}p{margin:0 0 20px}img,video{max-width:100%;height:auto}iframe,.article_info{display:none}</style>"
             + "</head><body><article><h1>" + title + "</h1><p class='source'>来源：" + android.text.Html.escapeHtml(publisher)
             + (suppliedBody.isEmpty() ? "" : " · 原站 RSS / 快讯，可能为节选") + "</p>" + ArticleHtml.clean(content) + "</article></body></html>";
         readerDocument = true;
@@ -197,15 +172,17 @@ public final class NewsReaderActivity extends Activity {
         web.setVisibility(View.INVISIBLE); retry.setVisibility(View.VISIBLE); back.requestFocus();
         android.util.Log.w("QuietTVReader",message);
     }
-    @Override public boolean onKeyDown(int key,KeyEvent event) {
-        if (web != null && web.hasFocus()) {
-            if (key == KeyEvent.KEYCODE_DPAD_DOWN) { web.scrollBy(0,Math.max(80,web.getHeight()/3)); return true; }
-            if (key == KeyEvent.KEYCODE_DPAD_UP) {
-                if (web.getScrollY() <= 0) back.requestFocus(); else web.scrollBy(0,-Math.max(80,web.getHeight()/3));
-                return true;
+    @Override public boolean dispatchKeyEvent(KeyEvent event) {
+        int key = event.getKeyCode();
+        if (web != null && web.hasFocus() && (key == KeyEvent.KEYCODE_DPAD_DOWN || key == KeyEvent.KEYCODE_DPAD_UP)) {
+            // Intercept before Chromium moves focus among HTML links instead of scrolling.
+            if (event.getAction() == KeyEvent.ACTION_DOWN) {
+                if (key == KeyEvent.KEYCODE_DPAD_UP && web.getScrollY() <= 0) back.requestFocus();
+                else web.scrollBy(0,(key == KeyEvent.KEYCODE_DPAD_DOWN ? 1 : -1) * Math.max(80,web.getHeight()/3));
             }
+            return true;
         }
-        return super.onKeyDown(key,event);
+        return super.dispatchKeyEvent(event);
     }
     @Override public void onBackPressed() { finish(); }
     @Override protected void onPause() { if (web != null) web.onPause(); super.onPause(); }

@@ -70,15 +70,16 @@ public final class DashboardDataTest {
             .put("items",new JSONArray().put(flash).put(flash).put(invalidFlash))).toString(),2);
         check(finance.size() == 1 && finance.get(0).publisher.equals("华尔街见闻"));
         check(finance.get(0).title.equals("财经 & 快讯") && finance.get(0).url.startsWith("https://"));
-        check(finance.get(0).brief.length() == 361 && finance.get(0).body.contains(body));
+        check(finance.get(0).brief.length() == 361 && android.text.Html.fromHtml(finance.get(0).body).toString().contains(body));
         SimpleDateFormat rssDate = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss Z",Locale.US);
         rssDate.setTimeZone(TimeZone.getTimeZone("GMT"));
         String rssItem = "<item><title>科技 &amp; 中文</title><link>https://www.ithome.com/1/2/3.htm</link><pubDate>"
-            + rssDate.format(new Date(now-30_000)) + "</pubDate><description><![CDATA[<p>" + longer + "</p>]]></description></item>";
+            + rssDate.format(new Date(now-30_000)) + "</pubDate><description><![CDATA[<img src='https://example.test/unused.png'><p>" + longer + "</p>]]></description></item>";
         String rss = "<rss><channel>" + rssItem + rssItem + rssItem.replace("www.ithome.com/1", "www.ithome.com.attacker.test/1") + "</channel></rss>";
         List<DashboardRepository.Story> tech = DashboardRepository.parseFeed(rss,3);
         check(tech.size() == 1 && tech.get(0).publisher.equals("IT之家"));
         check(tech.get(0).title.equals("科技 & 中文") && tech.get(0).body.contains("<p>"));
+        check(tech.get(0).brief.indexOf('\ufffc') == -1);
         check(DashboardRepository.parseFeed(rss.replace("科技 &amp; 中文","京东补贴优惠券"),3).isEmpty());
         check(DashboardRepository.parseFeed(rss.replace(rssDate.format(new Date(now-30_000)),rssDate.format(new Date(now-49*60*60_000L))),3).isEmpty());
         check(DashboardRepository.parseFeed(rss,4).isEmpty());

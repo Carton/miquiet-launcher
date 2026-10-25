@@ -34,7 +34,7 @@ def main():
     destination.parent.mkdir(parents=True, exist_ok=True)
     destination.write_text(output, encoding="utf-8")
     print(output)
-    expected = ["PASS: 18 Android data assertions"]
+    expected = ["PASS: 19 Android data assertions"]
     if args.news:
         expected += ["NEWS LIVE: " + category + " count=" for category in ["china","world","finance","tech","game","ai"]]
     else:
