@@ -23,7 +23,8 @@ final class LegacyTls {
         // Extra trust applies only to these data service hosts, not arbitrary article links.
         if (!(host.equals("ipwho.is") || host.equals("api.open-meteo.com")
             || host.equals("geocoding-api.open-meteo.com") || host.equals("api-one.wallstcn.com")
-            || host.equals("www.ithome.com") || host.equals("www.gcores.com") || host.equals("www.qbitai.com"))) return;
+            || host.equals("www.ithome.com") || host.equals("db2.gamersky.com")
+            || host.equals("www.gamersky.com") || host.equals("aihot.news"))) return;
         synchronized (LegacyTls.class) {
             if (sockets == null) {
                 try (InputStream isrg = resources.openRawResource(R.raw.isrg_root_x1);

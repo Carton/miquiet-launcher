@@ -4,12 +4,14 @@ package local.mitv.launcher;
 final class NewsSources {
     static final String[] IDS = {"china", "world", "finance", "tech", "game", "ai"};
     static final String[] LABELS = {"国内", "国际", "财经", "科技", "游戏", "AI"};
-    static final String[] PUBLISHERS = {"央视网", "央视网", "华尔街见闻", "IT之家", "机核", "量子位"};
+    static final String[] PUBLISHERS = {"央视网", "央视网", "华尔街见闻", "IT之家", "游民星空", "AIHOT"};
     static final String[] URLS = {
         "https://news.cctv.com/2019/07/gaiban/cmsdatainterface/page/china_1.jsonp",
         "https://news.cctv.com/2019/07/gaiban/cmsdatainterface/page/world_1.jsonp",
         "https://api-one.wallstcn.com/apiv1/content/lives?channel=global-channel&limit=30",
-        "https://www.ithome.com/rss/", "https://www.gcores.com/rss", "https://www.qbitai.com/feed"
+        "https://www.ithome.com/rss/",
+        "https://db2.gamersky.com/LabelJsonpAjax.aspx?jsondata=%7B%22type%22%3A%22updatenodelabel%22%2C%22isCache%22%3Atrue%2C%22cacheTime%22%3A60%2C%22nodeId%22%3A%22129%22%2C%22isNodeId%22%3A%22true%22%2C%22page%22%3A1%7D",
+        "https://aihot.news/feed.xml"
     };
     private NewsSources() {}
     static int index(int value) { return value >= 0 && value < IDS.length ? value : 0; }
@@ -23,8 +25,8 @@ final class NewsSources {
             case 0: case 1: return host.equalsIgnoreCase("news.cctv.com") || host.equalsIgnoreCase("m.news.cctv.com");
             case 2: return host.equalsIgnoreCase("wallstreetcn.com");
             case 3: return host.equalsIgnoreCase("www.ithome.com");
-            case 4: return host.equalsIgnoreCase("www.gcores.com");
-            case 5: return host.equalsIgnoreCase("www.qbitai.com");
+            case 4: return host.equalsIgnoreCase("www.gamersky.com");
+            case 5: return host.equalsIgnoreCase("aihot.news");
             default: return false;
         }
     }

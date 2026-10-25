@@ -73,11 +73,13 @@ def main():
              ROOT / "tests/SaverPolicyTest.java",
              ROOT / "app/src/main/java/local/mitv/launcher/NewsReaderPolicy.java",
              ROOT / "app/src/main/java/local/mitv/launcher/NewsSources.java",
+             ROOT / "app/src/main/java/local/mitv/launcher/GameNews.java",
              ROOT / "app/src/main/java/local/mitv/launcher/RssFeed.java",
              ROOT / "app/src/main/java/local/mitv/launcher/ArticleHtml.java",
              ROOT / "app/src/main/java/local/mitv/launcher/SaverBrowser.java",
              ROOT / "app/src/main/java/local/mitv/launcher/PhotoUploadServer.java",
              ROOT / "tests/RssFeedTest.java",
+             ROOT / "tests/GameNewsTest.java",
              ROOT / "tests/ArticleHtmlTest.java",
              ROOT / "tests/SaverBrowserTest.java",
              ROOT / "tests/PhotoUploadServerTest.java",
@@ -89,6 +91,7 @@ def main():
         run([JDK / "bin/java.exe", "-cp", target, "local.mitv.launcher.SaverPolicyTest"])
         run([JDK / "bin/java.exe", "-cp", target, "local.mitv.launcher.NewsReaderPolicyTest"])
         run([JDK / "bin/java.exe", "-cp", target, "local.mitv.launcher.RssFeedTest"])
+        run([JDK / "bin/java.exe", "-cp", target, "local.mitv.launcher.GameNewsTest"])
         run([JDK / "bin/java.exe", "-cp", target, "local.mitv.launcher.ArticleHtmlTest"])
         run([JDK / "bin/java.exe", "-cp", target, "local.mitv.launcher.SaverBrowserTest"])
         run([JDK / "bin/java.exe", "-cp", target, "local.mitv.launcher.PhotoUploadServerTest"])

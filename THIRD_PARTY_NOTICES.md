@@ -32,20 +32,22 @@ Copyright (c) 2020-2024 Paweł Kuna。完整许可见 [LICENSE](third_party/tabl
 
 新闻内容版权归原权利人所有，**不是 MIT 或其他开源许可内容**。这是网页数据接口而非有稳定承诺的开放 API；接口变动时可能需要更新解析器。
 
-## 0.7.0 新增新闻来源
+## 新闻来源（0.7.2 更新）
 
 - 财经：[华尔街见闻](https://wallstreetcn.com/)公开快讯，直连 `api-one.wallstcn.com/apiv1/content/lives?channel=global-channel&limit=30`，使用发布时间、标题、正文摘要及原站链接。
 - 科技：[IT之家 RSS](https://www.ithome.com/rss/)。
-- 游戏：[机核 RSS](https://www.gcores.com/rss)。该订阅含游戏与游戏文化内容。
-- AI：[量子位 RSS](https://www.qbitai.com/feed)。该订阅可能只有简短摘要；点击原文时尝试从量子位静态文章页提取正文。
+- 游戏：[游民星空单机资讯](https://www.gamersky.com/pcgame/)，直接访问原站`db2.gamersky.com/LabelJsonpAjax.aspx`的node129列表。只解码JSONP包装内JSON和HTML文本，不执行脚本。对标题／摘要筛选，保留PC／Steam／模拟器关联和单机新作内容，过滤明显手游、电竞、主播直播及没有PC关联的主机动态；这不是完整的游戏平台识别器。点击阅读时提取游民原站`Mid2L_con`或`MidLcon`正文。
+- AI：[AIHOT RSS](https://aihot.news/feed.xml)，用户指定的AI动态聚合源。使用其中文标题、聚合摘要、日期和`aihot.news/items/`链接。摘要和阅读保留AIHOT署名，删掉转成不可点击文字的“阅读原文／via AIHOT”链接尾注，不自动跳转社交网站；订阅内容不等于上游完整原文。
 
-2026-10-25 已在电视 Android 6 上验证六个来源实际联网及解析：国内／国际／财经／科技／游戏各12条，AI在48小时有效期内有1条。原始响应和本机证据只保存在忽略的 `nor/research/` 下。桌面显示实际来源与文章时间，不把抓取时间冒充发布时间。量子位等来源的更新频率可能低于综合新闻，因此条数可能不足一页。
+0.7.0／0.7.1曾使用机核及量子位，0.7.2已替换并移除两者的链接白名单。2026-10-25已在电视Android 6上验证六个当前来源实际联网及解析：国内／国际／财经／科技各12条，游民筛选后9条、AIHOT12条。原始响应和本机证据只保存在忽略的`nor/research/`下。桌面显示实际来源与文章时间，不把抓取时间冒充发布时间；条数不足时不拿过期内容补齐。
 
-RSS 由 Android 自带 SAX XML 解析器读取，不执行脚本，不允许 DTD 或外部实体。订阅中较长的内容直接送入内置阅读器，明确标为“订阅内容，可能为节选”；财经与机核也直接使用原站快讯／RSS内容，避免依赖客户端渲染网页。其他短摘要在用户打开时才尝试获取原站。静态正文请求使用相同的 HTTPS 校验和定长上限，模板不支持则保留摘要。阅读文档关闭脚本，并移除脚本、外部样式和嵌入表单等元素；正文内链接转为普通文字，避免电视方向键焦点跳转。原文和图片版权仍归原权利人，不属于本项目开源代码，不打包进安装文件、不提交到 Git。
+RSS 由 Android 自带 SAX XML 解析器读取，不执行脚本，不允许 DTD 或外部实体。订阅中较长的内容直接送入内置阅读器，明确标为“订阅内容，可能为节选”；财经与AIHOT也直接使用快讯／聚合摘要。游戏和其他短摘要在用户打开时才尝试获取原站。静态正文请求使用相同的 HTTPS 校验和定长上限，模板不支持则保留摘要。阅读文档关闭脚本，并移除脚本、外部样式和嵌入表单等元素；正文内链接转为普通文字，避免电视方向键焦点跳转。原文和图片版权仍归原权利人，不属于本项目开源代码，不打包进安装文件、不提交到 Git。
 
 ## 聚合与阅读交互参考
 
 研究了 [NewsNow](https://github.com/ourongxing/newsnow) 的分类和来源卡片组织，以及 [Read You](https://github.com/ReadYouApp/ReadYou) 的 RSS、摘要和正文阅读流程。NewsNow 是 [MIT](https://github.com/ourongxing/newsnow/blob/main/LICENSE)，Read You 是 GPL-3.0。只参考交互和公开接口结构，没有复制其 TypeScript / Kotlin 应用代码，也没有接入其公共聚合代理；当前解析器及电视界面自行编写。原有实际复用的图标仍按前文 MIT 许可署名。
+
+0.7.2调研了[RSSHub游民路由](https://github.com/DIYgod/RSSHub/tree/master/lib/routes/gamersky)，用于核对原站列表节点和正文容器；没有复制该路由的TypeScript代码或使用公共RSSHub代理。Java解析器自行编写，新闻数据直连游民原站。
 
 ## 更新与缓存
 
@@ -57,4 +59,4 @@ RSS 由 Android 自带 SAX XML 解析器读取，不执行脚本，不允许 DTD
 
 没有信任任意证书、修改全局信任库或替换主机名校验。已在电视 API 23 上验证三个服务的有效证书通过，自签名、主机名不匹配和已过期证书均被拒绝。
 
-0.7.0 将同一组额外公开根证书限定扩展到 `api-one.wallstcn.com`、`www.ithome.com`、`www.gcores.com`、`www.qbitai.com` 的应用数据请求，保留默认主机名校验。WebView 的证书错误仍会取消，不使用 `SslErrorHandler.proceed()`。这些新增主机已于2026-10-25通过电视Android 6实际联网验证。
+当前新闻额外公开根证书限定用于`api-one.wallstcn.com`、`www.ithome.com`、`db2.gamersky.com`、`www.gamersky.com`和`aihot.news`的应用数据请求，保留默认主机名校验；已移除旧机核／量子位主机。WebView的证书错误仍会取消，不使用`SslErrorHandler.proceed()`。当前列表主机和游民正文已于2026-10-25通过电视Android 6实际联网验证。

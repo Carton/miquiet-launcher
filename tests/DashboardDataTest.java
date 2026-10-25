@@ -82,7 +82,26 @@ public final class DashboardDataTest {
         check(tech.get(0).brief.indexOf('\ufffc') == -1);
         check(DashboardRepository.parseFeed(rss.replace("科技 &amp; 中文","京东补贴优惠券"),3).isEmpty());
         check(DashboardRepository.parseFeed(rss.replace(rssDate.format(new Date(now-30_000)),rssDate.format(new Date(now-49*60*60_000L))),3).isEmpty());
-        check(DashboardRepository.parseFeed(rss,4).isEmpty());
+        String aiRss = rss.replace("www.ithome.com/1/2/3.htm", "aihot.news/items/example")
+            .replace(longer.toString(), "这是AI聚合摘要，短内容也应在电视直接可读。")
+            .replace("</p>]]>","</p><p>🔗 <a href='https://example.test/'>阅读原文</a></p><p>via AIHOT · https://aihot.news/items/example</p>]]>");
+        List<DashboardRepository.Story> ai = DashboardRepository.parseFeed(aiRss,5);
+        check(ai.size() == 1 && ai.get(0).publisher.equals("AIHOT") && !ai.get(0).body.isEmpty());
+        check(!ai.get(0).brief.contains("阅读原文") && !ai.get(0).body.contains("via AIHOT"));
+        check(DashboardRepository.parseFeed(aiRss.replace("aihot.news/items/example", "www.qbitai.com/old"),5).isEmpty());
+        SimpleDateFormat gameDate = new SimpleDateFormat("yyyy-MM-dd HH:mm",Locale.ROOT);
+        gameDate.setTimeZone(TimeZone.getTimeZone("Asia/Shanghai"));
+        String gameRow = "<li><a class='tt' href='https://www.gamersky.com/news/202610/test.shtml'>Steam &amp; 新作</a>"
+            + "<div class='txt'>PC新游摘要</div><div class='time'>" + gameDate.format(new Date(now-120_000)) + "</div></li>";
+        String gameResponse = "(" + new JSONObject().put("status","ok").put("body",gameRow + gameRow
+            + gameRow.replace("www.gamersky.com/", "www.gamersky.com.attacker.test/")
+            + gameRow.replace("test.shtml", "console.shtml").replace("Steam &amp; 新作","PS5固件更新").replace("PC新游摘要","主机独占")
+            + gameRow.replace("test.shtml", "old.shtml").replace(gameDate.format(new Date(now-120_000)), gameDate.format(new Date(now-49*60*60_000L)))) + ");";
+        List<DashboardRepository.Story> games = DashboardRepository.parseFeed(gameResponse,4);
+        check(games.size() == 1);
+        check(games.get(0).publisher.equals("游民星空") && games.get(0).title.equals("Steam & 新作") && games.get(0).body.isEmpty());
+        try { DashboardRepository.parseFeed(rss,4); throw new AssertionError("Old RSS cache accepted as game JSONP"); }
+        catch (IllegalArgumentException expected) { assertions++; }
         System.out.println("PASS: " + assertions + " Android data assertions");
         if (args.length >= 2) {
             SSLSocketFactory sockets;

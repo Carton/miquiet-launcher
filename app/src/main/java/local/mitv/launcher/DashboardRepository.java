@@ -269,12 +269,25 @@ final class DashboardRepository {
                         "<p>" + Html.escapeHtml(text).replace("\n", "</p><p>") + "</p>", now);
                 } catch (Exception ignored) { /* Individual malformed flash. */ }
             }
+        } else if (category == 4) {
+            String value = response.trim();
+            if (!value.startsWith("(") || !value.endsWith(");")) throw new IllegalArgumentException("Unexpected game response");
+            JSONObject data = new JSONObject(value.substring(1,value.length()-2));
+            if (!data.getString("status").equals("ok")) throw new IllegalArgumentException("Game source unavailable");
+            for (GameNews.Item item : GameNews.parse(data.getString("body"))) {
+                String title = plain(item.title), brief = plain(item.brief);
+                if (GameNews.relevant(title,brief)) addStory(result,seen,category,title,brief,item.url,item.time,"",now);
+            }
         } else {
             for (RssFeed.Item item : RssFeed.parse(response)) {
                 String title = plain(item.title);
+                String body = item.body();
+                // RSS link footers become dead text in a remote-only reader; retain the
+                // publisher credit in our own header instead of filling the summary with URLs.
+                if (category == 5) body = body.replaceAll("(?is)<p>\\s*(?:🔗|via\\s+AIHOT\\b).*?</p\\s*>","");
                 // Avoid shopping coupons in a technology headline slot.
                 if (category == 3 && (title.contains("神券") || title.contains("优惠券") || title.contains("京东补贴"))) continue;
-                addStory(result, seen, category, title, plain(item.body()), item.url, RssFeed.date(item.date), item.body(), now);
+                addStory(result, seen, category, title, plain(body), item.url, RssFeed.date(item.date), body, now);
             }
         }
         Collections.sort(result, (a, b) -> Long.compare(b.time, a.time));
@@ -291,10 +304,9 @@ final class DashboardRepository {
             if (address == null || !NewsSources.articleHost(category, new URL(address).getHost())
                 || title.isEmpty() || !DashboardPolicy.fresh(time, now, NEWS_MAX_AGE) || !seen.add(address)) return;
             String brief = text.length() > 360 ? text.substring(0, 360) + "…" : text;
-            // A short feed excerpt stays a summary; the reader loads the publisher's page instead.
-            // Gcores pages are client-rendered; its publisher RSS is the reliable reader content,
-            // including short posts. Do not send these to a static-HTML extractor.
-            String article = !text.isEmpty() && (category == 2 || category == 4 || text.length() >= 500)
+            // AIHOT publishes curated summaries, not full articles. Read the supplied feed text
+            // even for a short item; never attempt to load an unrelated upstream social page.
+            String article = !text.isEmpty() && (category == 2 || category == 5 || text.length() >= 500)
                 && body.length() <= 60_000 ? body : "";
             result.add(new Story(title.length() > 160 ? title.substring(0, 160) + "…" : title,
                 brief, address, time, NewsSources.PUBLISHERS[category], article));

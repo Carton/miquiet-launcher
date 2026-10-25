@@ -27,9 +27,8 @@ final class ArticleHtml {
             if (!tags.group(1).isEmpty()) continue;
             String attributes = tags.group(3);
             boolean start = cctv ? attribute(attributes,"id","content_area")
-                : host.equals("www.qbitai.com") ? attribute(attributes,"class","article")
                 : host.equals("www.ithome.com") ? attribute(attributes,"id","paragraph")
-                : host.equals("www.gcores.com") && tags.group(2).equalsIgnoreCase("article");
+                : host.equals("www.gamersky.com") && (attribute(attributes,"class","Mid2L_con") || attribute(attributes,"class","MidLcon"));
             if (!start) continue;
             int begin = tags.end(), depth = 1; String kind = tags.group(2);
             Matcher nested = CONTAINERS.matcher(source); nested.region(begin,source.length());
@@ -77,7 +76,7 @@ final class ArticleHtml {
     private static boolean attribute(String attributes,String name,String value) {
         Matcher field = Pattern.compile("\\b" + name + "\\s*=\\s*(['\"])(.*?)\\1",Pattern.CASE_INSENSITIVE).matcher(attributes);
         if (!field.find()) return false;
-        for (String word : field.group(2).toLowerCase(Locale.ROOT).split("\\s+")) if (word.equals(value)) return true;
+        for (String word : field.group(2).toLowerCase(Locale.ROOT).split("\\s+")) if (word.equalsIgnoreCase(value)) return true;
         return false;
     }
 }
