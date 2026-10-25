@@ -6,6 +6,8 @@ import json
 from pathlib import Path
 import re
 import subprocess
+import struct
+import zlib
 
 ROOT = Path(__file__).resolve().parents[1]
 RULES = {
@@ -17,8 +19,54 @@ RULES = {
 }
 
 
+def png_metadata(data):
+    """Scan PNG metadata, not compressed pixels; invalid PNGs retain raw scanning.
+
+    Pixel content still requires human review. Keep unknown chunks and trailing
+    bytes, and expand compressed text so this is not a blanket binary exemption.
+    """
+    if not data.startswith(b"\x89PNG\r\n\x1a\n"):
+        return data
+    offset, chunks, first = 8, [], True
+    try:
+        while offset < len(data):
+            length = struct.unpack_from(">I", data, offset)[0]
+            end = offset + 12 + length
+            if end > len(data):
+                return data
+            kind = data[offset+4:offset+8]
+            payload = data[offset+8:end-4]
+            expected = struct.unpack_from(">I", data, end-4)[0]
+            if zlib.crc32(kind + payload) != expected or (first and (kind != b"IHDR" or length != 13)):
+                return data
+            first = False
+            if kind != b"IDAT":
+                chunks.append(payload)
+                if kind == b"zTXt":
+                    _, text = payload.split(b"\0", 1)
+                    if not text or text[0] != 0:
+                        return data
+                    chunks.append(zlib.decompress(text[1:]))
+                elif kind == b"iTXt":
+                    _, text = payload.split(b"\0", 1)
+                    flag, method = text[:2]
+                    _, _, text = text[2:].split(b"\0", 2)
+                    if method != 0 or flag not in (0, 1):
+                        return data
+                    chunks.append(zlib.decompress(text) if flag else text)
+            offset = end
+            if kind == b"IEND":
+                if length != 0:
+                    return data
+                return b"\n".join(chunks + [data[offset:]])
+    except (ValueError, struct.error, zlib.error):
+        return data
+    return data
+
+
 def findings(data):
-    return [label for label, expression in RULES.items() if expression.search(data)]
+    text = png_metadata(data)
+    return [label for label, expression in RULES.items() if expression.search(text)]
 
 
 def private_file(name):

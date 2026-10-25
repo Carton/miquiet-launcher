@@ -219,16 +219,16 @@ final class DashboardPanel {
     void showCredits() {
         new AlertDialog.Builder(activity).setTitle("数据与开源说明")
             .setMessage(DashboardRepository.WEATHER_CREDIT
-                + "\n\nOpen-Meteo：https://open-meteo.com/\n位置搜索：Open-Meteo / GeoNames（https://www.geonames.org/）\n数据许可：https://creativecommons.org/licenses/by/4.0/\n图标：https://tabler.io/icons\n网络位置：IPWhois（IP 约略定位，可手动更改）\n新闻：央视网、华尔街见闻、IT之家、游民星空（PC单机）、AIHOT；版权归原权利人，非开源内容。分类与订阅交互参考 NewsNow（MIT）和 Read You（GPL-3.0），未打包其应用代码。\n\n天气约每 15 分钟、新闻约每 10 分钟更新；失败时保留近期缓存并标记。超过 6 小时的天气、48 小时的新闻停止显示。\n\n" + licenseText())
+                + "\n\nOpen-Meteo：https://open-meteo.com/\n位置搜索：Open-Meteo / GeoNames（https://www.geonames.org/）\n数据许可：https://creativecommons.org/licenses/by/4.0/\n天气图标：Tabler Icons · MIT\n设置图标：Lucide · ISC / Feather MIT（https://lucide.dev/）\n网络位置：IPWhois（IP 约略定位，可手动更改）\n新闻：央视网、华尔街见闻、IT之家、游民星空（PC单机）、AIHOT；版权归原权利人，非开源内容。分类与订阅交互参考 NewsNow（MIT）和 Read You（GPL-3.0），未打包其应用代码。\n\n天气约每 15 分钟、新闻约每 10 分钟更新；失败时保留近期缓存并标记。超过 6 小时的天气、48 小时的新闻停止显示。\n\n" + licenseText(R.raw.tabler_license) + "\n\n" + licenseText(R.raw.lucide_license))
             .setPositiveButton("关闭", null).show();
     }
 
-    private String licenseText() {
-        try (java.io.InputStream input = activity.getResources().openRawResource(R.raw.tabler_license);
+    private String licenseText(int resource) {
+        try (java.io.InputStream input = activity.getResources().openRawResource(resource);
              java.io.ByteArrayOutputStream output = new java.io.ByteArrayOutputStream()) {
             byte[] bytes = new byte[2048]; int count;
             while ((count = input.read(bytes)) != -1) output.write(bytes, 0, count);
             return output.toString("UTF-8");
-        } catch (java.io.IOException error) { return "Tabler Icons · MIT · Copyright (c) 2020-2024 Paweł Kuna"; }
+        } catch (java.io.IOException error) { return "Tabler Icons · MIT；Lucide · ISC / Feather MIT，见项目第三方许可。"; }
     }
 }

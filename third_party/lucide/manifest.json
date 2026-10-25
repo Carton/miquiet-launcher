@@ -1,0 +1,19 @@
+{
+  "source": "https://raw.githubusercontent.com/lucide-icons/lucide/1.17.0/",
+  "sha256": {
+    "settings.svg": "0ae27fd0f81999229e3127ac96c5b32edfea448e291d509e76212b917551d66b",
+    "monitor-cog.svg": "ad9070756393f141d207256ad5507801158b7bf3a71374e15d5fddd3ae1d07d6",
+    "layout-grid.svg": "b8903f61d09b1d75e55c71158277d26570962f69c2099446a251871e0a2d6678",
+    "wifi.svg": "5c4c795d014fa95d1e1038362df44a0f0f32ded9cb08c833ae72419ebadc9a91",
+    "bluetooth.svg": "f2bf3d88cf608834dc389f01b1ee41fdb7bf3656dabef69632c60d5498f3bf29",
+    "monitor.svg": "d1a443233345724859de8e4fb48968ba91e885e12ddbd710701548bd91b39428",
+    "volume-2.svg": "fb404f9c128a0579de67b399177631e5edb3502fdc247ceb30e8b15754b46071",
+    "folder-open.svg": "ee57452b40e71df310214091dd9da1941a397c83197b8ff8d7ae66dd4242578b",
+    "cast.svg": "e0c674878995c8819603c8c7887d62fa9f55c853fda94c208c920d0751662877",
+    "images.svg": "f853679adfac703296d71cf0a55945af93144927bc50c9ce72eac809300aad8c",
+    "shield-check.svg": "8d4fcdbde5bba4abb1a2f6fe53e37ceb6343a1d5449a9d88f6f97c1971d26c4e",
+    "info.svg": "bc977a64eb96f3e9c1041ffd09a3fceb70e3e65c02b571f76064062ed31f3cb9",
+    "x.svg": "4a9cdab38fbb96162e7dace28e33f4ca0e49d8963a6162abc3d4691b7d675117"
+  },
+  "license_sha256": "b495047bd93a9b06913511076f504daba17d5bbeb3e0650f3bb53a4220329c57"
+}

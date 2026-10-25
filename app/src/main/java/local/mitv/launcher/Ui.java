@@ -8,6 +8,7 @@ import android.graphics.Path;
 import android.graphics.RectF;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.StateListDrawable;
+import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.TextView;
@@ -54,13 +55,20 @@ final class Ui {
         private final String kind;
         private final Paint paint = new Paint(3);
         private final int color;
+        private final Drawable standardIcon;
         private int wifiLevel = -1;
         private boolean wifi = true, connected;
-        Icon(Context context, String kind, int color) { super(context); this.kind = kind; this.color = color; setImportantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_NO); }
+        Icon(Context context, String kind, int color) {
+            super(context); this.kind = kind; this.color = color;
+            standardIcon = kind.equals("settings") ? context.getDrawable(R.drawable.menu_settings).mutate() : null;
+            if (standardIcon!=null) standardIcon.setTint(color);
+            setImportantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_NO);
+        }
         void setNetwork(boolean wifi, boolean connected, int level) {
             this.wifi = wifi; this.connected = connected; this.wifiLevel = level; invalidate();
         }
         @Override protected void onDraw(Canvas canvas) {
+            if(standardIcon!=null){standardIcon.setBounds(0,0,getWidth(),getHeight());standardIcon.draw(canvas);return;}
             canvas.save();
             canvas.scale(getWidth() / 32f, getHeight() / 32f);
             paint.setColor(color); paint.setStrokeWidth(2.2f); paint.setStyle(Paint.Style.STROKE);
@@ -107,12 +115,6 @@ final class Ui {
             } else if (kind.equals("sound")) {
                 Path path = new Path(); path.moveTo(4, 12); path.lineTo(10, 12); path.lineTo(17, 6); path.lineTo(17, 26); path.lineTo(10, 20); path.lineTo(4, 20); path.close(); canvas.drawPath(path, paint);
                 canvas.drawArc(new RectF(14, 9, 28, 23), -55, 110, false, paint);
-            } else if (kind.equals("settings")) {
-                canvas.drawCircle(16, 16, 9, paint); canvas.drawCircle(16, 16, 3, paint);
-                for (int i = 0; i < 8; i++) {
-                    double a = i * Math.PI / 4;
-                    canvas.drawLine(16 + (float)Math.cos(a) * 10, 16 + (float)Math.sin(a) * 10, 16 + (float)Math.cos(a) * 13, 16 + (float)Math.sin(a) * 13, paint);
-                }
             } else if (kind.equals("factory")) {
                 Path house = new Path(); house.moveTo(3,14); house.lineTo(16,3); house.lineTo(29,14);
                 house.moveTo(7,12); house.lineTo(7,28); house.lineTo(25,28); house.lineTo(25,12);

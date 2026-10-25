@@ -11,6 +11,7 @@ The default README and detailed deployment guide are in Simplified Chinese, refl
 ## Features
 
 - **Simple home screen:** no account cards, subscription promotions or channel navigation; retain volume, Wi-Fi, time and common settings shortcuts.
+- **Remote-friendly settings:** a 4-column × 3-row grid of icons and labels, with a standard rounded gear, predictable directional navigation and focus restoration on close.
 - **Choose your apps:** configure favorites, hold an app to reorder or remove its shortcut, search installed apps, and keep access to all apps and the factory launcher.
 - **Inputs and settings:** HDMI shortcuts, the factory input selector, file manager and TV settings. Live preview depends on the inputs actually exposed by the firmware.
 - **Weather:** Celsius temperature, Chinese condition text and icons. Select to open Xiaomi Weather; hold to change location, use approximate network location or refresh. The home screen does not show the city.
@@ -19,7 +20,19 @@ The default README and detailed deployment guide are in Simplified Chinese, refl
 
 ## Compatibility comes first
 
-The current version is **0.7.2**. It has been tested on **MiTV4-ANSM0 running Android 6.0.1 / API 23**. The minimum runtime API is 23. Other Xiaomi TVs require firmware checks and possibly adaptation; matching the brand or Android version alone does not establish compatibility.
+The current version is **0.8.0**, adding the settings grid and rounded gear. It has been tested on **MiTV4-ANSM0 running Android 6.0.1 / API 23**. The minimum runtime API is 23. Other Xiaomi TVs require firmware checks and possibly adaptation; matching the brand or Android version alone does not establish compatibility. See the [0.8.0 acceptance record](docs/settings-grid-080.md).
+
+## Screenshots
+
+Home screen:
+
+![MiQuiet Launcher running on a TV: news, inputs, favorite apps and the status bar](docs/images/home.png)
+
+Settings menu (4 columns × 3 rows):
+
+![MiQuiet Launcher settings on a TV: icon-and-label grid with visible remote focus](docs/images/settings.png)
+
+These are actual version 0.8.0 screenshots. Apps, news and weather vary with configuration and time. HDMI was disconnected, so these images do not demonstrate live video preview. See the [image notes](docs/images/README.md) for provenance and rights.
 
 Read the complete [deployment, adaptation and recovery guide (Chinese)](docs/agent-deployment.md) before using the device tools. It is also intended for agents helping other users deploy the launcher.
 
@@ -64,7 +77,7 @@ Keep `nor/.local/launcher.keystore` safe. A fresh clone creates its own developm
 
 ## Everyday use and recovery
 
-Use the directional pad and OK button to navigate; Menu or the top-right gear opens settings. Configure favorites in the settings menu and hold an app shortcut to move or remove it. Removing a favorite does not uninstall its app. The factory-launcher shortcut pauses takeover; explicitly reopening MiQuiet resumes takeover if it was previously enabled.
+Use the directional pad and OK button to navigate; Menu or the top-right rounded gear opens the settings grid. Move through its rows and columns with the directional pad. Back, Menu or the close tile dismisses it and restores focus to the gear; TV settings is the first tile. Configure favorites in the settings menu and hold an app shortcut to move or remove it. Removing a favorite does not uninstall its app. The factory-launcher shortcut pauses takeover; explicitly reopening MiQuiet resumes takeover if it was previously enabled.
 
 The bridge preserves existing accessibility services and grants GET_USAGE_STATS only to this app. It uses narrow factory-Home window matching plus a background UsageEvents fallback for firmware that omits window events. It polls a recent three-second window every 400 ms and keeps only the current package/class state in memory. It does not read screen text or save application usage history. The app does not request WRITE_SECURE_SETTINGS.
 

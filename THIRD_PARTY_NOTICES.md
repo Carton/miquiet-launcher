@@ -1,6 +1,6 @@
 # 数据源与第三方许可
 
-桌面本身从头编写，未修改或重新打包小米原厂 APK。现有 HDMI 无信号背景在设备运行时通过原厂资源包加载，不随本项目分发。
+桌面本身从头编写，未修改或重新打包小米原厂 APK。HDMI无信号背景在设备运行时通过原厂资源包加载，不作为独立素材打包进本项目APK。README的实机截图展示运行时界面，其中原厂背景、第三方应用图标和新闻文字的权利仍归原权利人，不因此成为本项目MIT源码或可独立复用的素材。
 
 ## Tabler Icons — MIT
 
@@ -9,6 +9,12 @@
 源码与原始许可保存在 `third_party/tabler-icons/`；SHA-256 和版本源见该目录的 `manifest.json`。`tools/import_weather_icons.py` 将其转换为 Android VectorDrawable，调整颜色、描边宽度，并组合出晴间多云与夜间多云图标。转换后的十个图标位于 `app/src/main/res/drawable/weather_*.xml`，无需 SVG 渲染库。原始 MIT 许可也打包进 APK，并可从桌面设置底部的“数据与开源说明”查看。
 
 Copyright (c) 2020-2024 Paweł Kuna。完整许可见 [LICENSE](third_party/tabler-icons/LICENSE)。
+
+## Lucide — ISC / Feather MIT
+
+0.8.0的标准圆角齿轮及设置矩阵复用了[Lucide 1.17.0](https://github.com/lucide-icons/lucide/tree/1.17.0/icons)的13个SVG：settings、monitor-cog、layout-grid、wifi、bluetooth、monitor、volume-2、folder-open、cast、images、shield-check、info、x。
+
+原始SVG、完整上游许可与哈希清单位于`third_party/lucide/`；许可保留Lucide的ISC与其中Feather来源图标的MIT说明，并打包到APK的`lucide_license.txt`。`tools/import_settings_icons.py`转换为Android VectorDrawable并调整描边、颜色；为已验证的Android6渲染兼容，将SVG中M/m后的隐含直线转换成显式L/l，保持几何形状。无需在电视上加载SVG或额外图标运行库，许可可在“数据与开源说明”查看。
 
 ## Open-Meteo — 天气数据 CC BY 4.0
 

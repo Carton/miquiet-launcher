@@ -87,6 +87,8 @@ def main():
              ROOT / "tests/SaverPolicyTest.java",
              ROOT / "app/src/main/java/local/mitv/launcher/NewsReaderPolicy.java",
              ROOT / "app/src/main/java/local/mitv/launcher/NewsSources.java",
+             ROOT / "app/src/main/java/local/mitv/launcher/SettingsMenu.java",
+             ROOT / "tests/SettingsMenuTest.java",
              ROOT / "app/src/main/java/local/mitv/launcher/GameNews.java",
              ROOT / "app/src/main/java/local/mitv/launcher/RssFeed.java",
              ROOT / "app/src/main/java/local/mitv/launcher/ArticleHtml.java",
@@ -106,6 +108,7 @@ def main():
         run([JDK / "bin/java.exe", "-cp", target, "local.mitv.launcher.NewsReaderPolicyTest"])
         run([JDK / "bin/java.exe", "-cp", target, "local.mitv.launcher.RssFeedTest"])
         run([JDK / "bin/java.exe", "-cp", target, "local.mitv.launcher.GameNewsTest"])
+        run([JDK / "bin/java.exe", "-cp", target, "local.mitv.launcher.SettingsMenuTest"])
         run([JDK / "bin/java.exe", "-cp", target, "local.mitv.launcher.ArticleHtmlTest"])
         run([JDK / "bin/java.exe", "-cp", target, "local.mitv.launcher.SaverBrowserTest"])
         run([JDK / "bin/java.exe", "-cp", target, "local.mitv.launcher.PhotoUploadServerTest"])

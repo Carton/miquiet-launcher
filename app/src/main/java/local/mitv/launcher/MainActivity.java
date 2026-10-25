@@ -65,6 +65,8 @@ public final class MainActivity extends Activity {
     private TextView previewTitle;
     private LinearLayout dock;
     private FrameLayout previewBox;
+    private View settingsButton;
+    private Dialog settingsDialog;
     private int selectedPort;
     private String lastFocusKey;
     private boolean appsDirty;
@@ -124,7 +126,8 @@ public final class MainActivity extends Activity {
         clock = Ui.text(this, "", 19, Color.WHITE);
         clock.setGravity(Gravity.CENTER);
         Ui.place(page, clock, 64, 34, 846, 8);
-        Ui.place(page, iconButton("桌面设置", "settings", this::showSettings), 38, 34, 910, 8);
+        settingsButton = iconButton("桌面设置", "settings", this::showSettings);
+        Ui.place(page, settingsButton, 38, 34, 910, 8);
 
         FrameLayout hero = new FrameLayout(this);
         hero.setBackground(Ui.shape(this, Ui.PANEL, 0, 8));
@@ -305,22 +308,16 @@ public final class MainActivity extends Activity {
     }
 
     private void showSettings() {
-        String[] choices = {"电视设置", "配置首页应用", "网络与连接", "蓝牙", "图像", "声音", "文件管理", "无线投屏", "桌面接管与恢复", "本地图片屏保"};
-        new AlertDialog.Builder(this).setTitle("桌面设置").setItems(choices, (dialog, which) -> {
-            switch (which) {
-                case 0: actions.settings(); break;
-                case 1: configureFavorites(); break;
-                case 2: actions.panel("connect_settings"); break;
-                case 3: actions.panel("bluetooth_settings"); break;
-                case 4: actions.panel("display_settings"); break;
-                case 5: actions.panel("sound_settings"); break;
-                case 6: actions.media(); break;
-                case 7: launchPackage("com.xiaomi.mitv.smartshare"); break;
-                case 8: bridgeSettings(); break;
-                case 9: saverSettings.show(); break;
-                default: break;
-            }
-        }).setNegativeButton("关闭", null).setNeutralButton("数据与开源说明", (d,w) -> dashboard.showCredits()).show();
+        if (settingsDialog != null && settingsDialog.isShowing()) return;
+        settingsDialog = SettingsDialog.show(this,new Runnable[]{
+            actions::settings, this::configureFavorites, ()->actions.panel("connect_settings"),
+            ()->actions.panel("bluetooth_settings"), ()->actions.panel("display_settings"),
+            ()->actions.panel("sound_settings"), actions::media, ()->launchPackage("com.xiaomi.mitv.smartshare"),
+            saverSettings::show, this::bridgeSettings, dashboard::showCredits, ()->{}
+        },()->{
+            settingsDialog=null;
+            if (!isFinishing() && settingsButton!=null) settingsButton.requestFocus();
+        });
     }
 
     private void launchPackage(String pkg) {
@@ -486,6 +483,7 @@ public final class MainActivity extends Activity {
     }
 
     @Override protected void onDestroy() {
+        if (settingsDialog!=null) settingsDialog.dismiss();
         unregisterReceiver(packageChanges);
         handler.removeCallbacks(statusTick);
         dashboard.close();
