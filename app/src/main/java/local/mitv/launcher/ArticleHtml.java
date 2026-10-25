@@ -27,7 +27,8 @@ final class ArticleHtml {
             if (!tags.group(1).isEmpty()) continue;
             String attributes = tags.group(3);
             boolean start = cctv ? attribute(attributes,"id","content_area")
-                : host.equals("www.ithome.com") ? attribute(attributes,"id","paragraph")
+                : host.equals("news.sciencenet.cn") ? attribute(attributes,"id","content1")
+                : host.equals("www.stdaily.com") ? attribute(attributes,"class","content")
                 : host.equals("www.gamersky.com") && (attribute(attributes,"class","Mid2L_con") || attribute(attributes,"class","MidLcon"));
             if (!start) continue;
             int begin = tags.end(), depth = 1; String kind = tags.group(2);

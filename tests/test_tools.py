@@ -161,7 +161,8 @@ class ResearchNewsTests(unittest.TestCase):
     def test_game_jsonp_is_inspected_as_html_list_not_rss(self):
         result = self.inspect_game("ok")
         self.assertEqual(result["items"], 1)
-        self.assertEqual(result["recent_48h"], 1)
+        self.assertEqual(result["recent"], 1)
+        self.assertEqual(result["max_age_hours"], 48)
         self.assertEqual(result["file"], "game.json")
 
     def test_publisher_failure_does_not_look_like_success(self):

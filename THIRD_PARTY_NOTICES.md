@@ -38,14 +38,14 @@ Copyright (c) 2020-2024 Paweł Kuna。完整许可见 [LICENSE](third_party/tabl
 
 新闻内容版权归原权利人所有，**不是 MIT 或其他开源许可内容**。这是网页数据接口而非有稳定承诺的开放 API；接口变动时可能需要更新解析器。
 
-## 新闻来源（0.7.2 更新）
+## 新闻来源（0.8.1 更新）
 
 - 财经：[华尔街见闻](https://wallstreetcn.com/)公开快讯，直连 `api-one.wallstcn.com/apiv1/content/lives?channel=global-channel&limit=30`，使用发布时间、标题、正文摘要及原站链接。
-- 科技：[IT之家 RSS](https://www.ithome.com/rss/)。
+- 科技：[科学网官方RSS说明](https://www.sciencenet.cn/RSS.aspx)中的国际科研报道（`https://www.sciencenet.cn/xml/news-0.aspx?di=7`），组合[科技日报国际科技频道](https://www.stdaily.com/web/gjxw/node_381.html)中有真实发布时间的国际科技与创新连线卡片。两家交错展示，按URL与规范化标题去重，保留最近7天；不是对IT资讯做关键词改名，也不保证识别不同标题的同一事件。保留每篇的来源与时间，打开时提取科学网`content1`或科技日报`content`正文，不执行原站脚本。单源故障保留另一源，必要时使用仍有效的该源缓存并标记。旧IT之家缓存与链接白名单已经移除。
 - 游戏：[游民星空单机资讯](https://www.gamersky.com/pcgame/)，直接访问原站`db2.gamersky.com/LabelJsonpAjax.aspx`的node129列表。只解码JSONP包装内JSON和HTML文本，不执行脚本。对标题／摘要筛选，保留PC／Steam／模拟器关联和单机新作内容，过滤明显手游、电竞、主播直播及没有PC关联的主机动态；这不是完整的游戏平台识别器。点击阅读时提取游民原站`Mid2L_con`或`MidLcon`正文。
 - AI：[AIHOT RSS](https://aihot.news/feed.xml)，用户指定的AI动态聚合源。使用其中文标题、聚合摘要、日期和`aihot.news/items/`链接。摘要和阅读保留AIHOT署名，删掉转成不可点击文字的“阅读原文／via AIHOT”链接尾注，不自动跳转社交网站；订阅内容不等于上游完整原文。
 
-0.7.0／0.7.1曾使用机核及量子位，0.7.2已替换并移除两者的链接白名单。2026-10-25已在电视Android 6上验证六个当前来源实际联网及解析：国内／国际／财经／科技各12条，游民筛选后9条、AIHOT12条。原始响应和本机证据只保存在忽略的`nor/research/`下。桌面显示实际来源与文章时间，不把抓取时间冒充发布时间；条数不足时不拿过期内容补齐。
+0.7.0／0.7.1曾使用机核及量子位，0.7.2已替换并移除两者的链接白名单。0.7.2的六分类联网结果见历史验收，0.8.1又在电视Android 6验证科学网20条、科技日报10条原始列表，合并12条，以及两家正文提取。原始响应和本机证据只保存在忽略的`nor/research/`下。桌面显示实际来源与文章时间，不把抓取时间冒充发布时间；条数不足时不拿过期内容补齐。
 
 RSS 由 Android 自带 SAX XML 解析器读取，不执行脚本，不允许 DTD 或外部实体。订阅中较长的内容直接送入内置阅读器，明确标为“订阅内容，可能为节选”；财经与AIHOT也直接使用快讯／聚合摘要。游戏和其他短摘要在用户打开时才尝试获取原站。静态正文请求使用相同的 HTTPS 校验和定长上限，模板不支持则保留摘要。阅读文档关闭脚本，并移除脚本、外部样式和嵌入表单等元素；正文内链接转为普通文字，避免电视方向键焦点跳转。原文和图片版权仍归原权利人，不属于本项目开源代码，不打包进安装文件、不提交到 Git。
 
@@ -65,4 +65,4 @@ RSS 由 Android 自带 SAX XML 解析器读取，不执行脚本，不允许 DTD
 
 没有信任任意证书、修改全局信任库或替换主机名校验。已在电视 API 23 上验证三个服务的有效证书通过，自签名、主机名不匹配和已过期证书均被拒绝。
 
-当前新闻额外公开根证书限定用于`api-one.wallstcn.com`、`www.ithome.com`、`db2.gamersky.com`、`www.gamersky.com`和`aihot.news`的应用数据请求，保留默认主机名校验；已移除旧机核／量子位主机。WebView的证书错误仍会取消，不使用`SslErrorHandler.proceed()`。当前列表主机和游民正文已于2026-10-25通过电视Android 6实际联网验证。
+当前新闻额外公开根证书限定用于`api-one.wallstcn.com`、`www.sciencenet.cn`、`news.sciencenet.cn`、`www.stdaily.com`、`db2.gamersky.com`、`www.gamersky.com`和`aihot.news`的应用数据请求，保留默认主机名校验；已移除旧机核／量子位／IT之家主机。WebView的证书错误仍会取消，不使用`SslErrorHandler.proceed()`。科学网、科技日报列表与正文已于2026-10-25通过电视Android 6实际联网验证。

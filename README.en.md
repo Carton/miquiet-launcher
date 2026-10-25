@@ -20,7 +20,7 @@ The default README and detailed deployment guide are in Simplified Chinese, refl
 
 ## Compatibility comes first
 
-The current version is **0.8.0**, adding the settings grid and rounded gear. It has been tested on **MiTV4-ANSM0 running Android 6.0.1 / API 23**. The minimum runtime API is 23. Other Xiaomi TVs require firmware checks and possibly adaptation; matching the brand or Android version alone does not establish compatibility. See the [0.8.0 acceptance record](docs/settings-grid-080.md).
+The current version is **0.8.1**, combining multidisciplinary science reporting from ScienceNet and Science and Technology Daily. It has been tested on **MiTV4-ANSM0 running Android 6.0.1 / API 23**. The minimum runtime API is 23. Other Xiaomi TVs require firmware checks and possibly adaptation; matching the brand or Android version alone does not establish compatibility. See the [science-source record](docs/science-news-081.md) and [settings-grid acceptance record](docs/settings-grid-080.md).
 
 ## Screenshots
 
@@ -97,7 +97,7 @@ The recovery tool removes only this project's accessibility entry and foreground
 | --- | --- |
 | China / World | CCTV News |
 | Finance | Wallstreetcn live updates |
-| Technology | IT Home RSS |
+| Technology | ScienceNet international research RSS + Science and Technology Daily science / innovation reports, interleaved |
 | Games | GamerSky single-player news, with title/summary keyword rules to filter some content unrelated to PC gaming |
 | AI | [AIHOT RSS](https://aihot.news/feed.xml) |
 
@@ -112,7 +112,7 @@ Rebuild and reinstall after changes. When appropriate, run `tools/check_dashboar
 
 Select a category to switch and refresh, select a headline for its summary, and use the page control to browse more. The reader supports directional scrolling and text-size controls. It may show feed summaries or part of a publisher article and labels supplied content as potentially excerpted. Not every site template is supported; unavailable or confirmed unsupported reader entries are hidden, while network failures can be retried.
 
-Weather refreshes approximately every 15 minutes and the active news category every 10 minutes. Failed updates retain recent cached data with a visible status; weather older than 6 hours and news older than 48 hours are hidden. Network-based location can be inaccurate because of ISP routing or proxies; it can be changed manually in the weather menu.
+Weather refreshes approximately every 15 minutes and the active news category every 10 minutes. Failed updates retain recent cached data with a visible status; weather older than 6 hours is hidden. Science reporting has a seven-day window; other news has a 48-hour window. Science sources are interleaved and deduplicated by URL and normalized title, without semantic deduplication or subject-keyword guessing. Individual articles retain publisher and publication time; one source can keep working when the other fails. Network-based location can be inaccurate because of ISP routing or proxies; it can be changed manually in the weather menu.
 
 ## Local photo screensaver
 

@@ -103,6 +103,7 @@ final class DashboardRepository {
     List<Story> stories(int category) { return news.get(NewsSources.index(category)); }
     boolean failed(int category) { return newsFailed[NewsSources.index(category)]; }
     boolean busy(int category) { return newsBusy[NewsSources.index(category)]; }
+    static long newsMaxAge(int category) { return category==3 ? ScienceNews.MAX_AGE : NEWS_MAX_AGE; }
     void refreshWeather(boolean force) {
         if (!closed && !weatherBusy && (force || System.currentTimeMillis() >= nextWeather)) fetchWeather();
     }
@@ -162,13 +163,22 @@ final class DashboardRepository {
         nextNews[category] = System.currentTimeMillis() + 10 * 60_000L;
         worker.execute(() -> {
             try {
-                String response = get(NewsSources.URLS[category]);
+                String response;
+                boolean partial=false;
+                if(category==3) {
+                    String[] cached={"",""};
+                    try { cached=unpackScience(prefs.getString("news_tech_cache","")); } catch(Exception ignored) {}
+                    ScienceNews.Batch batch=ScienceNews.load(cached,i->get(NewsSources.SCIENCE_URLS[i]),System.currentTimeMillis());
+                    response=packScience(batch.responses);partial=batch.partial;
+                } else response=get(NewsSources.URLS[category]);
                 List<Story> stories = parseFeed(response, category);
                 if (stories.isEmpty()) throw new IllegalArgumentException("No recent headlines");
+                final boolean incomplete=partial;
                 deliver(() -> {
-                    newsBusy[category] = false; news.set(category, stories); newsFailed[category] = false;
+                    newsBusy[category] = false; news.set(category, stories); newsFailed[category] = incomplete;
+                    if(incomplete)nextNews[category]=System.currentTimeMillis()+2*60_000L;
                     prefs.edit().putString("news_" + NewsSources.IDS[category] + "_cache", response).apply();
-                    Log.i("QuietTVData", NewsSources.IDS[category] + " updated count=" + stories.size() + " newest=" + stories.get(0).time);
+                    Log.i("QuietTVData", NewsSources.IDS[category] + " updated count=" + stories.size() + " partial=" + incomplete + " newest=" + stories.get(0).time);
                     changed.run();
                 });
             } catch (Exception error) {
@@ -257,6 +267,17 @@ final class DashboardRepository {
         List<Story> result = new ArrayList<>();
         HashSet<String> seen = new HashSet<>();
         long now = System.currentTimeMillis();
+        if(category==3) {
+            String[] feeds=unpackScience(response);
+            List<ScienceNews.Item> first=feeds[0].isEmpty()?Collections.emptyList():ScienceNews.parse(0,feeds[0]);
+            List<ScienceNews.Item> second=feeds[1].isEmpty()?Collections.emptyList():ScienceNews.parse(1,feeds[1]);
+            for(ScienceNews.Item item:ScienceNews.merge(first,second,now)) {
+                String brief=plain(item.brief);
+                result.add(new Story(plain(item.title),brief.length()>360?brief.substring(0,360)+"…":brief,
+                    item.url,item.time,item.publisher,""));
+            }
+            return Collections.unmodifiableList(result);
+        }
         if (category == 2) {
             JSONArray rows = new JSONObject(response).getJSONObject("data").getJSONArray("items");
             for (int i = 0; i < rows.length(); i++) {
@@ -285,13 +306,22 @@ final class DashboardRepository {
                 // RSS link footers become dead text in a remote-only reader; retain the
                 // publisher credit in our own header instead of filling the summary with URLs.
                 if (category == 5) body = body.replaceAll("(?is)<p>\\s*(?:🔗|via\\s+AIHOT\\b).*?</p\\s*>","");
-                // Avoid shopping coupons in a technology headline slot.
-                if (category == 3 && (title.contains("神券") || title.contains("优惠券") || title.contains("京东补贴"))) continue;
                 addStory(result, seen, category, title, plain(body), item.url, RssFeed.date(item.date), body, now);
             }
         }
         Collections.sort(result, (a, b) -> Long.compare(b.time, a.time));
         return Collections.unmodifiableList(new ArrayList<>(result.subList(0, Math.min(12, result.size()))));
+    }
+
+    static String packScience(String[] feeds) throws Exception {
+        return new JSONObject().put("scienceVersion",1).put("feeds",new JSONArray().put(feeds[0]).put(feeds[1])).toString();
+    }
+    static String[] unpackScience(String response) throws Exception {
+        JSONObject value=new JSONObject(response);
+        if(value.getInt("scienceVersion")!=1)throw new IllegalArgumentException("Unsupported science cache");
+        JSONArray feeds=value.getJSONArray("feeds");
+        if(feeds.length()!=2)throw new IllegalArgumentException("Invalid science cache");
+        return new String[]{feeds.getString(0),feeds.getString(1)};
     }
 
     private static String plain(String html) {

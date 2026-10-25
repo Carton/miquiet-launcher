@@ -14,8 +14,10 @@ public final class ArticleHtmlTest {
         check(!body.contains("script") && !body.contains("Duplicate heading"));
         check(ArticleHtml.extract(html,"example.com") == null);
         check(ArticleHtml.extract("<div class='Mid2L_con'><p>short</p></div>","www.gamersky.com") == null);
-        check(ArticleHtml.extract("<div id='paragraph'><p>" + text + "</p></div>","www.ithome.com") != null);
-        check(ArticleHtml.extract("<div id='other'><p>" + text + "</p></div>","www.ithome.com") == null);
+        check(ArticleHtml.extract("<div id='content1'><p>" + text + "</p></div>","news.sciencenet.cn") != null);
+        check(ArticleHtml.extract("<div id='other'><p>" + text + "</p></div>","news.sciencenet.cn") == null);
+        check(ArticleHtml.extract("<div id='printContent'><div class='content'><p>"+text+"</p></div><div>SIDEBAR</div></div>","www.stdaily.com").equals("<p>"+text+"</p>"));
+        check(ArticleHtml.extract("<div class='content'><p>"+text+"</p></div>","www.stdaily.com.attacker.test")==null);
         check(ArticleHtml.clean("<p>body</p><iframe>hidden</iframe><form>form</form><meta http-equiv='refresh'><link href='external'><script>x</script>").equals("<p>body</p>"));
         check(ArticleHtml.extract("<div class='MidLcon'><p>" + text,"www.gamersky.com") == null);
         check(ArticleHtml.extract("<div class='MidLcon'><p>" + text + "</p></div>","www.gamersky.com") != null);
@@ -29,7 +31,8 @@ public final class ArticleHtmlTest {
         System.out.println("PASS: " + assertions + " static article assertions");
         for (String file : args) {
             String source = new String(java.nio.file.Files.readAllBytes(java.nio.file.Paths.get(file)),java.nio.charset.StandardCharsets.UTF_8);
-            String article = ArticleHtml.extract(source,file.contains("cctv") ? "news.cctv.com" : "www.gamersky.com");
+            String article = ArticleHtml.extract(source,file.contains("cctv") ? "news.cctv.com"
+                : file.contains("science-article") ? "news.sciencenet.cn" : file.contains("daily-article") ? "www.stdaily.com" : "www.gamersky.com");
             check(article != null && article.length() > 500);
             System.out.println("ARTICLE FIXTURE: " + file + " body chars=" + article.length());
         }

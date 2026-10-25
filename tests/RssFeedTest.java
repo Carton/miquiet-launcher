@@ -37,7 +37,8 @@ public final class RssFeedTest {
         check(NewsSources.IDS.length == 6 && NewsSources.LABELS.length == 6);
         check(NewsSources.index(-1) == 0 && NewsSources.index(8) == 0);
         check(NewsSources.index("ai") == 5 && NewsSources.index("game") == 4);
-        check(NewsSources.articleHost(3,"www.ithome.com") && !NewsSources.articleHost(3,"www.ithome.com.attacker.test"));
+        check(NewsSources.articleHost(3,"news.sciencenet.cn") && NewsSources.articleHost(3,"www.stdaily.com")
+            && !NewsSources.articleHost(3,"www.ithome.com") && !NewsSources.articleHost(3,"www.stdaily.com.attacker.test"));
         check(!NewsSources.articleHost(4,"aihot.news"));
         check(NewsSources.articleHost(5,"aihot.news") && !NewsSources.articleHost(5,"www.qbitai.com"));
         System.out.println("PASS: " + assertions + " RSS and source assertions");

@@ -137,6 +137,6 @@ python -B tools/screensaver_tv.py restore --serial $tv --expected-model $model -
 - HDMI：实际枚举输入；已验证固件只注册了HDMI3，HDMI1/2使用原厂同样的input参数也不能凭空创建TvInputInfo。适配依据是目标固件和真实信号，不伪造成功。
 - 截图：部分旧固件`exec-out screencap -p`在PNG前输出诊断文本，应从PNG签名开始保存；安全视频页面可能不能截图。这与桌面崩溃不是同一结论。
 - 自动化：本机曾在`uiautomator dump`断开时发生系统权限错误，不依赖它做激活；普通按键、截图和有限的`dumpsys`足够验证这些步骤。
-- 新闻与天气：需要时运行`tools/check_dashboard.py --serial ... --expected-model ...`及`--news`；这会临时推送shell测试辅助文件，但不安装测试应用。不同日期源可能暂时没有48小时内内容，不要把它伪造成网络成功或用旧消息填充。
+- 新闻与天气：需要时运行`tools/check_dashboard.py --serial ... --expected-model ...`及`--news`；只检查科技两源及其正文可用`--science`。这会临时推送shell测试辅助文件，但不安装测试应用。科技类使用7天、其他类别48小时的有效期；过期或无内容不能伪造成网络成功，不用过期消息填充。
 
 最初参考的三篇微博：[Home思路一](https://weibo.com/1655253920/RnoSYhIUm)、[思路二](https://weibo.com/1655253920/RnrZ0BGgQ)、[思路三](https://weibo.com/1655253920/Rnxh6fZzf)。本指南以本项目实际实现和验收为准，文章只是背景，不能直接照搬其中针对其他固件的包名和禁用操作。

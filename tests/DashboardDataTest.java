@@ -76,12 +76,23 @@ public final class DashboardDataTest {
         String rssItem = "<item><title>科技 &amp; 中文</title><link>https://www.ithome.com/1/2/3.htm</link><pubDate>"
             + rssDate.format(new Date(now-30_000)) + "</pubDate><description><![CDATA[<img src='https://example.test/unused.png'><p>" + longer + "</p>]]></description></item>";
         String rss = "<rss><channel>" + rssItem + rssItem + rssItem.replace("www.ithome.com/1", "www.ithome.com.attacker.test/1") + "</channel></rss>";
-        List<DashboardRepository.Story> tech = DashboardRepository.parseFeed(rss,3);
-        check(tech.size() == 1 && tech.get(0).publisher.equals("IT之家"));
-        check(tech.get(0).title.equals("科技 & 中文") && tech.get(0).body.contains("<p>"));
-        check(tech.get(0).brief.indexOf('\ufffc') == -1);
-        check(DashboardRepository.parseFeed(rss.replace("科技 &amp; 中文","京东补贴优惠券"),3).isEmpty());
-        check(DashboardRepository.parseFeed(rss.replace(rssDate.format(new Date(now-30_000)),rssDate.format(new Date(now-49*60*60_000L))),3).isEmpty());
+        String science=rss.replace("https://www.ithome.com/1/2/3.htm","http://news.sciencenet.cn/htmlnews/test.shtm");
+        SimpleDateFormat scienceDate=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss",Locale.ROOT);
+        scienceDate.setTimeZone(TimeZone.getTimeZone("Asia/Shanghai"));
+        String daily="<div class='content_right_top_item h70'><div class='content_right_top_item_title'>"
+            +"<a href='https://www.stdaily.com/web/gjxw/test.html'>新材料与能源研究</a></div>"
+            +"<div class='content_right_top_item_date'>"+scienceDate.format(new Date(now-4*24*60*60_000L))+"</div></div>";
+        String combined=DashboardRepository.packScience(new String[]{science,daily});
+        List<DashboardRepository.Story> tech = DashboardRepository.parseFeed(combined,3);
+        check(tech.size() == 2 && tech.get(0).publisher.equals("科学网") && tech.get(1).publisher.equals("科技日报"));
+        check(tech.get(0).title.equals("科技 & 中文") && tech.get(0).body.isEmpty());
+        check(tech.get(0).brief.indexOf('\ufffc') == -1 && tech.get(0).url.startsWith("https://"));
+        check(DashboardRepository.parseFeed(DashboardRepository.packScience(new String[]{"",daily}),3).size()==1);
+        check(DashboardRepository.parseFeed(DashboardRepository.packScience(new String[]{science,
+            daily.replace("www.stdaily.com/","www.stdaily.com.attacker.test/")}),3).size()==1);
+        try {DashboardRepository.parseFeed(rss,3);throw new AssertionError("Old IT feed cache accepted");}
+        catch(org.json.JSONException expected){assertions++;}
+        check(DashboardRepository.newsMaxAge(3)==7*24*60*60_000L && DashboardRepository.newsMaxAge(5)==48*60*60_000L);
         String aiRss = rss.replace("www.ithome.com/1/2/3.htm", "aihot.news/items/example")
             .replace(longer.toString(), "这是AI聚合摘要，短内容也应在电视直接可读。")
             .replace("</p>]]>","</p><p>🔗 <a href='https://example.test/'>阅读原文</a></p><p>via AIHOT · https://aihot.news/items/example</p>]]>");
@@ -111,6 +122,9 @@ public final class DashboardDataTest {
             if (args.length == 3 && args[2].equals("--news")) {
                 liveNews(sockets); return;
             }
+            if (args.length == 3 && args[2].equals("--science")) {
+                liveScience(sockets); return;
+            }
             for (String host : new String[]{"ipwho.is", "api.open-meteo.com", "geocoding-api.open-meteo.com"}) {
                 HttpsURLConnection connection = (HttpsURLConnection)new URL("https://" + host + "/").openConnection();
                 connection.setSSLSocketFactory(sockets); connection.setConnectTimeout(8000); connection.setReadTimeout(8000);
@@ -129,6 +143,7 @@ public final class DashboardDataTest {
 
     private static void liveNews(SSLSocketFactory sockets) throws Exception {
         for (int i = 0; i < NewsSources.IDS.length; i++) {
+            if(i==3){liveScience(sockets);continue;}
             HttpsURLConnection connection = (HttpsURLConnection)new URL(NewsSources.URLS[i]).openConnection();
             connection.setSSLSocketFactory(sockets); connection.setConnectTimeout(8000); connection.setReadTimeout(8000);
             connection.setInstanceFollowRedirects(false); connection.setRequestProperty("User-Agent","QuietTV/0.7");
@@ -147,5 +162,38 @@ public final class DashboardDataTest {
                 System.out.println("NEWS LIVE: " + NewsSources.IDS[i] + " count=" + stories.size() + " newest=" + stories.get(0).time);
             } finally { connection.disconnect(); }
         }
+    }
+
+    private static String read(SSLSocketFactory sockets,String address)throws Exception {
+        HttpsURLConnection connection=(HttpsURLConnection)new URL(address).openConnection();
+        connection.setSSLSocketFactory(sockets);connection.setConnectTimeout(8000);connection.setReadTimeout(8000);
+        connection.setInstanceFollowRedirects(false);connection.setRequestProperty("User-Agent","QuietTV/0.7 (personal Android TV launcher)");
+        try {
+            if(connection.getResponseCode()!=200)throw new java.io.IOException("HTTP "+connection.getResponseCode());
+            java.io.ByteArrayOutputStream output=new java.io.ByteArrayOutputStream();
+            try(java.io.InputStream input=connection.getInputStream()) {
+                byte[] buffer=new byte[8192];int count;
+                while((count=input.read(buffer))!=-1){if(output.size()+count>512*1024)throw new java.io.IOException("Oversize response");output.write(buffer,0,count);}
+            }
+            return output.toString("UTF-8");
+        } finally {connection.disconnect();}
+    }
+
+    private static void liveScience(SSLSocketFactory sockets)throws Exception {
+        ScienceNews.Batch batch=ScienceNews.load(new String[]{"",""},new ScienceNews.Loader(){
+            @Override public String get(int source)throws Exception{return read(sockets,NewsSources.SCIENCE_URLS[source]);}
+        },System.currentTimeMillis());
+        check(!batch.partial);
+        List<DashboardRepository.Story> stories=DashboardRepository.parseFeed(DashboardRepository.packScience(batch.responses),3);
+        check(stories.size()>=2 && stories.get(0).publisher.equals("科学网") && stories.get(1).publisher.equals("科技日报"));
+        for(int i=0;i<2;i++) {
+            System.out.println("SCIENCE LIVE: "+ScienceNews.PUBLISHERS[i]+" count="+ScienceNews.parse(i,batch.responses[i]).size());
+            DashboardRepository.Story story=stories.get(i);
+            String body=ArticleHtml.extract(read(sockets,story.url),new URL(story.url).getHost());
+            check(body!=null && body.length()>100);
+            System.out.println("SCIENCE ARTICLE: "+story.publisher+" chars="+body.length()+" url="+story.url);
+        }
+        System.out.println("SCIENCE COMBINED: count="+stories.size());
+        System.out.println("NEWS LIVE: tech count="+stories.size()+" newest="+stories.get(0).time);
     }
 }

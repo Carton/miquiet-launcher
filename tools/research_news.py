@@ -1,4 +1,4 @@
-"""Download and inspect the six publisher feeds from this PC; never connects to the TV."""
+"""Inspect publisher endpoints for the six categories from this PC, never the TV."""
 
 import concurrent.futures
 import datetime as dt
@@ -51,21 +51,29 @@ def inspect(source):
             raise RuntimeError("Game source unavailable")
         rows = re.findall(r'<div\s+class="time">(.*?)</div>', payload["body"], re.S)
         dates = [dt.datetime.strptime(value.strip(), "%Y-%m-%d %H:%M").replace(tzinfo=SHANGHAI) for value in rows]
+    elif category == "tech_daily":
+        cards = re.findall(r'<div\s+class=[\'\"]content_right_top_item(?:\s+[^\'\"]*)?[\'\"]\s*>(.*?)'
+                           r'(?=<div\s+class=[\'\"]content_right_top_item(?:\s|[\'\"])|$)', text, re.S)
+        rows = [card for card in cards if re.search(r'content_right_top_item_date', card)]
+        dates = [dt.datetime.strptime(re.search(r'\d{4}-\d\d-\d\d \d\d[:]\d\d[:]\d\d', card).group(),
+                                             "%Y-%m-%d %H:%M:%S").replace(tzinfo=SHANGHAI) for card in rows]
     else:
         if "<!DOCTYPE" in text.upper() or "<!ENTITY" in text.upper():
             raise RuntimeError("Unexpected XML declaration")
         rows = ET.fromstring(text).findall(".//item")
-        dates = [email.utils.parsedate_to_datetime(row.findtext("pubDate")) for row in rows]
+        dates = [(dt.datetime.strptime(row.findtext("pubDate"), "%Y-%m-%d %H:%M").replace(tzinfo=SHANGHAI)
+                  if category == "tech" else email.utils.parsedate_to_datetime(row.findtext("pubDate"))) for row in rows]
         if not all(row.findtext("title") and row.findtext("link") for row in rows):
             raise RuntimeError(f"Missing {category} fields")
     now = dt.datetime.now(dt.timezone.utc)
-    recent = [date for date in dates if dt.timedelta(minutes=-5) <= now - date <= dt.timedelta(hours=48)]
+    max_age = dt.timedelta(days=7) if category in ("tech", "tech_daily") else dt.timedelta(hours=48)
+    recent = [date for date in dates if dt.timedelta(minutes=-5) <= now - date <= max_age]
     if not recent:
         raise RuntimeError(f"No recent {category} stories")
-    file = DESTINATION / (category + (".xml" if category in ("tech", "ai") else ".json"))
+    file = DESTINATION / (category + (".xml" if category in ("tech", "ai") else ".html" if category == "tech_daily" else ".json"))
     file.write_bytes(data)
     return {"category": category, "url": url, "status": status, "bytes": len(data),
-            "sha256": hashlib.sha256(data).hexdigest(), "items": len(rows), "recent_48h": len(recent),
+            "sha256": hashlib.sha256(data).hexdigest(), "items": len(rows), "recent": len(recent), "max_age_hours": max_age.total_seconds()/3600,
             "newest": max(recent).astimezone(SHANGHAI).isoformat(), "file": file.name}
 
 
@@ -77,17 +85,20 @@ def main():
     if len(ids) != 6 or len(urls) != 6:
         raise RuntimeError("Unexpected source table")
     DESTINATION.mkdir(parents=True, exist_ok=True)
+    daily = re.search(r'SCIENCE_URLS\s*=\s*\{.*?"(https://[^\"]+)"', source, re.S).group(1)
     with concurrent.futures.ThreadPoolExecutor(max_workers=3) as worker:
-        results = list(worker.map(inspect, zip(ids, urls)))
+        results = list(worker.map(inspect, [*zip(ids, urls), ("tech_daily",daily)]))
     manifest = {"checked_at": dt.datetime.now(SHANGHAI).isoformat(), "origin": "development PC, not the TV", "sources": results}
     (DESTINATION / "manifest.json").write_text(json.dumps(manifest, ensure_ascii=False, indent=2), encoding="utf-8")
     for row in results:
-        print(f"PC FEED: {row['category']} HTTP {row['status']} items={row['items']} recent={row['recent_48h']} newest={row['newest']}")
+        print(f"PC FEED: {row['category']} HTTP {row['status']} items={row['items']} recent={row['recent']} newest={row['newest']}")
     classes = ROOT / "nor/build/test-classes"
     if (classes / "local/mitv/launcher/RssFeedTest.class").exists():
         from build import JDK
         subprocess.run([str(JDK / "bin/java.exe"), "-cp", str(classes), "local.mitv.launcher.RssFeedTest",
-                        *[str(DESTINATION / (category + ".xml")) for category in ("tech", "ai")]], check=True)
+                        str(DESTINATION / "ai.xml")], check=True)
+        subprocess.run([str(JDK / "bin/java.exe"), "-cp", str(classes), "local.mitv.launcher.ScienceNewsTest",
+                        str(DESTINATION / "tech.xml"), str(DESTINATION / "tech_daily.html")], check=True)
 
 
 if __name__ == "__main__":

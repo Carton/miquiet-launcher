@@ -29,7 +29,7 @@
 | 原厂入口／信号源 | `DeviceActions`、`PreviewController` |
 | Home接管 | `LauncherPolicy`、`HomeBridgeService`、`ForegroundMonitor`、`DesktopLaunch`、`BootReceiver` |
 | 接管与恢复开关 | `RestoreReceiver`、`tools/enable_home.py`、`tools/restore_tv.ps1` |
-| 新闻／天气 | `DashboardPanel`、`DashboardRepository`、`NewsSources`、`LegacyTls` |
+| 新闻／天气 | `DashboardPanel`、`DashboardRepository`、`NewsSources`、`ScienceNews`、`LegacyTls` |
 | 新闻阅读 | `NewsReaderActivity`、`ArticleHtml`、`NewsReaderPolicy` |
 | 屏保／图片 | `ScreensaverActivity`、`SaverLibraryActivity`、`SaverImages`、`PhotoUploadServer` |
 
@@ -41,6 +41,7 @@
 - 原厂桌面快捷按钮先持久暂停接管，显式重开新桌面才恢复；不要破坏暂停、服务解绑、开机标志清理和前台计时。
 - 修改无障碍服务名单必须先读取、校验并备份，追加／删除本项目条目，保留其他服务并验证读回与真实绑定。失败或空输出不能当作“原来无服务”。
 - 保留严格HTTPS证书和主机名校验；额外公开根只用于固定主机，不用忽略SSL错误或任意跳转。
+- 科技类是科学网与科技日报两源组合，有版本化的独立响应缓存、7天有效期和来源交错；其他类别48小时。新源适配须同步正文白名单、模板与TLS主机范围，按链接／规范化标题去重，不将其称为语义去重。可用`tools/check_dashboard.py --serial TV_SERIAL --science`验证两家列表与正文。
 - 图片导入只保存私有副本，移除不删原文件。上传接收器只在前台传图窗口内存活；离开页面立即关闭连接和监听。
 - 本地屏保只在桌面前台且有焦点时计时；不打断其他应用、HDMI或设置。原厂广告屏保是独立、可恢复的固件设置，不能把标准Android屏保开关等同于它。
 - 兼容API23，不能只凭SDK32编译通过。运行适合改动的测试；解析器、上传和接管改动应覆盖实际失败场景，不为纯文案新增镜像测试。
