@@ -14,13 +14,13 @@ The default README and detailed deployment guide are in Simplified Chinese, refl
 - **Remote-friendly settings:** a 4-column × 3-row grid of icons and labels, with a standard rounded gear, predictable directional navigation and focus restoration on close.
 - **Choose your apps:** configure favorites, hold an app to reorder or remove its shortcut, search installed apps, and keep access to all apps and the factory launcher.
 - **Inputs and settings:** HDMI shortcuts, the factory input selector, file manager and TV settings. Live preview depends on the inputs actually exposed by the firmware.
-- **Weather:** Celsius temperature, Chinese condition text and icons. Select to open Xiaomi Weather; hold to change location, use approximate network location or refresh. The home screen does not show the city.
+- **Weather:** Celsius temperature, Chinese condition text and icons. Select to refresh the launcher weather and open Xiaomi Weather; hold to change location, use approximate network location or refresh. The home screen does not show the city.
 - **News:** six horizontally scrolling categories with a remote-friendly internal WebView reader. A separate browser is not required.
 - **Local photo screensaver:** thumbnail selection, preview and batch removal, with imports from TV folders, the media library or a temporary LAN upload page on your computer or phone.
 
 ## Compatibility comes first
 
-The current version is **0.8.3**, adding Left/Right image navigation and Back to exit manual screensaver previews. It has been tested on **MiTV4-ANSM0 running Android 6.0.1 / API 23**. The minimum runtime API is 23. Other Xiaomi TVs require firmware checks and possibly adaptation; matching the brand or Android version alone does not establish compatibility. See the [preview controls record](docs/saver-preview-083.md), [QR upload record](docs/qr-upload-082.md), [science-source record](docs/science-news-081.md) and [settings-grid record](docs/settings-grid-080.md).
+The current version is **0.8.4**, updating weather placeholders and refreshing weather when selected. The tested device baseline is **MiTV4-ANSM0 running Android 6.0.1 / API 23**; see the [version-specific verification record](docs/verification.md). The minimum runtime API is 23. Other Xiaomi TVs require firmware checks and possibly adaptation; matching the brand or Android version alone does not establish compatibility. See the [preview controls record](docs/saver-preview-083.md), [QR upload record](docs/qr-upload-082.md), [science-source record](docs/science-news-081.md) and [settings-grid record](docs/settings-grid-080.md).
 
 ## Screenshots
 
@@ -112,7 +112,7 @@ Rebuild and reinstall after changes. When appropriate, run `tools/check_dashboar
 
 Select a category to switch and refresh, select a headline for its summary, and use the page control to browse more. The reader supports directional scrolling and text-size controls. It may show feed summaries or part of a publisher article and labels supplied content as potentially excerpted. Not every site template is supported; unavailable or confirmed unsupported reader entries are hidden, while network failures can be retried.
 
-Weather refreshes approximately every 15 minutes and the active news category every 10 minutes. Failed updates retain recent cached data with a visible status; weather older than 6 hours is hidden. Science reporting has a seven-day window; other news has a 48-hour window. Science sources are interleaved and deduplicated by URL and normalized title, without semantic deduplication or subject-keyword guessing. Individual articles retain publisher and publication time; one source can keep working when the other fails. Network-based location can be inaccurate because of ISP routing or proxies; it can be changed manually in the weather menu.
+Weather refreshes approximately every 15 minutes and the active news category every 10 minutes. Weather shows "--" after a failed refresh or when data is over one hour old, without a cache label. Failed news updates retain recent cached data with a visible status. Science reporting has a seven-day window; other news has a 48-hour window. Science sources are interleaved and deduplicated by URL and normalized title, without semantic deduplication or subject-keyword guessing. Individual articles retain publisher and publication time; one source can keep working when the other fails. Network-based location can be inaccurate because of ISP routing or proxies; it can be changed manually in the weather menu.
 
 ## Local photo screensaver
 

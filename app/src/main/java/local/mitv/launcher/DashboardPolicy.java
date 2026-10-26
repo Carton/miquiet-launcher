@@ -41,6 +41,10 @@ final class DashboardPolicy {
         return timestamp > 0 && timestamp <= now + 5 * 60_000L && now - timestamp <= maximumAge;
     }
 
+    static boolean weatherAvailable(long timestamp, long now, boolean failed) {
+        return !failed && fresh(timestamp, now, 60 * 60_000L);
+    }
+
     static String unwrap(String response, String callback) {
         String value = response.trim();
         String prefix = callback + "(";

@@ -26,6 +26,16 @@ public final class DashboardPolicyTest {
         check(!DashboardPolicy.fresh(now - 101, now, 100));
         check(!DashboardPolicy.fresh(0, now, 100));
         check(!DashboardPolicy.fresh(now + 300_001L, now, 100));
+        long weatherNow = 10_000_000L;
+        check(DashboardPolicy.weatherAvailable(weatherNow, weatherNow, false));
+        check(!DashboardPolicy.weatherAvailable(weatherNow, weatherNow, true));
+        check(DashboardPolicy.weatherAvailable(weatherNow - 3_600_000L, weatherNow, false));
+        check(!DashboardPolicy.weatherAvailable(weatherNow - 3_600_001L, weatherNow, false));
+        check(!DashboardPolicy.weatherAvailable(0, weatherNow, false));
+        check(!DashboardPolicy.weatherAvailable(weatherNow + 300_001L, weatherNow, false));
+        // A successful retry makes recent data visible again.
+        check(!DashboardPolicy.weatherAvailable(weatherNow - 60_000L, weatherNow, true));
+        check(DashboardPolicy.weatherAvailable(weatherNow - 60_000L, weatherNow, false));
         check(DashboardPolicy.unwrap(" china({\"data\":{}}); ", "china").equals("{\"data\":{}}"));
         check(DashboardPolicy.unwrap("world({})", "world").equals("{}"));
         try { DashboardPolicy.unwrap("evil({});", "china"); throw new AssertionError("Accepted wrong callback"); }
