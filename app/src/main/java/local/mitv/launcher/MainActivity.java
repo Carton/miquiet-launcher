@@ -313,11 +313,22 @@ public final class MainActivity extends Activity {
             actions::settings, this::configureFavorites, ()->actions.panel("connect_settings"),
             ()->actions.panel("bluetooth_settings"), ()->actions.panel("display_settings"),
             ()->actions.panel("sound_settings"), actions::media, ()->launchPackage("com.xiaomi.mitv.smartshare"),
-            saverSettings::show, this::bridgeSettings, dashboard::showCredits, ()->{}
+            saverSettings::show, this::bridgeSettings, dashboard::showCredits, this::showAbout
         },()->{
             settingsDialog=null;
             if (!isFinishing() && settingsButton!=null) settingsButton.requestFocus();
         });
+    }
+
+    private void showAbout() {
+        String version = "未知";
+        try {
+            version = getPackageManager().getPackageInfo(getPackageName(), 0).versionName;
+        } catch (android.content.pm.PackageManager.NameNotFoundException ignored) {}
+        new AlertDialog.Builder(this).setTitle("关于")
+            .setMessage("简净桌面 · MiTV Quiet Launcher\n版本 " + version
+                + "\n\n源码与发布：\nhttps://github.com/Carton/mitv-quiet-launcher")
+            .setPositiveButton("关闭", null).show();
     }
 
     private void launchPackage(String pkg) {

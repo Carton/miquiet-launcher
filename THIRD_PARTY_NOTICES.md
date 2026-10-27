@@ -12,7 +12,7 @@ Copyright (c) 2020-2024 Paweł Kuna。完整许可见 [LICENSE](third_party/tabl
 
 ## Lucide — ISC / Feather MIT
 
-0.8.0的标准圆角齿轮及设置矩阵复用了[Lucide 1.17.0](https://github.com/lucide-icons/lucide/tree/1.17.0/icons)的13个SVG：settings、monitor-cog、layout-grid、wifi、bluetooth、monitor、volume-2、folder-open、cast、images、shield-check、info、x。
+0.8.0的标准圆角齿轮及设置矩阵复用了[Lucide 1.17.0](https://github.com/lucide-icons/lucide/tree/1.17.0/icons)的13个SVG：settings、monitor-cog、layout-grid、wifi、bluetooth、monitor、volume-2、folder-open、cast、images、shield-check、info、code。
 
 原始SVG、完整上游许可与哈希清单位于`third_party/lucide/`；许可保留Lucide的ISC与其中Feather来源图标的MIT说明，并打包到APK的`lucide_license.txt`。`tools/import_settings_icons.py`转换为Android VectorDrawable并调整描边、颜色；为已验证的Android6渲染兼容，将SVG中M/m后的隐含直线转换成显式L/l，保持几何形状。无需在电视上加载SVG或额外图标运行库，许可可在“数据与开源说明”查看。
 

@@ -11,7 +11,7 @@ import xml.etree.ElementTree as ET
 ROOT = Path(__file__).resolve().parents[1]
 BASE = "https://raw.githubusercontent.com/lucide-icons/lucide/1.17.0/"
 NAMES = ["settings", "monitor-cog", "layout-grid", "wifi", "bluetooth", "monitor",
-         "volume-2", "folder-open", "cast", "images", "shield-check", "info", "x"]
+         "volume-2", "folder-open", "cast", "images", "shield-check", "info", "code"]
 ANDROID = "http://schemas.android.com/apk/res/android"
 
 

@@ -21,7 +21,7 @@ final class SettingsDialog {
     private static final int[] ICONS = {R.drawable.menu_monitor_cog, R.drawable.menu_layout_grid,
         R.drawable.menu_wifi, R.drawable.menu_bluetooth, R.drawable.menu_monitor, R.drawable.menu_volume_2,
         R.drawable.menu_folder_open, R.drawable.menu_cast, R.drawable.menu_images, R.drawable.menu_shield_check,
-        R.drawable.menu_info, R.drawable.menu_x};
+        R.drawable.menu_info, R.drawable.menu_code};
     private SettingsDialog() {}
 
     static Dialog show(Activity activity, Runnable[] actions, Runnable closed) {

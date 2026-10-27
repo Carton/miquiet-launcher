@@ -5,7 +5,7 @@ public final class SettingsMenuTest {
     private static void check(boolean value) { assertions++; if(!value)throw new AssertionError("Settings assertion "+assertions); }
     public static void main(String[] args) {
         check(SettingsMenu.COLUMNS==4 && SettingsMenu.LABELS.length==12 && SettingsMenu.DETAILS.length==12);
-        check(SettingsMenu.LABELS[0].equals("电视设置") && SettingsMenu.LABELS[11].equals("关闭菜单"));
+        check(SettingsMenu.LABELS[0].equals("电视设置") && SettingsMenu.LABELS[11].equals("关于"));
         check(SettingsMenu.LABELS[8].equals("本地图片屏保") && SettingsMenu.LABELS[9].equals("桌面接管与恢复"));
         check(SettingsMenu.move(0,-1,0)==0 && SettingsMenu.move(0,0,-1)==0);
         check(SettingsMenu.move(3,1,0)==3 && SettingsMenu.move(8,-1,0)==8);
