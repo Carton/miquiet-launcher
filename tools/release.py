@@ -28,8 +28,11 @@ def version_bump(manifest_text, new_version):
 
 
 def sh(*args, check=True):
-    return subprocess.run([str(item) for item in args], check=check, capture_output=True,
-                          text=True, encoding="utf-8", cwd=ROOT)
+    result = subprocess.run([str(item) for item in args], check=False, capture_output=True,
+                            text=True, encoding="utf-8", cwd=ROOT)
+    if check and result.returncode != 0:
+        sys.exit(f"命令失败({result.returncode}): {' '.join(str(item) for item in args)}\n{result.stderr.strip()}")
+    return result
 
 
 def main():
@@ -59,7 +62,7 @@ def main():
     if sh("git", "rev-parse", "-q", "--verify", f"refs/tags/{tag}", check=False).returncode == 0:
         sys.exit(f"tag {tag} 已存在")
 
-    MANIFEST.write_text(text, encoding="utf-8")
+    MANIFEST.write_text(text, encoding="utf-8", newline="\n")
     sh("git", "add", MANIFEST)
     sh("git", "commit", "-m", f"chore: bump version to {args.version}")
     sh("git", "push", "origin", "master")
