@@ -28,8 +28,13 @@ jobs:
 
       - name: Install platform 32 and build-tools 32.0.0
         run: |
-          export ANDROID_HOME="${ANDROID_HOME:-/usr/local/lib/android/sdk}"
-          sdkmanager --install "platforms;android-32" "build-tools;32.0.0"
+          if [ -z "$ANDROID_HOME" ]; then
+            echo "ANDROID_HOME=/usr/local/lib/android/sdk" >> "$GITHUB_ENV"
+            export ANDROID_HOME=/usr/local/lib/android/sdk
+          fi
+          SDKMGR="$(command -v sdkmanager || true)"
+          [ -n "$SDKMGR" ] || SDKMGR="$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager"
+          "$SDKMGR" --install "platforms;android-32" "build-tools;32.0.0"
 
       - name: Restore signing keystore
         id: keystore
