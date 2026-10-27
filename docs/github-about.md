@@ -2,19 +2,19 @@
 
 中文名：**简净桌面**
 
-英文名：**MiQuiet Launcher**
+英文名：**MiTV Quiet Launcher**
 
-仓库名：`miquiet-launcher`
+仓库名：`mitv-quiet-launcher`
 
-公开仓库：[Carton/miquiet-launcher](https://github.com/Carton/miquiet-launcher)，默认分支`master`。
+公开仓库：[Carton/mitv-quiet-launcher](https://github.com/Carton/mitv-quiet-launcher)，默认分支`master`。
 
 ## 默认简介（中文，复制到 GitHub About）
 
-简净桌面（MiQuiet Launcher）：面向小米电视 / 小米TV（Xiaomi TV / Mi TV）的轻量开源桌面，支持可配置应用栏、信号源入口、天气新闻与本地图片屏保，可通过 ADB 部署并恢复原厂桌面。
+简净桌面（MiTV Quiet Launcher）：面向小米电视 / 小米TV（Xiaomi TV / Mi TV）的轻量开源桌面，支持可配置应用栏、信号源入口、天气新闻与本地图片屏保，可通过 ADB 部署并恢复原厂桌面。
 
 ## 英文简介（备用）
 
-MiQuiet Launcher: a lightweight, open-source home screen for Xiaomi TV / Mi TV, with configurable apps, input shortcuts, weather, news and a local photo screensaver. Deploy over ADB and return to the factory launcher.
+MiTV Quiet Launcher: a lightweight, open-source home screen for Xiaomi TV / Mi TV, with configurable apps, input shortcuts, weather, news and a local photo screensaver. Deploy over ADB and return to the factory launcher.
 
 ## 建议 Topics
 

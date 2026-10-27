@@ -40,4 +40,4 @@ python -B tools/audit_public.py --history --report nor/research/privacy/latest.j
 - 174项Java断言、15项离线Python测试通过；在没有原有`nor/`资料的全新Git克隆中，APK构建、API23引用检查及签名验证通过，15项离线测试再次通过。
 - 未连接或改动实际电视，未创建GitHub仓库或推送。真实电视原有部署结果仍属于相应版本的历史验收，不能冒称本次在其他型号上验证过部署指南。
 
-随后维护者明确授权公开发布，已创建[Carton/miquiet-launcher](https://github.com/Carton/miquiet-launcher)，默认分支为`master`。中文简介、Topics、MIT识别和远端提交均已核对，上传内容仅为Git跟踪的源码、文档和清理后的历史，不包含`nor/`中的本地资料。后续发布仍按上面的检查步骤操作。
+随后维护者明确授权公开发布，已创建[Carton/mitv-quiet-launcher](https://github.com/Carton/mitv-quiet-launcher)（原名`miquiet-launcher`，已改名），默认分支为`master`。中文简介、Topics、MIT识别和远端提交均已核对，上传内容仅为Git跟踪的源码、文档和清理后的历史，不包含`nor/`中的本地资料。后续发布仍按上面的检查步骤操作。
