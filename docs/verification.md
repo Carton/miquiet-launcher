@@ -1,5 +1,11 @@
 # 实机验证记录
 
+## 2026-10-27 当前版本 0.8.5：Release 通道与设置“关于”
+
+设置矩阵右下角“关闭菜单”改为“关于”：弹窗显示项目名（简净桌面 · MiTV Quiet Launcher）、PackageInfo 版本号与源码地址 `https://github.com/Carton/mitv-quiet-launcher`，图标换成 Lucide `code`（`x` 移出导入集合）。SettingsMenu 断言更新后通过，25项Python测试通过，CI（GitHub Actions，JDK11／SDK32）构建与签名验证通过。
+
+首个 Release `v0.8.5`（versionCode 19）由 CI 用 `QUIET_TV_KEYSTORE` Secret 签名发布，证书指纹与本机 `nor/.local/launcher.keystore` 一致；实机从 0.8.3 同签名覆盖升级。安装确认弹窗两次出现：一次用户遥控确认，一次 agent 注入 `input keyevent 23` 确认，后者方法已补入部署指南。遥控实测“关于”格子：菜单键开矩阵，方向键移至右下格并确定，弹窗内容与“关闭”按钮经实机截图核对（截图留 `nor/`）。该固件 `screencap -p <文件>` 打印用法且伴随 screencap 进程 SIGSEGV，`exec-out` 二进制重定向在 Git Bash 下被换行污染；取证需设备端落盘后 `adb pull`。
+
 ## 2026-10-26 当前版本 0.8.4：天气占位与点击刷新
 
 天气最近一次刷新失败、无数据或数据超过一小时时，温度显示“--°C”，描述显示“--”，使用未知天气图标，不再显示“缓存”。正常点击／确定会请求立即刷新桌面天气并打开小米天气；长按仍保留三个天气设置选项。已有请求进行中时继续该请求，不创建重复请求。
