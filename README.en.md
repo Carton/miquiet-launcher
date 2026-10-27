@@ -61,7 +61,15 @@ Restoring Home takeover and restoring the factory screensaver are two independen
 
 ## Build and install
 
-Users without a build environment can download the prebuilt `quiet-tv.apk` from [Releases](https://github.com/Carton/mitv-quiet-launcher/releases); the steps below build it yourself. Verified on Windows with JDK 11, SDK 32 and Build Tools 32.0.0; host tools need Python 3.11+. Set `QUIET_TV_JDK`/`JAVA_HOME` to your JDK and `ANDROID_HOME` to your SDK; `TV_SERIAL` and `MODEL` are placeholders.
+### Download and install (no build environment needed)
+
+1. Download the latest `quiet-tv.apk` from [Releases](https://github.com/Carton/mitv-quiet-launcher/releases).
+2. Install over wireless ADB: enable ADB as described in the [quick-start guide](docs/quick-start.md), run `adb connect TV_IP:PORT`, then `adb -s TV_IP:PORT install -r quiet-tv.apk`. You can also hand the quick-start instruction to an agent, which downloads, installs and takes over Home.
+3. Alternatively, copy the APK to a USB drive and open it with the TV's built-in file manager (untested here; depends on firmware).
+
+### Build it yourself
+
+Verified on Windows with JDK 11, SDK 32 and Build Tools 32.0.0; host tools need Python 3.11+. Set `QUIET_TV_JDK`/`JAVA_HOME` to your JDK and `ANDROID_HOME` to your SDK; `TV_SERIAL` and `MODEL` are placeholders.
 
 ```powershell
 python -B tools/build.py --test

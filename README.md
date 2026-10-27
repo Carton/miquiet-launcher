@@ -61,7 +61,15 @@ python -B tools/screensaver_tv.py restore --serial TV_SERIAL --expected-model MO
 
 ## 安装与构建
 
-普通用户可直接从 [Releases](https://github.com/Carton/mitv-quiet-launcher/releases) 下载已构建的 `quiet-tv.apk` 安装，无需本地编译；以下为自行构建的步骤。已验证 Windows、JDK 11、SDK 32、Build Tools 32.0.0，电脑端工具需 Python 3.11+。用 `QUIET_TV_JDK`／`JAVA_HOME` 指定 JDK，`ANDROID_HOME` 指定 SDK；`TV_SERIAL` 和 `MODEL` 为占位符。
+### 下载安装（无需编译环境）
+
+1. 在 [Releases](https://github.com/Carton/mitv-quiet-launcher/releases) 下载最新版 `quiet-tv.apk`。
+2. 用无线 ADB 安装：按[上手指南](docs/quick-start.md)在电视开启 ADB 后，`adb connect 电视IP:端口`，再 `adb -s 电视IP:端口 install -r quiet-tv.apk`。也可以把上手指南里那句话交给 agent，由它下载、安装并接管 Home。
+3. 或将 APK 拷入 U 盘，用电视自带文件管理器打开安装（此路径未实测，视固件而定）。
+
+### 自行构建
+
+已验证 Windows、JDK 11、SDK 32、Build Tools 32.0.0，电脑端工具需 Python 3.11+。用 `QUIET_TV_JDK`／`JAVA_HOME` 指定 JDK，`ANDROID_HOME` 指定 SDK；`TV_SERIAL` 和 `MODEL` 为占位符。
 
 ```powershell
 python -B tools/build.py --test

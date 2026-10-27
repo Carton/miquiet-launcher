@@ -1,6 +1,11 @@
 name: Build APK
 
 on:
+  push:
+    branches: [master]
+    tags: ["v*"]
+  pull_request:
+    branches: [master]
   workflow_dispatch:
     inputs:
       tag:
@@ -65,10 +70,13 @@ jobs:
           path: nor/dist/quiet-tv.apk
 
       - name: Create release
-        if: github.event.inputs.tag != '' && steps.keystore.outputs.restored == 'true'
+        if: >-
+          steps.keystore.outputs.restored == 'true' &&
+          ((github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')) ||
+           (github.event_name == 'workflow_dispatch' && github.event.inputs.tag != ''))
         env:
           GH_TOKEN: ${{ github.token }}
-          TAG: ${{ github.event.inputs.tag }}
+          TAG: ${{ github.event_name == 'push' && github.ref_name || github.event.inputs.tag }}
         run: |
           gh release create "$TAG" nor/dist/quiet-tv.apk \
             --title "简净桌面 $TAG" \
