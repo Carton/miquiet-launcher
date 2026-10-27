@@ -19,7 +19,7 @@
 > 请部署简净桌面，仓库是 https://github.com/Carton/mitv-quiet-launcher ，
 > 电视的 ADB 地址是（第 1 步屏幕上那串），电视型号是（设置 → 关于 里可查）。
 
-之后安装、接管 Home 键、验收都由 agent 完成。过程中电视可能弹出「允许调试」等确认框，用遥控器选「允许／确定」即可。
+之后安装、接管 Home 键、验收都由 agent 完成。如果仓库的 [Releases](https://github.com/Carton/mitv-quiet-launcher/releases) 页已有构建好的 `quiet-tv.apk`，agent 可直接下载安装，无需在你的电脑上编译。过程中电视可能弹出「允许调试」等确认框，用遥控器选「允许／确定」即可。
 
 ## 之后
 

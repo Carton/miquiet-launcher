@@ -61,7 +61,7 @@ Restoring Home takeover and restoring the factory screensaver are two independen
 
 ## Build and install
 
-Verified on Windows with JDK 11, SDK 32 and Build Tools 32.0.0; host tools need Python 3.11+. Set `QUIET_TV_JDK`/`JAVA_HOME` to your JDK and `ANDROID_HOME` to your SDK; `TV_SERIAL` and `MODEL` are placeholders.
+Users without a build environment can download the prebuilt `quiet-tv.apk` from [Releases](https://github.com/Carton/mitv-quiet-launcher/releases); the steps below build it yourself. Verified on Windows with JDK 11, SDK 32 and Build Tools 32.0.0; host tools need Python 3.11+. Set `QUIET_TV_JDK`/`JAVA_HOME` to your JDK and `ANDROID_HOME` to your SDK; `TV_SERIAL` and `MODEL` are placeholders.
 
 ```powershell
 python -B tools/build.py --test

@@ -61,7 +61,7 @@ python -B tools/screensaver_tv.py restore --serial TV_SERIAL --expected-model MO
 
 ## 安装与构建
 
-已验证 Windows、JDK 11、SDK 32、Build Tools 32.0.0，电脑端工具需 Python 3.11+。用 `QUIET_TV_JDK`／`JAVA_HOME` 指定 JDK，`ANDROID_HOME` 指定 SDK；`TV_SERIAL` 和 `MODEL` 为占位符。
+普通用户可直接从 [Releases](https://github.com/Carton/mitv-quiet-launcher/releases) 下载已构建的 `quiet-tv.apk` 安装，无需本地编译；以下为自行构建的步骤。已验证 Windows、JDK 11、SDK 32、Build Tools 32.0.0，电脑端工具需 Python 3.11+。用 `QUIET_TV_JDK`／`JAVA_HOME` 指定 JDK，`ANDROID_HOME` 指定 SDK；`TV_SERIAL` 和 `MODEL` 为占位符。
 
 ```powershell
 python -B tools/build.py --test

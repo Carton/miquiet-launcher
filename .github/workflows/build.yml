@@ -1,0 +1,71 @@
+name: Build APK
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "要发布的 Release 标签（如 v0.8.5）；留空则只构建并上传为 workflow 产物"
+        required: false
+        default: ""
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "11"
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - uses: android-actions/setup-android@v3
+
+      - name: Install platform 32 and build-tools 32.0.0
+        run: |
+          yes | sdkmanager --licenses >/dev/null || true
+          sdkmanager --install "platforms;android-32" "build-tools;32.0.0"
+
+      - name: Restore signing keystore
+        id: keystore
+        env:
+          KEYSTORE_BASE64: ${{ secrets.QUIET_TV_KEYSTORE }}
+        run: |
+          if [ -n "$KEYSTORE_BASE64" ]; then
+            mkdir -p nor/.local
+            printf '%s' "$KEYSTORE_BASE64" | base64 -d > nor/.local/launcher.keystore
+            echo "restored=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "restored=false" >> "$GITHUB_OUTPUT"
+            echo "::warning::Secret QUIET_TV_KEYSTORE 未设置：APK 将用一次性密钥签名，仅供测试，不能作为可覆盖升级的 Release 发布。"
+          fi
+
+      - name: Run pure-Java tests
+        run: python -B tools/build.py --test
+
+      - name: Build APK
+        run: python -B tools/build.py
+
+      - name: Upload APK as workflow artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: quiet-tv-apk
+          path: nor/dist/quiet-tv.apk
+
+      - name: Create release
+        if: github.event.inputs.tag != '' && steps.keystore.outputs.restored == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.event.inputs.tag }}
+        run: |
+          gh release create "$TAG" nor/dist/quiet-tv.apk \
+            --title "简净桌面 $TAG" \
+            --notes "MiTV Quiet Launcher / 简净桌面 $TAG。下载 quiet-tv.apk 安装使用；包名 local.mitv.launcher，可覆盖同签名旧版。详见 README。" \
+            --target "$GITHUB_SHA"
