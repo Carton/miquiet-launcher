@@ -26,11 +26,9 @@ jobs:
         with:
           python-version: "3.11"
 
-      - uses: android-actions/setup-android@v3
-
       - name: Install platform 32 and build-tools 32.0.0
         run: |
-          yes | sdkmanager --licenses >/dev/null || true
+          export ANDROID_HOME="${ANDROID_HOME:-/usr/local/lib/android/sdk}"
           sdkmanager --install "platforms;android-32" "build-tools;32.0.0"
 
       - name: Restore signing keystore
