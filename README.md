@@ -2,7 +2,7 @@
 
 **简体中文** | [English](README.en.md)
 
-面向**小米电视 / 小米TV（Xiaomi TV / Mi TV）**的轻量开源桌面：保留常用应用、信号源入口和电视设置，配上天气、新闻与本地图片屏保。原生 Java，MIT 开源；通过 ADB 安装，无需 Root，不修改、不覆盖原厂 APK；Home 接管可随时撤销，原厂桌面始终保留。
+面向**小米电视 / 小米TV**（Xiaomi TV / Mi TV）的轻量开源桌面：保留常用应用、信号源入口和电视设置，配上天气、新闻与本地图片屏保。原生 Java，MIT 开源；通过 ADB 安装，无需 Root，不修改、不覆盖原厂 APK；Home 接管可随时撤销，原厂桌面始终保留。
 
 普通用户从[上手指南](docs/quick-start.md)开始：在电视上开启无线 ADB，其余交给 agent 完成。给其他 agent 的开发入口：[AGENTS.md](AGENTS.md)。
 
