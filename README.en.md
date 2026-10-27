@@ -112,7 +112,7 @@ Rebuild and reinstall after changes, and verify with `tools/check_dashboard.py -
 - Icons reuse MIT-licensed [Tabler Icons](https://github.com/tabler/tabler-icons) (weather) and [Lucide](https://github.com/lucide-icons/lucide) (settings); original SVGs, licenses and conversion scripts are kept.
 - Weather uses the Open-Meteo API with Open-Meteo / GeoNames location search; Android 6 lacks some newer CA roots, so public CAs are added for fixed weather/news hosts only, keeping chain and hostname validation.
 - News connects directly to CCTV, Wallstreetcn, ScienceNet, Science and Technology Daily, GamerSky and AIHOT; the category and reader interactions reference NewsNow and Read You without copying their code. News content is not covered by this project's source license.
-- The source code is under the [MIT License](LICENSE); see [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) for third-party and data boundaries, and [docs/github-about.md](docs/github-about.md) for repository metadata.
+- The source code is under the [MIT License](LICENSE); see [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) for third-party and data boundaries.
 
 On-device check tools (ADB enabled on the TV):
 

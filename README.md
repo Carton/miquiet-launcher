@@ -112,7 +112,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File tools/restore_tv.ps1 -Serial
 - 图标复用 MIT 许可的 [Tabler Icons](https://github.com/tabler/tabler-icons)（天气）与 [Lucide](https://github.com/lucide-icons/lucide)（设置），保留原始 SVG、许可与转换脚本。
 - 天气使用 Open-Meteo API，位置搜索 Open-Meteo / GeoNames；Android 6 缺少部分较新的根证书，仅为固定天气／新闻主机补充公开 CA，保留证书链与主机名校验。
 - 新闻直连央视网、华尔街见闻、科学网、科技日报、游民星空和 AIHOT；分类与阅读交互参考 NewsNow、Read You，未复制其代码。新闻内容不属于本项目开源范围。
-- 源码采用 [MIT 许可证](LICENSE)，第三方与数据边界详见 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。仓库元信息见 [docs/github-about.md](docs/github-about.md)。
+- 源码采用 [MIT 许可证](LICENSE)，第三方与数据边界详见 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。
 
 实机检查工具（电视需开启 ADB）：
 
