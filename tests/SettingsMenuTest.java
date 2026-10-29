@@ -11,7 +11,7 @@ public final class SettingsMenuTest {
         check(SettingsMenu.move(3,1,0)==3 && SettingsMenu.move(8,-1,0)==8);
         check(SettingsMenu.move(11,1,0)==11 && SettingsMenu.move(11,0,1)==11);
         int index=0;
-        index=SettingsMenu.move(index,1,0);check(SettingsMenu.LABELS[index].equals("配置首页应用"));
+        index=SettingsMenu.move(index,1,0);check(SettingsMenu.LABELS[index].equals("首页配置"));
         index=SettingsMenu.move(index,0,1);check(SettingsMenu.LABELS[index].equals("声音"));
         index=SettingsMenu.move(index,0,1);check(SettingsMenu.LABELS[index].equals("桌面接管与恢复"));
         index=SettingsMenu.move(index,1,0);check(SettingsMenu.LABELS[index].equals("数据与开源说明"));

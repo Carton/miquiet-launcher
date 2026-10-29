@@ -82,6 +82,9 @@ def main():
         reset_generated(target)
         run([JDK / ("bin/javac" + BIN), "--release", "8", "-encoding", "UTF-8", "-d", target,
              ROOT / "app/src/main/java/local/mitv/launcher/LauncherPolicy.java",
+             ROOT / "app/src/main/java/local/mitv/launcher/FavoriteMove.java",
+             ROOT / "app/src/main/java/local/mitv/launcher/InputNames.java",
+             ROOT / "tests/HomeEditingTest.java",
              ROOT / "app/src/main/java/local/mitv/launcher/ForegroundState.java",
              ROOT / "app/src/main/java/local/mitv/launcher/DashboardPolicy.java",
              ROOT / "app/src/main/java/local/mitv/launcher/SaverPolicy.java",
@@ -106,6 +109,7 @@ def main():
              ROOT / "tests/DashboardPolicyTest.java",
              ROOT / "tests/LauncherPolicyTest.java"])
         run([JDK / ("bin/java" + BIN), "-cp", target, "local.mitv.launcher.LauncherPolicyTest"])
+        run([JDK / ("bin/java" + BIN), "-cp", target, "local.mitv.launcher.HomeEditingTest"])
         run([JDK / ("bin/java" + BIN), "-cp", target, "local.mitv.launcher.DashboardPolicyTest"])
         run([JDK / ("bin/java" + BIN), "-cp", target, "local.mitv.launcher.SaverPolicyTest"])
         run([JDK / ("bin/java" + BIN), "-cp", target, "local.mitv.launcher.NewsReaderPolicyTest"])

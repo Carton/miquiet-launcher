@@ -59,6 +59,12 @@ public final class MainActivity extends Activity {
         }
     };
     private TextView previewTitle;
+    private final TextView[] inputLabels = new TextView[4];
+    private final TextView[] inputPorts = new TextView[4];
+    private final View[] inputRows = new View[4];
+    private TextView moveHint;
+    private FavoriteMove favoriteMove;
+    private int moveKeyToRelease = KeyEvent.KEYCODE_UNKNOWN;
     private LinearLayout dock;
     private FrameLayout previewBox;
     private View settingsButton;
@@ -80,7 +86,8 @@ public final class MainActivity extends Activity {
         getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
         prefs = getSharedPreferences(Apps.PREFS, MODE_PRIVATE);
         prefs.edit().putBoolean("bridge_paused", false).putBoolean("boot_pending", false).commit();
-        selectedPort = prefs.getInt("selected_port", 3);
+        int savedPort = prefs.getInt("selected_port", 3);
+        selectedPort = savedPort >= 1 && savedPort <= 3 ? savedPort : 3;
         apps = new Apps(this);
         IntentFilter changes = new IntentFilter();
         changes.addAction(Intent.ACTION_PACKAGE_ADDED);
@@ -111,6 +118,10 @@ public final class MainActivity extends Activity {
         FrameLayout.LayoutParams pageParams = new FrameLayout.LayoutParams(dp(960), dp(540), Gravity.CENTER);
         root.addView(page, pageParams);
         topButton(page, "信号源", "hdmi", 12, 110, () -> actions.sources());
+        moveHint = Ui.text(this, "移动位置  ·  ← → 调整  ·  确定保存  ·  返回取消", 14, Ui.ACCENT);
+        moveHint.setGravity(Gravity.CENTER_VERTICAL);
+        moveHint.setVisibility(View.GONE);
+        Ui.place(page, moveHint, 470, 34, 130, 8);
 
         FrameLayout sound = iconButton("声音设置", "sound", () -> actions.panel("sound_settings"));
         Ui.place(page, sound, 38, 34, 610, 8);
@@ -154,7 +165,7 @@ public final class MainActivity extends Activity {
         TextView hint = Ui.text(this, "正在连接信号源…", 16, 0xffd6dce7);
         hint.setGravity(Gravity.CENTER);
         Ui.place(previewBox, hint, 556, 260, 14, 12);
-        previewTitle = Ui.text(this, "HDMI" + selectedPort, 18, Color.WHITE);
+        previewTitle = Ui.text(this, inputDisplay(selectedPort), 18, Color.WHITE);
         previewTitle.setShadowLayer(4, 0, 1, Color.BLACK);
         Ui.place(previewBox, previewTitle, 550, 30, 16, 288);
         preview = new PreviewController(this, tv, hint, fallback);
@@ -170,8 +181,27 @@ public final class MainActivity extends Activity {
             row.setContentDescription(labels[i]);
             Ui.place(row, new Ui.Icon(this, icons[i], Color.WHITE), 25, 25, 10, 20);
             TextView label = Ui.text(this, labels[i], 18, Color.WHITE);
-            label.setGravity(Gravity.CENTER_VERTICAL);
-            Ui.place(row, label, 94, 66, 45, 0);
+            label.setSingleLine(true);
+            label.setEllipsize(TextUtils.TruncateAt.END);
+            if (ports[i] > 0) {
+                LinearLayout caption = new LinearLayout(this);
+                caption.setOrientation(LinearLayout.VERTICAL);
+                caption.setGravity(Gravity.CENTER_VERTICAL);
+                caption.addView(label, new LinearLayout.LayoutParams(-1, dp(26)));
+                TextView port = Ui.text(this, labels[i], 12, Ui.MUTED);
+                caption.addView(port, new LinearLayout.LayoutParams(-1, dp(20)));
+                inputLabels[ports[i]] = label;
+                inputPorts[ports[i]] = port;
+                inputRows[ports[i]] = row;
+                row.setOnLongClickListener(v -> {
+                    InputSettings.edit(this, prefs, ports[index], this::refreshInputNames);
+                    return true;
+                });
+                Ui.place(row, caption, 94, 66, 45, 0);
+            } else {
+                label.setGravity(Gravity.CENTER_VERTICAL);
+                Ui.place(row, label, 94, 66, 45, 0);
+            }
             Ui.place(hero, row, 144, 66, 792, i * 66 + 1);
             row.setOnFocusChangeListener((v, focused) -> {
                 if (focused && ports[index] > 0) selectPort(ports[index]);
@@ -182,6 +212,7 @@ public final class MainActivity extends Activity {
                 else actions.sources();
             });
         }
+        refreshInputNames();
 
         HorizontalScrollView scroll = new HorizontalScrollView(this);
         scroll.setClipChildren(false);
@@ -219,37 +250,62 @@ public final class MainActivity extends Activity {
 
     private void selectPort(int port) {
         selectedPort = port;
-        previewTitle.setText("HDMI" + port);
+        previewTitle.setText(inputDisplay(port));
+        previewBox.setContentDescription(inputDisplay(port) + " 预览，确定进入全屏");
         prefs.edit().putInt("selected_port", port).apply();
         preview.select(port);
     }
 
+    private String inputDisplay(int port) {
+        return InputNames.display(port, prefs.getString(InputNames.key(port), ""));
+    }
+
+    private void refreshInputNames() {
+        for (int port = 1; port <= 3; port++) {
+            String name = InputNames.normalize(prefs.getString(InputNames.key(port), ""));
+            inputLabels[port].setText(name.isEmpty() ? "HDMI" + port : name);
+            inputPorts[port].setVisibility(name.isEmpty() ? View.GONE : View.VISIBLE);
+            inputRows[port].setContentDescription(inputDisplay(port) + "，长按修改名称");
+        }
+        previewTitle.setText(inputDisplay(selectedPort));
+        previewBox.setContentDescription(inputDisplay(selectedPort) + " 预览，确定进入全屏");
+    }
+
     private void renderDock() {
+        String focusKey = favoriteMove == null ? lastFocusKey : favoriteMove.item;
         dock.removeAllViews();
-        for (String pkg : apps.favorites()) {
+        for (String pkg : favoriteMove == null ? apps.favorites() : favoriteMove.current()) {
             Apps.App app = apps.all.get(pkg);
             if (app == null) continue;
             FrameLayout tile = appTile(app.label, app, false);
             tile.setTag(app.pkg);
             tile.setOnFocusChangeListener((v, focused) -> { if (focused) lastFocusKey = app.pkg; });
-            tile.setOnClickListener(v -> actions.start(new Intent(app.intent)));
-            tile.setOnLongClickListener(v -> { editFavorite(app); return true; });
+            tile.setOnClickListener(v -> {
+                if (favoriteMove == null) actions.start(new Intent(app.intent));
+                else if (favoriteMove.item.equals(app.pkg)) finishFavoriteMove(true);
+            });
+            tile.setOnLongClickListener(v -> { beginFavoriteMove(app); return true; });
+            if (favoriteMove != null && favoriteMove.item.equals(pkg)) {
+                tile.setBackground(Ui.shape(this, 0xff31564e, Ui.ACCENT, 10));
+                tile.setContentDescription(app.label + "，正在移动，左右调整，确定保存，返回取消");
+            }
             dock.addView(tile, new LinearLayout.LayoutParams(dp(132), dp(124)));
-            if (app.pkg.equals(lastFocusKey)) tile.requestFocus();
         }
         FrameLayout factory = appTile("原厂桌面", null, true, "factory");
         factory.setTag("factory");
         factory.setOnFocusChangeListener((v, focused) -> { if (focused) lastFocusKey = "factory"; });
-        factory.setOnClickListener(v -> returnFactory());
+        factory.setOnClickListener(v -> { if (favoriteMove == null) returnFactory(); });
         dock.addView(factory, new LinearLayout.LayoutParams(dp(132), dp(124)));
-        if ("factory".equals(lastFocusKey)) factory.requestFocus();
         FrameLayout all = appTile("我的应用", null, true);
         all.setTag("all");
         all.setOnFocusChangeListener((v, focused) -> { if (focused) lastFocusKey = "all"; });
-        all.setOnClickListener(v -> showApps(new ArrayList<>(apps.all.values()), "我的应用"));
-        all.setOnLongClickListener(v -> { configureFavorites(); return true; });
+        all.setOnClickListener(v -> { if (favoriteMove == null) showApps(new ArrayList<>(apps.all.values()), "我的应用"); });
+        all.setOnLongClickListener(v -> { if (favoriteMove == null) configureFavorites(); return true; });
         dock.addView(all, new LinearLayout.LayoutParams(dp(132), dp(124)));
-        if ("all".equals(lastFocusKey)) all.requestFocus();
+        if (focusKey != null) {
+            View previous = dock.findViewWithTag(focusKey);
+            if (previous != null) previous.requestFocus();
+        }
     }
 
     private FrameLayout appTile(String label, Apps.App app, boolean allApps) {
@@ -305,7 +361,7 @@ public final class MainActivity extends Activity {
     private void showSettings() {
         if (settingsDialog != null && settingsDialog.isShowing()) return;
         settingsDialog = SettingsDialog.show(this,new Runnable[]{
-            actions::settings, this::configureFavorites, ()->actions.panel("connect_settings"),
+            actions::settings, this::homeSettings, ()->actions.panel("connect_settings"),
             ()->actions.panel("bluetooth_settings"), ()->actions.panel("display_settings"),
             ()->actions.panel("sound_settings"), actions::media, ()->launchPackage("com.xiaomi.mitv.smartshare"),
             saverSettings::show, this::bridgeSettings, dashboard::showCredits, this::showAbout
@@ -356,15 +412,62 @@ public final class MainActivity extends Activity {
         dialog.show();
     }
 
-    private void editFavorite(Apps.App app) {
-        new AlertDialog.Builder(this).setTitle(app.label).setItems(new String[]{"向左移动", "向右移动", "从首页移除", "配置首页应用"}, (dialog, which) -> {
-            List<String> favorites = apps.favorites();
-            if (which == 0 || which == 1) apps.save(LauncherPolicy.move(favorites, app.pkg, which == 0 ? -1 : 1));
-            else if (which == 2) { favorites.remove(app.pkg); apps.save(favorites); }
-            else { configureFavorites(); return; }
-            renderDock();
-            previewBox.requestFocus();
-        }).setNegativeButton("取消", null).show();
+    private void homeSettings() {
+        new AlertDialog.Builder(this).setTitle("首页配置")
+            .setItems(new String[]{"选择首页应用", "信号源名称"}, (dialog, which) -> {
+                if (which == 0) configureFavorites();
+                else InputSettings.show(this, prefs, this::refreshInputNames);
+            }).setNegativeButton("关闭", null).show();
+    }
+
+    private void beginFavoriteMove(Apps.App app) {
+        if (favoriteMove != null) return;
+        favoriteMove = new FavoriteMove(apps.favorites(), app.pkg);
+        lastFocusKey = app.pkg;
+        moveHint.setVisibility(View.VISIBLE);
+        handler.removeCallbacks(idleSaver);
+        renderDock();
+    }
+
+    private void finishFavoriteMove(boolean save) {
+        if (favoriteMove == null) return;
+        List<String> order = favoriteMove.finish(save);
+        lastFocusKey = favoriteMove.item;
+        favoriteMove = null;
+        if (save) apps.save(order);
+        moveHint.setVisibility(View.GONE);
+        renderDock();
+        resetSaverTimer();
+    }
+
+    @Override public boolean dispatchKeyEvent(KeyEvent event) {
+        int key = event.getKeyCode();
+        // The release belonging to Save/Cancel must never click the newly rendered tile.
+        if (key == moveKeyToRelease) {
+            if (event.getAction() == KeyEvent.ACTION_UP) moveKeyToRelease = KeyEvent.KEYCODE_UNKNOWN;
+            return true;
+        }
+        if (favoriteMove != null) {
+            if (key == KeyEvent.KEYCODE_DPAD_LEFT || key == KeyEvent.KEYCODE_DPAD_RIGHT) {
+                if (event.getAction() == KeyEvent.ACTION_DOWN) {
+                    resetSaverTimer();
+                    if (favoriteMove.move(key == KeyEvent.KEYCODE_DPAD_LEFT ? -1 : 1)) renderDock();
+                }
+                return true;
+            }
+            if (key == KeyEvent.KEYCODE_DPAD_UP || key == KeyEvent.KEYCODE_DPAD_DOWN) return true;
+            if (key == KeyEvent.KEYCODE_DPAD_CENTER || key == KeyEvent.KEYCODE_ENTER
+                    || key == KeyEvent.KEYCODE_BACK || key == KeyEvent.KEYCODE_MENU) {
+                if (event.getAction() == KeyEvent.ACTION_DOWN && event.getRepeatCount() == 0) {
+                    // A settings dialog owns the Menu release once it opens.
+                    moveKeyToRelease = key == KeyEvent.KEYCODE_MENU ? KeyEvent.KEYCODE_UNKNOWN : key;
+                    finishFavoriteMove(key == KeyEvent.KEYCODE_DPAD_CENTER || key == KeyEvent.KEYCODE_ENTER);
+                    if (key == KeyEvent.KEYCODE_MENU) showSettings();
+                }
+                return true;
+            }
+        }
+        return super.dispatchKeyEvent(event);
     }
 
     private void showApps(List<Apps.App> entries, String title) {
@@ -456,6 +559,7 @@ public final class MainActivity extends Activity {
 
     @Override protected void onResume() {
         super.onResume();
+        moveKeyToRelease = KeyEvent.KEYCODE_UNKNOWN;
         desktopResumed = true; resetSaverTimer();
         android.util.Log.i("QuietTV", "Desktop resumed at=" + android.os.SystemClock.elapsedRealtime());
         if (preview != null) {
@@ -463,12 +567,14 @@ public final class MainActivity extends Activity {
                 apps.reload(); renderDock(); appsDirty = false;
             }
             preview.select(selectedPort); preview.resume();
+            handler.removeCallbacks(statusTick);
             handler.post(statusTick);
         }
     }
 
     @Override protected void onPause() {
         desktopResumed = false;
+        finishFavoriteMove(false);
         handler.removeCallbacks(idleSaver);
         handler.removeCallbacks(statusTick);
         if (preview != null) preview.pause();
@@ -486,7 +592,7 @@ public final class MainActivity extends Activity {
 
     private void resetSaverTimer() {
         handler.removeCallbacks(idleSaver);
-        if (desktopResumed && prefs != null && hasWindowFocus() && prefs.getBoolean("saver_enabled",true)) {
+        if (desktopResumed && favoriteMove == null && prefs != null && hasWindowFocus() && prefs.getBoolean("saver_enabled",true)) {
             handler.postDelayed(idleSaver,SaverPolicy.waitMinutes(prefs.getInt("saver_wait_minutes",12)) * 60_000L);
         }
     }
