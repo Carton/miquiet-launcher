@@ -18,8 +18,6 @@ import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.Settings;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.KeyEvent;
@@ -29,9 +27,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.view.accessibility.AccessibilityManager;
 import android.accessibilityservice.AccessibilityServiceInfo;
-import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
-import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.GridView;
 import android.widget.HorizontalScrollView;
@@ -115,7 +111,6 @@ public final class MainActivity extends Activity {
         FrameLayout.LayoutParams pageParams = new FrameLayout.LayoutParams(dp(960), dp(540), Gravity.CENTER);
         root.addView(page, pageParams);
         topButton(page, "信号源", "hdmi", 12, 110, () -> actions.sources());
-        topButton(page, "搜索", "search", 130, 90, this::searchApps);
 
         FrameLayout sound = iconButton("声音设置", "sound", () -> actions.panel("sound_settings"));
         Ui.place(page, sound, 38, 34, 610, 8);
@@ -369,19 +364,6 @@ public final class MainActivity extends Activity {
             else { configureFavorites(); return; }
             renderDock();
             previewBox.requestFocus();
-        }).setNegativeButton("取消", null).show();
-    }
-
-    private void searchApps() {
-        EditText query = new EditText(this);
-        query.setSingleLine(true);
-        query.setTextSize(20);
-        query.setHint("输入应用名称");
-        new AlertDialog.Builder(this).setTitle("搜索本机应用").setView(query).setPositiveButton("搜索", (dialog, which) -> {
-            String keyword = query.getText().toString().trim().toLowerCase(Locale.ROOT);
-            List<Apps.App> result = new ArrayList<>();
-            for (Apps.App app : apps.all.values()) if (app.label.toLowerCase(Locale.ROOT).contains(keyword) || app.pkg.contains(keyword)) result.add(app);
-            showApps(result, keyword.isEmpty() ? "我的应用" : "搜索结果");
         }).setNegativeButton("取消", null).show();
     }
 

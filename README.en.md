@@ -22,7 +22,7 @@ See the [image notes](docs/images/README.md) for provenance and rights.
 
 - Move with the directional pad and open with OK; select the input preview to open the factory full-screen source (the tested firmware registers TvInputInfo only for HDMI3; HDMI1/2 go through the factory player entry).
 - Menu or the top-right rounded gear opens the settings grid; TV settings is the first tile. Back or Menu dismisses it; the bottom-right About tile shows the project name, version and source repository.
-- “Configure home apps” picks the apps shown; “My Apps” is always kept. Hold a home shortcut to move or remove it — removing does not uninstall the app. Search covers installed apps.
+- “Configure home apps” picks the apps shown; “My Apps” is always kept and lists installed apps. Hold a home shortcut to move or remove it — removing does not uninstall the app.
 - The bottom “factory launcher” button pauses takeover and opens the factory launcher; explicitly reopening MiTV Quiet Launcher resumes the previous takeover state.
 - The weather bar shows Celsius, a short description and an icon, without the city; OK refreshes the weather and opens Xiaomi Weather; hold to choose a location, network locating or refresh now.
 - News has six categories (China, World, Finance, Tech, Games, AI), switched with Left/Right; headlines open summaries with paging. “Read” in a summary opens a TV-friendly reader in the system WebView: scripts disabled, directional scrolling, adjustable text size, retry after network failures. Finance and AI flashes use the source summaries directly.

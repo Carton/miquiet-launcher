@@ -76,8 +76,6 @@ final class Ui {
             if (kind.equals("hdmi")) {
                 Path path = new Path(); path.moveTo(4, 11); path.lineTo(28, 11); path.lineTo(28, 17); path.lineTo(24, 21); path.lineTo(8, 21); path.lineTo(4, 17); path.close();
                 canvas.drawPath(path, paint); canvas.drawLine(9, 15, 23, 15, paint);
-            } else if (kind.equals("search")) {
-                canvas.drawCircle(13, 13, 8, paint); canvas.drawLine(19, 19, 27, 27, paint);
             } else if (kind.equals("wifi")) {
                 if (connected && !wifi) {
                     canvas.drawRoundRect(new RectF(4, 7, 28, 23), 2, 2, paint);
