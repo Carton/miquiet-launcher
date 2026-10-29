@@ -33,6 +33,8 @@ public final class LocaleDataTest {
             check(localized.getString(R.string.appearance_content).equals(english ? "Appearance & content" : "外观与内容"));
             check(localized.getString(UiLabels.weather(DashboardPolicy.condition(0))).equals(english ? "Clear" : "晴"));
             check(localized.getString(R.string.switch_off).equals(english ? "Off" : "关闭"));
+            check(localized.getString(R.string.opening_publisher, "Source")
+                .equals(english ? "Opening Source…" : "正在打开Source…"));
             check(localized.getString(R.string.screensaver_clock_format).contains(english ? "MMM" : "月"));
             check(new java.text.SimpleDateFormat(localized.getString(R.string.screensaver_clock_format),
                 UiLocale.locale(localized)).format(new java.util.Date()).length() > 5);

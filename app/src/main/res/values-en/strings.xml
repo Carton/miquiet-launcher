@@ -66,7 +66,7 @@
     <string name="enable_home_takeover" formatted="false">"Enable Home takeover"</string>
     <string name="enter_a_city_or_district_e_g" formatted="false">"Enter a city or district, e.g. Shanghai"</string>
     <string name="ethernet_connected_open_network_settings" formatted="false">"Ethernet connected. Open network settings"</string>
-    <string name="example_console_set_top_box" formatted="false">"Example: Console, Set-top box"</string>
+    <string name="example_console_set_top_box" formatted="false">"Example: PS5, Apple TV"</string>
     <string name="exploring_nature_and_science" formatted="false">"Exploring nature and science"</string>
     <string name="factory_home" formatted="false">"Factory home"</string>
     <string name="failed" formatted="false">", failed "</string>
@@ -167,7 +167,7 @@
     <string name="open_network_settings" formatted="false">", open network settings"</string>
     <string name="open_the_tv_s_casting_app" formatted="false">"Open the TV\'s casting app"</string>
     <string name="open_the_tv_s_native_settings" formatted="false">"Open the TV\'s native settings"</string>
-    <string name="opening" formatted="false">"Opening"</string>
+    <string name="opening_publisher">"Opening %1$s…"</string>
     <string name="opening_article" formatted="false">"Opening article…"</string>
     <string name="original_feed_brief_may_be_an_excerpt" formatted="false">" · Original feed / brief; may be an excerpt"</string>
     <string name="overcast" formatted="false">"Overcast"</string>

@@ -167,7 +167,7 @@
     <string name="open_network_settings" formatted="false">"，打开网络设置"</string>
     <string name="open_the_tv_s_casting_app" formatted="false">"打开电视投屏入口"</string>
     <string name="open_the_tv_s_native_settings" formatted="false">"打开电视原生设置"</string>
-    <string name="opening" formatted="false">"正在打开"</string>
+    <string name="opening_publisher">"正在打开%1$s…"</string>
     <string name="opening_article" formatted="false">"正在打开新闻…"</string>
     <string name="original_feed_brief_may_be_an_excerpt" formatted="false">" · 原站 RSS / 快讯，可能为节选"</string>
     <string name="overcast" formatted="false">"阴"</string>

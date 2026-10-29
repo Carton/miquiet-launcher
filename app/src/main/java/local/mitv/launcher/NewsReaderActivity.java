@@ -96,7 +96,7 @@ public final class NewsReaderActivity extends Activity {
                     Toast.makeText(NewsReaderActivity.this,NewsReaderActivity.this.getString(R.string.return_to_the_news_list_and_choose),Toast.LENGTH_SHORT).show(); return true;
                 }
                 @Override public void onPageStarted(WebView view,String url,android.graphics.Bitmap icon) {
-                    loading = true; failed = false; status.setText(NewsReaderActivity.this.getString(R.string.opening) + publisher + "…");
+                    loading = true; failed = false; status.setText(getString(R.string.opening_publisher, publisher));
                     handler.removeCallbacks(timeout); handler.postDelayed(timeout,25000);
                 }
                 @Override public void onPageFinished(WebView view,String url) {
@@ -136,7 +136,7 @@ public final class NewsReaderActivity extends Activity {
         if (!suppliedBody.isEmpty()) showArticle(suppliedBody);
         else {
             web.getSettings().setJavaScriptEnabled(false);
-            loading = true; status.setText(NewsReaderActivity.this.getString(R.string.opening) + publisher + "…");
+            loading = true; status.setText(getString(R.string.opening_publisher, publisher));
             handler.removeCallbacks(timeout); handler.postDelayed(timeout,25000);
             // Static publishers use the same verified HTTPS client as feeds. This also supplies
             // the public roots missing from Android 6, without overriding WebView SSL failures.
