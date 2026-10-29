@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="local.mitv.launcher" android:versionCode="21" android:versionName="0.8.7">
+    package="local.mitv.launcher" android:versionCode="22" android:versionName="0.8.8">
     <uses-sdk android:minSdkVersion="23" android:targetSdkVersion="23" />
     <uses-feature android:name="android.software.leanback" android:required="false" />
     <uses-feature android:name="android.hardware.touchscreen" android:required="false" />
@@ -9,7 +9,7 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.PACKAGE_USAGE_STATS" />
-    <application android:label="简净桌面" android:theme="@style/AppTheme"
+    <application android:label="@string/app_name" android:theme="@style/AppTheme"
         android:icon="@drawable/app_icon" android:allowBackup="false" android:hardwareAccelerated="true">
         <activity android:name=".MainActivity" android:exported="true"
             android:screenOrientation="landscape" android:launchMode="singleTask"
@@ -47,7 +47,7 @@
             <intent-filter><action android:name="android.intent.action.BOOT_COMPLETED" /></intent-filter>
         </receiver>
         <service android:name=".HomeBridgeService" android:exported="true"
-            android:label="简净桌面 Home 接管"
+            android:label="@string/home_service_name"
             android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
             <intent-filter><action android:name="android.accessibilityservice.AccessibilityService" /></intent-filter>
             <meta-data android:name="android.accessibilityservice" android:resource="@xml/home_accessibility" />

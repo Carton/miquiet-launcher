@@ -119,32 +119,32 @@ public final class MainActivity extends Activity {
         FrameLayout page = new FrameLayout(this);
         FrameLayout.LayoutParams pageParams = new FrameLayout.LayoutParams(dp(960), dp(540), Gravity.CENTER);
         root.addView(page, pageParams);
-        topButton(page, "信号源", "hdmi", 12, 110, () -> actions.sources());
-        moveHint = Ui.text(this, "移动位置  ·  ← → 调整  ·  确定保存  ·  返回取消", 14, Ui.ACCENT);
+        topButton(page, MainActivity.this.getString(R.string.inputs), "hdmi", 12, 110, () -> actions.sources());
+        moveHint = Ui.text(this, MainActivity.this.getString(R.string.move_left_right_ok_save_back_cancel), 14, Ui.ACCENT);
         moveHint.setGravity(Gravity.CENTER_VERTICAL);
         moveHint.setVisibility(View.GONE);
         Ui.place(page, moveHint, 470, 34, 130, 8);
 
-        FrameLayout sound = iconButton("声音设置", "sound", () -> actions.panel("sound_settings"));
+        FrameLayout sound = iconButton(MainActivity.this.getString(R.string.sound_settings), "sound", () -> actions.panel("sound_settings"));
         Ui.place(page, sound, 38, 34, appearance.networkX() - 44, 8);
-        FrameLayout network = iconButton("网络设置", "wifi", () -> actions.panel("connect_settings"));
+        FrameLayout network = iconButton(MainActivity.this.getString(R.string.network_settings), "wifi", () -> actions.panel("connect_settings"));
         networkIcon = (Ui.Icon)network.getChildAt(0);
         Ui.place(page, network, 38, 34, appearance.networkX(), 8);
         if (appearance.showWeather) Ui.place(page, dashboard.weather, 146, 34, 696, 8);
         clock = Ui.text(this, "", 19, Color.WHITE);
         clock.setGravity(Gravity.CENTER);
         Ui.place(page, clock, 64, 34, 846, 8);
-        settingsButton = iconButton("桌面设置", "settings", this::showSettings);
+        settingsButton = iconButton(MainActivity.this.getString(R.string.desktop_settings), "settings", this::showSettings);
         Ui.place(page, settingsButton, 38, 34, 910, 8);
 
         FrameLayout hero = new FrameLayout(this);
         hero.setBackground(Ui.shape(this, appearance.panelColor(), 0, 8));
-        Ui.place(page, hero, 936, 332, 12, 54);
+        Ui.place(page, hero, appearance.heroWidth(), 332, appearance.heroX(), 54);
         if (appearance.showNews) Ui.place(hero, dashboard.news, 200, 332, 0, 0);
 
         previewBox = new FrameLayout(this);
         Ui.homeFocusable(previewBox, 0xff222b3c, 8, appearance);
-        previewBox.setContentDescription("信号源预览，确定进入全屏");
+        previewBox.setContentDescription(MainActivity.this.getString(R.string.input_preview_press_ok_for_full_screen));
         Ui.place(hero, previewBox, appearance.previewWidth(), 332, appearance.previewX(), 0);
         FrameLayout videoViewport = new FrameLayout(this);
         videoViewport.setClipChildren(true);
@@ -164,25 +164,25 @@ public final class MainActivity extends Activity {
             // The solid blue background remains usable if the original launcher is unavailable.
         }
         Ui.place(previewBox, fallback, appearance.previewWidth() - 8, 324, 4, 4);
-        TextView hint = Ui.text(this, "正在连接信号源…", appearance.textSize(16), 0xffd6dce7);
+        TextView hint = Ui.text(this, MainActivity.this.getString(R.string.connecting_to_input), appearance.textSize(16), 0xffd6dce7);
         hint.setGravity(Gravity.CENTER);
         Ui.place(previewBox, hint, appearance.previewWidth() - 28, 260, 14, 12);
         previewTitle = Ui.text(this, inputDisplay(selectedPort), appearance.textSize(18), Color.WHITE);
         previewTitle.setShadowLayer(4, 0, 1, Color.BLACK);
         Ui.place(previewBox, previewTitle, appearance.previewWidth() - 34, 30, 16, 288);
         preview = new PreviewController(this, tv, hint, fallback);
-        previewBox.setOnClickListener(v -> actions.fullscreen(selectedPort));
+        previewBox.setOnClickListener(v -> openInput(selectedPort));
 
-        String[] labels = {"HDMI3", "文件管理", "HDMI1", "HDMI2", "全部"};
-        String[] icons = {"hdmi", "folder", "hdmi", "hdmi", "arrow"};
-        int[] ports = {3, 0, 1, 2, 0};
-        for (int i = 0; i < labels.length; i++) {
+        String[] icons = SourceMenu.ICONS;
+        int[] ports = SourceMenu.order(prefs.getString(SourceMenu.RECENT, ""));
+        for (int i = 0; i < ports.length; i++) {
             final int index = i;
             FrameLayout row = new FrameLayout(this);
             Ui.homeFocusable(row, appearance.panelColor(), 5, appearance);
-            row.setContentDescription(labels[i]);
+            String captionText = ports[i] > 0 ? "HDMI" + ports[i] : getString(i == SourceMenu.FILES ? R.string.files : R.string.all_inputs);
+            row.setContentDescription(captionText);
             Ui.place(row, new Ui.Icon(this, icons[i], Color.WHITE), 25, 25, 10, 20);
-            TextView label = Ui.text(this, labels[i], appearance.textSize(18), Color.WHITE);
+            TextView label = Ui.text(this, captionText, appearance.textSize(18), Color.WHITE);
             label.setSingleLine(true);
             label.setEllipsize(TextUtils.TruncateAt.END);
             if (ports[i] > 0) {
@@ -190,7 +190,7 @@ public final class MainActivity extends Activity {
                 caption.setOrientation(LinearLayout.VERTICAL);
                 caption.setGravity(Gravity.CENTER_VERTICAL);
                 caption.addView(label, new LinearLayout.LayoutParams(-1, dp(26)));
-                TextView port = Ui.text(this, labels[i], 12, Ui.MUTED);
+                TextView port = Ui.text(this, captionText, 12, Ui.MUTED);
                 caption.addView(port, new LinearLayout.LayoutParams(-1, dp(20)));
                 inputLabels[ports[i]] = label;
                 inputPorts[ports[i]] = port;
@@ -204,13 +204,13 @@ public final class MainActivity extends Activity {
                 label.setGravity(Gravity.CENTER_VERTICAL);
                 Ui.place(row, label, 94, 66, 45, 0);
             }
-            Ui.place(hero, row, 144, 66, 792, i * 66 + 1);
+            Ui.place(hero, row, 144, 66, appearance.inputsX(), i * 66 + 1);
             row.setOnFocusChangeListener((v, focused) -> {
                 if (focused && ports[index] > 0) selectPort(ports[index]);
             });
             row.setOnClickListener(v -> {
-                if (ports[index] > 0) { selectPort(ports[index]); actions.fullscreen(ports[index]); }
-                else if (index == 1) actions.media();
+                if (ports[index] > 0) { selectPort(ports[index]); openInput(ports[index]); }
+                else if (index == SourceMenu.FILES) actions.media();
                 else actions.sources();
             });
         }
@@ -253,9 +253,22 @@ public final class MainActivity extends Activity {
     private void selectPort(int port) {
         selectedPort = port;
         previewTitle.setText(inputDisplay(port));
-        previewBox.setContentDescription(inputDisplay(port) + " 预览，确定进入全屏");
+        previewBox.setContentDescription(inputDisplay(port) + MainActivity.this.getString(R.string.preview_press_ok_for_full_screen));
         prefs.edit().putInt("selected_port", port).apply();
         preview.select(port);
+    }
+
+    private void openInput(int port) {
+        String saved = SourceMenu.used(prefs.getString(SourceMenu.RECENT, ""), port);
+        prefs.edit().putString(SourceMenu.RECENT, saved).apply();
+        int[] ordered = SourceMenu.order(saved);
+        for (int index = 0; index < 3; index++) {
+            View row = inputRows[ordered[index]];
+            FrameLayout.LayoutParams layout = (FrameLayout.LayoutParams) row.getLayoutParams();
+            layout.topMargin = dp(index * 66 + 1);
+            row.setLayoutParams(layout);
+        }
+        actions.fullscreen(port);
     }
 
     private String inputDisplay(int port) {
@@ -267,10 +280,10 @@ public final class MainActivity extends Activity {
             String name = InputNames.normalize(prefs.getString(InputNames.key(port), ""));
             inputLabels[port].setText(name.isEmpty() ? "HDMI" + port : name);
             inputPorts[port].setVisibility(name.isEmpty() ? View.GONE : View.VISIBLE);
-            inputRows[port].setContentDescription(inputDisplay(port) + "，长按修改名称");
+            inputRows[port].setContentDescription(inputDisplay(port) + MainActivity.this.getString(R.string.hold_ok_to_rename));
         }
         previewTitle.setText(inputDisplay(selectedPort));
-        previewBox.setContentDescription(inputDisplay(selectedPort) + " 预览，确定进入全屏");
+        previewBox.setContentDescription(inputDisplay(selectedPort) + MainActivity.this.getString(R.string.preview_press_ok_for_full_screen));
     }
 
     private void renderDock() {
@@ -289,19 +302,19 @@ public final class MainActivity extends Activity {
             tile.setOnLongClickListener(v -> { beginFavoriteMove(app); return true; });
             if (favoriteMove != null && favoriteMove.item.equals(pkg)) {
                 tile.setBackground(Ui.shape(this, 0xff31564e, Ui.ACCENT, 10));
-                tile.setContentDescription(app.label + "，正在移动，左右调整，确定保存，返回取消");
+                tile.setContentDescription(app.label + MainActivity.this.getString(R.string.moving_left_right_to_move_ok_to));
             }
             dock.addView(tile, new LinearLayout.LayoutParams(dp(132), dp(124)));
         }
-        FrameLayout factory = appTile("原厂桌面", null, true, "factory");
+        FrameLayout factory = appTile(MainActivity.this.getString(R.string.factory_home), null, true, "factory");
         factory.setTag("factory");
         factory.setOnFocusChangeListener((v, focused) -> { if (focused) lastFocusKey = "factory"; });
         factory.setOnClickListener(v -> { if (favoriteMove == null) returnFactory(); });
         dock.addView(factory, new LinearLayout.LayoutParams(dp(132), dp(124)));
-        FrameLayout all = appTile("我的应用", null, true);
+        FrameLayout all = appTile(MainActivity.this.getString(R.string.my_apps), null, true);
         all.setTag("all");
         all.setOnFocusChangeListener((v, focused) -> { if (focused) lastFocusKey = "all"; });
-        all.setOnClickListener(v -> { if (favoriteMove == null) showApps(new ArrayList<>(apps.all.values()), "我的应用"); });
+        all.setOnClickListener(v -> { if (favoriteMove == null) showApps(new ArrayList<>(apps.all.values()), MainActivity.this.getString(R.string.my_apps)); });
         all.setOnLongClickListener(v -> { if (favoriteMove == null) configureFavorites(); return true; });
         dock.addView(all, new LinearLayout.LayoutParams(dp(132), dp(124)));
         if (focusKey != null) {
@@ -341,7 +354,7 @@ public final class MainActivity extends Activity {
     }
 
     private void updateStatus() {
-        clock.setText(new SimpleDateFormat("HH:mm", Locale.CHINA).format(new java.util.Date()));
+        clock.setText(new SimpleDateFormat("HH:mm", UiLocale.locale(this)).format(new java.util.Date()));
         ConnectivityManager manager = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
         NetworkInfo info = manager.getActiveNetworkInfo();
         boolean connected = info != null && info.isConnected();
@@ -355,8 +368,8 @@ public final class MainActivity extends Activity {
             }
         }
         networkIcon.setNetwork(wifi, connected, level);
-        ((View)networkIcon.getParent()).setContentDescription(!connected ? "网络未连接，打开网络设置" :
-            wifi ? "Wi-Fi 已连接，" + (level < 0 ? "信号强度未知" : "信号 " + (level + 1) + "/4") + "，打开网络设置" : "有线网络已连接，打开网络设置");
+        ((View)networkIcon.getParent()).setContentDescription(!connected ? MainActivity.this.getString(R.string.offline_open_network_settings) :
+            wifi ? MainActivity.this.getString(R.string.wi_fi_connected) + (level < 0 ? MainActivity.this.getString(R.string.signal_strength_unknown) : MainActivity.this.getString(R.string.signal) + (level + 1) + "/4") + MainActivity.this.getString(R.string.open_network_settings) : MainActivity.this.getString(R.string.ethernet_connected_open_network_settings));
         dashboard.tick();
     }
 
@@ -374,21 +387,21 @@ public final class MainActivity extends Activity {
     }
 
     private void showAbout() {
-        String version = "未知";
+        String version = MainActivity.this.getString(R.string.unknown_2);
         try {
             version = getPackageManager().getPackageInfo(getPackageName(), 0).versionName;
         } catch (android.content.pm.PackageManager.NameNotFoundException ignored) {}
-        new AlertDialog.Builder(this).setTitle("关于")
-            .setMessage("简净桌面 · MiTV Quiet Launcher\n版本 " + version
-                + "\n\n源码与发布：\nhttps://github.com/Carton/mitv-quiet-launcher")
-            .setPositiveButton("关闭", null).show();
+        new AlertDialog.Builder(this).setTitle(MainActivity.this.getString(R.string.about))
+            .setMessage(MainActivity.this.getString(R.string.mitv_quiet_launcher_version) + version
+                + MainActivity.this.getString(R.string.source_and_releases_https_github_com_carton))
+            .setPositiveButton(MainActivity.this.getString(R.string.close), null).show();
     }
 
     private void launchPackage(String pkg) {
         Intent intent = getPackageManager().getLaunchIntentForPackage(pkg);
         if (intent == null) intent = getPackageManager().getLeanbackLaunchIntentForPackage(pkg);
         if (intent != null) actions.start(intent);
-        else Toast.makeText(this, "此应用没有独立入口，请从电视设置打开", Toast.LENGTH_LONG).show();
+        else Toast.makeText(this, MainActivity.this.getString(R.string.this_app_has_no_launcher_entry_open), Toast.LENGTH_LONG).show();
     }
 
     private void configureFavorites() {
@@ -400,9 +413,9 @@ public final class MainActivity extends Activity {
             names[i] = available.get(i).label;
             checked[i] = previous.contains(available.get(i).pkg);
         }
-        AlertDialog dialog = new AlertDialog.Builder(this).setTitle("选择首页应用")
+        AlertDialog dialog = new AlertDialog.Builder(this).setTitle(MainActivity.this.getString(R.string.choose_home_apps))
             .setMultiChoiceItems(names, checked, (d, index, selected) -> checked[index] = selected)
-            .setPositiveButton("保存", (d, which) -> {
+            .setPositiveButton(MainActivity.this.getString(R.string.save), (d, which) -> {
                 List<String> selected = new ArrayList<>();
                 for (String pkg : previous) {
                     for (int i = 0; i < available.size(); i++) if (checked[i] && available.get(i).pkg.equals(pkg)) selected.add(pkg);
@@ -410,17 +423,17 @@ public final class MainActivity extends Activity {
                 for (int i = 0; i < available.size(); i++) if (checked[i] && !selected.contains(available.get(i).pkg)) selected.add(available.get(i).pkg);
                 apps.save(selected); renderDock();
                 previewBox.requestFocus();
-            }).setNegativeButton("取消", null).create();
+            }).setNegativeButton(MainActivity.this.getString(R.string.cancel), null).create();
         dialog.show();
     }
 
     private void homeSettings() {
-        new AlertDialog.Builder(this).setTitle("首页配置")
-            .setItems(new String[]{"选择首页应用", "信号源名称", "外观与内容"}, (dialog, which) -> {
+        new AlertDialog.Builder(this).setTitle(MainActivity.this.getString(R.string.home_setup))
+            .setItems(new String[]{MainActivity.this.getString(R.string.choose_home_apps), MainActivity.this.getString(R.string.input_names), MainActivity.this.getString(R.string.appearance_content)}, (dialog, which) -> {
                 if (which == 0) configureFavorites();
                 else if (which == 1) InputSettings.show(this, prefs, this::refreshInputNames);
                 else startActivity(new Intent(this, AppearanceActivity.class));
-            }).setNegativeButton("关闭", null).show();
+            }).setNegativeButton(MainActivity.this.getString(R.string.close), null).show();
     }
 
     private void beginFavoriteMove(Apps.App app) {
@@ -474,14 +487,14 @@ public final class MainActivity extends Activity {
     }
 
     private void showApps(List<Apps.App> entries, String title) {
-        if (entries.isEmpty()) { Toast.makeText(this, "没有找到应用", Toast.LENGTH_SHORT).show(); return; }
+        if (entries.isEmpty()) { Toast.makeText(this, MainActivity.this.getString(R.string.no_apps_found), Toast.LENGTH_SHORT).show(); return; }
         Dialog dialog = new Dialog(this);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         LinearLayout content = new LinearLayout(this);
         content.setOrientation(LinearLayout.VERTICAL);
         content.setPadding(dp(18), dp(16), dp(18), dp(16));
         content.setBackgroundColor(appearance.backgroundColor());
-        TextView heading = Ui.text(this, title + "    ·    长按应用配置首页", 20, Color.WHITE);
+        TextView heading = Ui.text(this, title + MainActivity.this.getString(R.string.hold_an_app_to_add_or_remove), 20, Color.WHITE);
         content.addView(heading, new LinearLayout.LayoutParams(-1, dp(42)));
         GridView grid = new GridView(this);
         grid.setNumColumns(5);
@@ -513,7 +526,7 @@ public final class MainActivity extends Activity {
             List<String> favorites = apps.favorites();
             if (favorites.contains(app.pkg)) favorites.remove(app.pkg); else favorites.add(app.pkg);
             apps.save(favorites); renderDock();
-            Toast.makeText(this, favorites.contains(app.pkg) ? "已添加到首页" : "已从首页移除", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, favorites.contains(app.pkg) ? MainActivity.this.getString(R.string.added_to_home) : MainActivity.this.getString(R.string.removed_from_home), Toast.LENGTH_SHORT).show();
             return true;
         });
         content.addView(grid, new LinearLayout.LayoutParams(-1, 0, 1));
@@ -535,9 +548,9 @@ public final class MainActivity extends Activity {
 
     private void bridgeSettings() {
         boolean enabled = prefs.getBoolean("bridge_enabled", false);
-        String state = bridgeBound() ? (enabled ? "Home 接管已开启" : "无障碍服务已授权，接管已暂停") : "尚未授权无障碍服务";
-        new AlertDialog.Builder(this).setTitle("桌面接管与恢复")
-            .setItems(new String[]{state, "启用 Home 接管", "暂停接管", "打开系统无障碍设置", "返回原厂桌面"}, (dialog, which) -> {
+        String state = bridgeBound() ? (enabled ? MainActivity.this.getString(R.string.home_takeover_is_on) : MainActivity.this.getString(R.string.accessibility_is_granted_takeover_is_paused)) : MainActivity.this.getString(R.string.accessibility_permission_has_not_been_granted);
+        new AlertDialog.Builder(this).setTitle(MainActivity.this.getString(R.string.home_takeover))
+            .setItems(new String[]{state, MainActivity.this.getString(R.string.enable_home_takeover), MainActivity.this.getString(R.string.pause_takeover), MainActivity.this.getString(R.string.open_accessibility_settings), MainActivity.this.getString(R.string.open_factory_home)}, (dialog, which) -> {
                 if (which == 1) {
                     getPackageManager().setComponentEnabledSetting(
                         new android.content.ComponentName(this, HomeBridgeService.class),
@@ -549,10 +562,10 @@ public final class MainActivity extends Activity {
                     }
                 } else if (which == 2) {
                     prefs.edit().putBoolean("bridge_enabled", false).commit();
-                    Toast.makeText(this, "已暂停 Home 接管", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, MainActivity.this.getString(R.string.home_takeover_paused), Toast.LENGTH_SHORT).show();
                 } else if (which == 3) actions.accessibility();
                 else if (which == 4) returnFactory();
-            }).setNegativeButton("关闭", null).show();
+            }).setNegativeButton(MainActivity.this.getString(R.string.close), null).show();
     }
 
     private void returnFactory() {

@@ -1,0 +1,315 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="image_transfer_interrupted">图片传输中断</string>
+    <string name="app_name">简净桌面</string>
+    <string name="home_service_name">简净桌面 Home 接管</string>
+    <string name="switch_off">关闭</string>
+    <string name="accessibility_description">仅在原厂主桌面出现时打开简净桌面。不读取屏幕内容。可在桌面设置中暂停接管并返回原厂。</string>
+    <string name="about" formatted="false">"关于"</string>
+    <string name="accessibility_is_granted_takeover_is_paused" formatted="false">"无障碍服务已授权，接管已暂停"</string>
+    <string name="accessibility_permission_has_not_been_granted" formatted="false">"尚未授权无障碍服务"</string>
+    <string name="add_photos" formatted="false">"添加图片"</string>
+    <string name="added_to_home" formatted="false">"已添加到首页"</string>
+    <string name="all_inputs" formatted="false">"全部"</string>
+    <string name="appearance_content" formatted="false">"外观与内容"</string>
+    <string name="apply_to_home" formatted="false">"应用到首页"</string>
+    <string name="apps_input_names_appearance_and_visible_content" formatted="false">"应用、信号源名称、外观与内容显示"</string>
+    <string name="reader_back" formatted="false">"‹ 返回"</string>
+    <string name="back" formatted="false">"返回"</string>
+    <string name="back_exit_preview" formatted="false">" · 返回键退出预览"</string>
+    <string name="background" formatted="false">"背景色"</string>
+    <string name="bluetooth" formatted="false">"蓝牙"</string>
+    <string name="browse_tv_storage_and_connected_devices" formatted="false">"浏览电视存储与已连接设备"</string>
+    <string name="cached" formatted="false">" · 缓存"</string>
+    <string name="camera_photos" formatted="false">"相机照片"</string>
+    <string name="cancel" formatted="false">"取消"</string>
+    <string name="cannot_read_this_folder_reconnect_the_storage" formatted="false">"无法读取此文件夹，请重新连接存储设备或选择其他位置"</string>
+    <string name="casting" formatted="false">"无线投屏"</string>
+    <string name="cctv" formatted="false">"央视网"</string>
+    <string name="cctv_updating" formatted="false">"央视网 · 正在更新"</string>
+    <string name="charcoal" formatted="false">"炭灰"</string>
+    <string name="china" formatted="false">"国内"</string>
+    <string name="china_world_science" formatted="false">"国内   国际   科技"</string>
+    <string name="choose_a_photo_to_upload" formatted="false">"请选择图片上传"</string>
+    <string name="choose_home_apps" formatted="false">"选择首页应用"</string>
+    <string name="choose_photo_location" formatted="false">"选择图片位置"</string>
+    <string name="choose_photos_then_save_to_tv_screensaver" formatted="false">"选好照片后点“保存到电视屏保”。\n关闭窗口或离开本页即停止接收。"</string>
+    <string name="choose_weather_location" formatted="false">"选择天气位置"</string>
+    <string name="clear_selection" formatted="false">"取消勾选"</string>
+    <string name="weather_clear" formatted="false">"晴"</string>
+    <string name="clear_the_current_selection" formatted="false">"取消当前勾选？"</string>
+    <string name="close" formatted="false">"关闭"</string>
+    <string name="cloudy" formatted="false">"多云"</string>
+    <string name="connect_remotes_headphones_and_other_devices" formatted="false">"连接遥控器、耳机与其他设备"</string>
+    <string name="connecting_to_hdmi" formatted="false">"正在连接 HDMI"</string>
+    <string name="connecting_to_input" formatted="false">"正在连接信号源…"</string>
+    <string name="connection_code" formatted="false">"\n连接码："</string>
+    <string name="action_continue" formatted="false">"继续"</string>
+    <string name="could_not_connect_securely_return_to_the" formatted="false">"无法安全连接新闻页面，请返回摘要"</string>
+    <string name="could_not_create_the_photo_folder" formatted="false">"无法创建图片目录"</string>
+    <string name="could_not_open_the_article_retry_or" formatted="false">"新闻暂时无法打开，请重试或返回摘要"</string>
+    <string name="could_not_save_photo" formatted="false">"保存图片失败"</string>
+    <string name="could_not_save_please_try_again" formatted="false">"保存失败，请重试"</string>
+    <string name="could_not_save_this_photo" formatted="false">"这张图片无法保存"</string>
+    <string name="could_not_start_uploads_check_the_network" formatted="false">"暂时无法开启传图，请检查网络后重试"</string>
+    <string name="d_pad_select_ok_change_back_cancel" formatted="false">"方向键选择，确定修改；返回取消"</string>
+    <string name="desktop_settings" formatted="false">"桌面设置"</string>
+    <string name="desktop_settings_home_setup_appearance_content" formatted="false">"桌面设置  /  首页配置  /  外观与内容"</string>
+    <string name="disconnected_press_ok_to_open_input" formatted="false">" 未连接 · 按确定打开信号源"</string>
+    <string name="done" formatted="false">"完成"</string>
+    <string name="done_uploading" formatted="false">"完成传图"</string>
+    <string name="downloads" formatted="false">"下载"</string>
+    <string name="drizzle" formatted="false">"毛毛雨"</string>
+    <string name="duplicate_request_header" formatted="false">"重复请求头"</string>
+    <string name="each_photo_must_be_no_larger_than" formatted="false">"单张图片不能超过32MB"</string>
+    <string name="each_photo_must_be_non_empty_and" formatted="false">"单张图片须小于32MB，且不能为空"</string>
+    <string name="enable_home_takeover" formatted="false">"启用 Home 接管"</string>
+    <string name="enter_a_city_or_district_e_g" formatted="false">"输入城市或区县，如：上海"</string>
+    <string name="ethernet_connected_open_network_settings" formatted="false">"有线网络已连接，打开网络设置"</string>
+    <string name="example_console_set_top_box" formatted="false">"例如：游戏机、机顶盒"</string>
+    <string name="exploring_nature_and_science" formatted="false">"探索自然，发现科学"</string>
+    <string name="factory_home" formatted="false">"原厂桌面"</string>
+    <string name="failed" formatted="false">"，失败 "</string>
+    <string name="fair" formatted="false">"晴间多云"</string>
+    <string name="feed_content" formatted="false">" · 订阅内容 · "</string>
+    <string name="files" formatted="false">"文件管理"</string>
+    <string name="finance" formatted="false">"财经"</string>
+    <string name="first_300_items_only" formatted="false">"仅显示前300项 · "</string>
+    <string name="first_time_takeover_setup" formatted="false">"首次接管设置"</string>
+    <string name="focus_style" formatted="false">"焦点样式"</string>
+    <string name="fog" formatted="false">"雾"</string>
+    <string name="forest" formatted="false">"墨绿"</string>
+    <string name="freezing_rain" formatted="false">"冻雨"</string>
+    <string name="gaming" formatted="false">"游戏"</string>
+    <string name="go_back_to_choose_another_location_reconnect" formatted="false">"返回选择其他位置；U盘断开后请重新插入"</string>
+    <string name="article_source_label" formatted="false">"来源："</string>
+    <string name="hailstorm" formatted="false">"雷雨冰雹"</string>
+    <string name="heavy_rain" formatted="false">"大雨"</string>
+    <string name="heavy_snow" formatted="false">"大雪"</string>
+    <string name="help" formatted="false">"说明"</string>
+    <string name="screensaver_clock_format" formatted="false">"HH:mm\nMM月dd日 EEEE"</string>
+    <string name="hold_an_app_to_add_or_remove" formatted="false">"    ·    长按应用配置首页"</string>
+    <string name="hold_ok_to_rename" formatted="false">"，长按修改名称"</string>
+    <string name="home_content" formatted="false">"首页内容"</string>
+    <string name="home_mock_preview_without_live_news_weather" formatted="false">"首页示意预览，不包含实时新闻、天气或视频"</string>
+    <string name="home_preview" formatted="false">"首页预览"</string>
+    <string name="home_setup" formatted="false">"首页配置"</string>
+    <string name="home_takeover" formatted="false">"桌面接管与恢复"</string>
+    <string name="home_takeover_is_on" formatted="false">"Home 接管已开启"</string>
+    <string name="home_takeover_paused" formatted="false">"已暂停 Home 接管"</string>
+    <string name="idle_time" formatted="false">"等待时间："</string>
+    <string name="import_results" formatted="false">"导入结果"</string>
+    <string name="import_selected" formatted="false">"导入选中"</string>
+    <string name="imported" formatted="false">"已导入 "</string>
+    <string name="importing_saver_photos" formatted="false">"正在导入屏保照片"</string>
+    <string name="incorrect_code_check_the_six_digits_shown" formatted="false">"连接码不正确，请查看电视上的六位数字"</string>
+    <string name="input_disconnected" formatted="false">"信号已断开"</string>
+    <string name="input_names" formatted="false">"信号源名称"</string>
+    <string name="input_preview" formatted="false">"信号源预览"</string>
+    <string name="input_preview_press_ok_for_full_screen" formatted="false">"信号源预览，确定进入全屏"</string>
+    <string name="inputs" formatted="false">"信号源"</string>
+    <string name="invalid_request" formatted="false">"请求无效"</string>
+    <string name="large" formatted="false">"大字"</string>
+    <string name="left_right_change_photo" formatted="false">"左右键切换图片 · "</string>
+    <string name="left_right_change_photo_back_exit_preview" formatted="false">"左右键切换图片 · 返回键退出预览"</string>
+    <string name="light_rain" formatted="false">"小雨"</string>
+    <string name="light_snow" formatted="false">"小雪"</string>
+    <string name="loading" formatted="false">"正在读取…"</string>
+    <string name="loading_photos" formatted="false">"正在读取图片…"</string>
+    <string name="loading_preview" formatted="false">"正在读取预览…"</string>
+    <string name="loading_the_latest_headlines" formatted="false">"正在获取最新头条…"</string>
+    <string name="loading_timed_out_retry_or_return_to" formatted="false">"加载超时，请重试或返回新闻摘要"</string>
+    <string name="local_screensaver" formatted="false">"本地图片屏保"</string>
+    <string name="screensaver_title_prefix" formatted="false">"本地屏保 · "</string>
+    <string name="location_search_failed_please_try_again" formatted="false">"位置搜索失败，请稍后重试"</string>
+    <string name="manage_home_takeover_and_restoration" formatted="false">"管理 Home 接管与恢复"</string>
+    <string name="manage_photos_and_idle_slideshows" formatted="false">"管理照片与闲置轮播"</string>
+    <string name="min" formatted="false">" 分钟"</string>
+    <string name="mitv_quiet_launcher_version" formatted="false">"简净桌面 · MiTV Quiet Launcher\n版本 "</string>
+    <string name="mmm_d_hh_mm" formatted="false">"MM月dd日 HH:mm"</string>
+    <string name="more" formatted="false">"更多 ›"</string>
+    <string name="move_left_right_ok_save_back_cancel" formatted="false">"移动位置  ·  ← → 调整  ·  确定保存  ·  返回取消"</string>
+    <string name="moving_left_right_to_move_ok_to" formatted="false">"，正在移动，左右调整，确定保存，返回取消"</string>
+    <string name="my_apps" formatted="false">"我的应用"</string>
+    <string name="name" formatted="false">" 名称"</string>
+    <string name="navy" formatted="false">"深海蓝"</string>
+    <string name="network" formatted="false">"网络与连接"</string>
+    <string name="network_settings" formatted="false">"网络设置"</string>
+    <string name="new_discoveries_in_everyday_life" formatted="false">"科技与生活的新发现"</string>
+    <string name="news_is_refreshing" formatted="false">"新闻正在刷新"</string>
+    <string name="news_is_updating_please_wait" formatted="false">"新闻正在更新，请稍候"</string>
+    <string name="news_update_failed_will_retry_automatically" formatted="false">"新闻更新失败\n稍后将自动重试"</string>
+    <string name="next_news_page_hold_ok_to_refresh" formatted="false">"下一页新闻，长按刷新"</string>
+    <string name="no_apps_found" formatted="false">"没有找到应用"</string>
+    <string name="no_data_yet" formatted="false">"尚无可用数据"</string>
+    <string name="no_imported_photos_built_in_scenes_are" formatted="false">"还没有自选照片，当前使用内置风景。\n\n选择「添加图片」从电视或U盘导入，\n或选择「电脑 / 手机传图」直接上传。"</string>
+    <string name="no_local_network_found_connect_wi_fi" formatted="false">"未找到局域网连接，请先连接Wi-Fi或网线"</string>
+    <string name="no_location_found_try_a_city_name" formatted="false">"没有找到位置，请尝试城市名或拼音"</string>
+    <string name="no_recent_news_select_a_category_to" formatted="false">"暂无近期新闻，点击分类重试"</string>
+    <string name="no_selectable_photos_here" formatted="false">"这里没有可选择的图片"</string>
+    <string name="no_summary_is_available_for_this_story" formatted="false">"此条新闻暂无摘要。"</string>
+    <string name="no_supported_photos_in_this_folder_go" formatted="false">"这个文件夹没有可用图片。\n按返回选择其他位置，或从电脑 / 手机传图。\n支持 JPG、PNG、WebP、BMP。"</string>
+    <string name="no_video_signal_press_ok_to_open" formatted="false">"暂无视频信号 · 按确定进入信号源"</string>
+    <string name="state_disabled" formatted="false">"已关闭"</string>
+    <string name="offline_open_network_settings" formatted="false">"网络未连接，打开网络设置"</string>
+    <string name="ok" formatted="false">"知道了"</string>
+    <string name="ok_to_read_the_summary" formatted="false">"，确定查看摘要"</string>
+    <string name="ok_to_refresh_and_open_xiaomi_weather" formatted="false">"，确定刷新并打开小米天气，长按设置位置"</string>
+    <string name="ok_to_switch_and_refresh_left_right" formatted="false">"，确定切换并刷新，左右查看其他分类"</string>
+    <string name="state_enabled" formatted="false">"已开启"</string>
+    <string name="switch_on" formatted="false">"开启"</string>
+    <string name="only_saved_screensaver_copies_are_removed_originals" formatted="false">"只移除电视内的屏保副本，原图保留。"</string>
+    <string name="open_a_photo_location_first" formatted="false">"请先打开图片所在位置"</string>
+    <string name="open_accessibility_settings" formatted="false">"打开系统无障碍设置"</string>
+    <string name="open_factory_home" formatted="false">"返回原厂桌面"</string>
+    <string name="open_location" formatted="false">"，打开位置"</string>
+    <string name="open_meteo_https_open_meteo_com_location" formatted="false">"\n\nOpen-Meteo：https://open-meteo.com/\n位置搜索：Open-Meteo / GeoNames（https://www.geonames.org/）\n数据许可：https://creativecommons.org/licenses/by/4.0/\n天气图标：Tabler Icons · MIT\n设置图标：Lucide · ISC / Feather MIT（https://lucide.dev/）\n传图二维码：Project Nayuki QR Code generator · MIT（https://www.nayuki.io/page/qr-code-generator-library）\n网络位置：IPWhois（IP 约略定位，可手动更改）\n新闻：央视网、华尔街见闻、科学网、科技日报、游民星空（PC单机）、AIHOT；版权归原权利人，非开源内容。分类与订阅交互参考 NewsNow（MIT）和 Read You（GPL-3.0），未打包其应用代码。\n\n天气约每 15 分钟、新闻约每 10 分钟更新；天气刷新失败或数据超过 1 小时显示 --，点击天气同时刷新并打开小米天气。新闻失败时保留近期缓存并标记；科技新闻保留 7 天，其他新闻保留 48 小时。科技按两家来源交错，保留实际发布时间。\n\n"</string>
+    <string name="open_network_settings" formatted="false">"，打开网络设置"</string>
+    <string name="open_the_tv_s_casting_app" formatted="false">"打开电视投屏入口"</string>
+    <string name="open_the_tv_s_native_settings" formatted="false">"打开电视原生设置"</string>
+    <string name="opening" formatted="false">"正在打开"</string>
+    <string name="opening_article" formatted="false">"正在打开新闻…"</string>
+    <string name="original_feed_brief_may_be_an_excerpt" formatted="false">" · 原站 RSS / 快讯，可能为节选"</string>
+    <string name="overcast" formatted="false">"阴"</string>
+    <string name="page_not_found" formatted="false">"没有这个页面"</string>
+    <string name="pause_takeover" formatted="false">"暂停接管"</string>
+    <string name="photo" formatted="false">"照片 "</string>
+    <string name="photo_is_damaged_or_its_format_is" formatted="false">"图片已损坏或电视不支持此格式"</string>
+    <string name="photo_library" formatted="false">"图片管理与导入 · "</string>
+    <string name="photo_library_full_remove_some_saved_copies" formatted="false">"图片已满，请先移除已保存照片"</string>
+    <string name="photo_not_saved_please_try_again" formatted="false">"图片未保存，请重试"</string>
+    <string name="photo_read_permission_not_granted" formatted="false">"未获得图片读取权限"</string>
+    <string name="photo_count_suffix" formatted="false">" 张"</string>
+    <string name="photo_failure_count_suffix" formatted="false">" 张："</string>
+    <string name="picture" formatted="false">"图像"</string>
+    <string name="pictures" formatted="false">"图片"</string>
+    <string name="press_any_key_to_return_home" formatted="false">"按任意键返回桌面"</string>
+    <string name="preview_not_supported_press_ok_to_open" formatted="false">"系统未开放此输入的预览 · 按确定进入信号源"</string>
+    <string name="preview_press_ok_for_full_screen" formatted="false">" 预览，确定进入全屏"</string>
+    <string name="preview_saver" formatted="false">"预览屏保"</string>
+    <string name="preview_unavailable_press_ok_to_open_input" formatted="false">"该输入暂不可预览 · 按确定进入信号源"</string>
+    <string name="previewing_not_saved_back_cancel" formatted="false">"正在预览 · 尚未保存；返回取消"</string>
+    <string name="rain" formatted="false">"中雨"</string>
+    <string name="read_article" formatted="false">"阅读原文"</string>
+    <string name="read_feed_content" formatted="false">"阅读订阅内容"</string>
+    <string name="refresh" formatted="false">"刷新"</string>
+    <string name="refresh_list" formatted="false">"刷新列表"</string>
+    <string name="refresh_news" formatted="false">"刷新新闻"</string>
+    <string name="refresh_now" formatted="false">"立即刷新 · "</string>
+    <string name="refreshing_weather" formatted="false">"正在刷新天气"</string>
+    <string name="remove" formatted="false">"移除"</string>
+    <string name="remove_2" formatted="false">"移除 "</string>
+    <string name="remove_selected" formatted="false">"移除选中"</string>
+    <string name="removed" formatted="false">"已移除 "</string>
+    <string name="removed_from_home" formatted="false">"已从首页移除"</string>
+    <string name="request_headers_too_large" formatted="false">"请求头过大"</string>
+    <string name="restore_default" formatted="false">"恢复默认"</string>
+    <string name="retry" formatted="false">"重试"</string>
+    <string name="return_to_the_news_list_and_choose" formatted="false">"请返回新闻列表选择其他文章"</string>
+    <string name="sample_content_no_network_or_video" formatted="false">"示意内容 · 不联网、不播放视频"</string>
+    <string name="sample_news_content" formatted="false">"新闻内容示意"</string>
+    <string name="save" formatted="false">"保存"</string>
+    <string name="photo_saved_prefix" formatted="false">"已保存 "</string>
+    <string name="saved_photos" formatted="false">"返回已保存"</string>
+    <string name="saved_screensaver_photos_are_not_affected" formatted="false">"已保存的屏保照片不受影响。"</string>
+    <string name="saved_to_tv_screensaver" formatted="false">"已保存到电视屏保"</string>
+    <string name="saver_photos" formatted="false">"屏保图片"</string>
+    <string name="saver_photos_saved" formatted="false">"屏保图片 · 已保存 "</string>
+    <string name="scan_to_open_photo_upload_the_connection" formatted="false">"扫码打开照片上传页，连接码已包含"</string>
+    <string name="scan_with_your_phone_to_choose_photos" formatted="false">"手机扫码，直接选择照片\n需要同一Wi-Fi或局域网。\n\n手动打开：\n"</string>
+    <string name="science" formatted="false">"科技"</string>
+    <string name="screensaver_copies_saved_on_this_tv" formatted="false">"已保存到电视的屏保副本"</string>
+    <string name="screensaver_idle_time" formatted="false">"静置多久进入屏保"</string>
+    <string name="screensaver_photo" formatted="false">"屏保照片"</string>
+    <string name="screensaver_photos" formatted="false">" 张屏保照片？"</string>
+    <string name="search" formatted="false">"搜索"</string>
+    <string name="searching_for_locations" formatted="false">"正在搜索位置…"</string>
+    <string name="sec" formatted="false">" 秒"</string>
+    <string name="select_across_folders_then_import_selected_reconnect" formatted="false">"可跨文件夹勾选，最后点击「导入选中」 · 未看到U盘时插入后刷新列表"</string>
+    <string name="select_all" formatted="false">"全选"</string>
+    <string name="select_photo" formatted="false">"，点击勾选"</string>
+    <string name="select_photos_imported_copies_work_without_the" formatted="false">"点击图片勾选 · 导入后拔掉U盘仍可播放 · 返回键回上一级"</string>
+    <string name="select_photos_then_import_selected_up_to" formatted="false">"点击图片勾选，完成后点击「导入选中」 · 最多显示最近300张"</string>
+    <string name="select_photos_view_selection_to_enlarge_removing" formatted="false">"点击照片勾选 · 查看选中可放大预览 · 移除副本不会删除原图"</string>
+    <string name="photo_selected_suffix" formatted="false">"，已勾选"</string>
+    <string name="choice_selected_suffix" formatted="false">"，已选择"</string>
+    <string name="show_news" formatted="false">"显示新闻："</string>
+    <string name="show_weather" formatted="false">"显示天气："</string>
+    <string name="showers" formatted="false">"阵雨"</string>
+    <string name="signal" formatted="false">"信号 "</string>
+    <string name="signal_strength_unknown" formatted="false">"信号强度未知"</string>
+    <string name="slide_interval" formatted="false">"图片间隔："</string>
+    <string name="slideshow_interval" formatted="false">"图片轮播间隔"</string>
+    <string name="snow" formatted="false">"中雪"</string>
+    <string name="snow_grains" formatted="false">"雪粒"</string>
+    <string name="snow_showers" formatted="false">"阵雪"</string>
+    <string name="soft_fill" formatted="false">"柔和底色"</string>
+    <string name="sound" formatted="false">"声音"</string>
+    <string name="sound_settings" formatted="false">"声音设置"</string>
+    <string name="source_and_releases_https_github_com_carton" formatted="false">"\n\n源码与发布：\nhttps://github.com/Carton/mitv-quiet-launcher"</string>
+    <string name="source_sample_content" formatted="false">"来源 · 内容示意"</string>
+    <string name="sources_licenses" formatted="false">"数据与开源说明"</string>
+    <string name="standard" formatted="false">"标准"</string>
+    <string name="stop" formatted="false">"停止"</string>
+    <string name="stopped" formatted="false">"，已停止"</string>
+    <string name="stopping_imported_photos_will_be_kept" formatted="false">"正在停止，已导入的照片会保留"</string>
+    <string name="tabler_icons_mit_lucide_isc_feather_mit" formatted="false">"Tabler Icons · MIT；Lucide · ISC / Feather MIT，见项目第三方许可。"</string>
+    <string name="reader_text_larger" formatted="false">"字号＋"</string>
+    <string name="reader_text_smaller" formatted="false">"字号－"</string>
+    <string name="photo_capacity_suffix" formatted="false">"/24 张"</string>
+    <string name="preview_weather_sample" formatted="false">"26°C 晴"</string>
+    <string name="text_size" formatted="false">"首页文字"</string>
+    <string name="the_automatic_saver_starts_only_while_this" formatted="false">"自动屏保仅在新桌面前台静置时启动，按任意键返回。手动预览时，左右键切换图片，返回键退出预览。\n\n在图片管理页中，可预览、批量导入或移除照片；也可从电脑或手机的浏览器向电视传图。\n\n照片会复制到电视内，拔掉U盘后仍可播放；移除屏保副本不删除原图。最多24张。\n\n未添加照片时使用三幅内置风景和移动时钟。屏保自身不联网，也不展示广告。"</string>
+    <string name="the_saver_holds_24_photos_remove_some" formatted="false">"屏保最多24张，请先移除部分已保存照片"</string>
+    <string name="the_tv_album_has_no_photos_yet" formatted="false">"电视相册尚未收录图片。\n可返回从「下载」「图片」或U盘直接导入，\n也可从电脑 / 手机传图。"</string>
+    <string name="the_tv_s_built_in_reader_is" formatted="false">"电视内置阅读组件不可用"</string>
+    <string name="this_app_has_no_launcher_entry_open" formatted="false">"此应用没有独立入口，请从电视设置打开"</string>
+    <string name="this_article_is_not_supported_in_tv" formatted="false">"这篇新闻暂不支持电视阅读，请返回摘要"</string>
+    <string name="this_article_is_unavailable_return_to_the" formatted="false">"这篇新闻暂时无法打开，请返回摘要"</string>
+    <string name="this_folder_is_outside_the_selected_storage" formatted="false">"这个目录不在所选存储设备内"</string>
+    <string name="this_link_cannot_be_opened_on_the" formatted="false">"这个链接无法在电视内打开"</string>
+    <string name="this_photo_cannot_be_decoded_choose_another" formatted="false">"无法解码这张图片，请选择其他图片"</string>
+    <string name="this_shortcut_is_unavailable_please_use_tv" formatted="false">"暂时无法打开该入口，请使用电视设置"</string>
+    <string name="this_tv_has_no_accessibility_settings_page" formatted="false">"这台电视未提供无障碍设置页。首次接管需要在电脑端完成；之后可在此暂停、恢复或返回原厂桌面。"</string>
+    <string name="thunder" formatted="false">"雷雨"</string>
+    <string name="today_s_sample_headline" formatted="false">"今日新闻标题示例"</string>
+    <string name="too_many_incorrect_codes_close_and_reopen" formatted="false">"连接码错误次数过多，请在电视关闭后重新打开传图"</string>
+    <string name="turn_off_local_screensaver" formatted="false">"关闭本地屏保"</string>
+    <string name="turn_on_local_screensaver" formatted="false">"开启本地屏保"</string>
+    <string name="tv_album" formatted="false">"电视相册"</string>
+    <string name="tv_album_recent_photos" formatted="false">"电视相册 · 最近图片"</string>
+    <string name="tv_album_unavailable_use_folders_or_upload" formatted="false">"电视相册暂不可读取，请通过文件夹或电脑 / 手机传图"</string>
+    <string name="tv_internal_storage" formatted="false">"电视内部存储"</string>
+    <string name="tv_picture_and_display_settings" formatted="false">"电视画面与显示设置"</string>
+    <string name="tv_settings" formatted="false">"电视设置"</string>
+    <string name="tv_sound_and_audio_output_settings" formatted="false">"电视声音与输出设置"</string>
+    <string name="unknown" formatted="false">"天气未知"</string>
+    <string name="unknown_2" formatted="false">"未知"</string>
+    <string name="unnamed" formatted="false">"未命名"</string>
+    <string name="unreadable_file_or_unsupported_format" formatted="false">"文件不可读或格式无效"</string>
+    <string name="unsupported_format_or_image_dimensions_too_large" formatted="false">"图片格式无效或尺寸过大"</string>
+    <string name="up_down_scroll_back_close" formatted="false">"方向键上下滚动，返回键退出"</string>
+    <string name="up_to_24_photos_can_be_saved" formatted="false">"最多保存24张图片"</string>
+    <string name="up_to_8_characters_leave_empty_to" formatted="false">"最多 8 个字符；留空使用端口名。仅修改本桌面的显示名称。"</string>
+    <string name="updated" formatted="false">"数据时间 "</string>
+    <string name="updating" formatted="false">" · 更新中"</string>
+    <string name="upload_from_a_browser" formatted="false">"从电脑 / 手机传图"</string>
+    <string name="upload_photos" formatted="false">"电脑 / 手机传图"</string>
+    <string name="usb_drive" formatted="false">"U盘 · "</string>
+    <string name="use_8_characters_or_fewer" formatted="false">"最多输入 8 个字符"</string>
+    <string name="use_automatic_network_location" formatted="false">"使用网络自动定位"</string>
+    <string name="use_the_photo_picker_on_this_page" formatted="false">"请使用页面上的选择图片按钮"</string>
+    <string name="view_data_sources_and_open_source_licenses" formatted="false">"查看数据来源与开源许可"</string>
+    <string name="view_selection" formatted="false">"查看选中"</string>
+    <string name="view_the_project_name_version_and_source" formatted="false">"查看项目名、版本与源码地址"</string>
+    <string name="weather_location" formatted="false">"天气位置"</string>
+    <string name="weather_open_meteo_cc_by_4_0" formatted="false">"天气：Open-Meteo · CC BY 4.0；图标：Tabler Icons · MIT"</string>
+    <string name="weather_settings" formatted="false">"天气设置"</string>
+    <string name="weather_unavailable_ok_to_refresh_and_open" formatted="false">"天气暂无数据，确定刷新并打开小米天气，长按选择位置或重试"</string>
+    <string name="white_outline" formatted="false">"白色描边"</string>
+    <string name="wi_fi_and_network_connections" formatted="false">"Wi-Fi 与网络连接"</string>
+    <string name="wi_fi_connected" formatted="false">"Wi-Fi 已连接，"</string>
+    <string name="world" formatted="false">"国际"</string>
+    <string name="you_can_still_upload_photos_from_a" formatted="false">"仍可通过「电脑 / 手机传图」添加屏保照片；再次进入添加图片可重新申请权限。"</string>
+    <string name="news_ai">AI</string>
+</resources>

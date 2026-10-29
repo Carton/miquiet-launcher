@@ -22,8 +22,10 @@ public final class HomeAppearanceTest {
             for (int mask = 0; mask < 16; mask++) {
                 boolean news = (mask & 1) != 0, weather = (mask & 2) != 0, large = (mask & 4) != 0;
                 HomeAppearance choice = new HomeAppearance(background, large, (mask & 8) != 0 ? 1 : 0, news, weather);
-                check(choice.previewX() + choice.previewWidth() == 792); // Inputs keep the same right edge.
-                check(choice.previewWidth() > 0 && choice.previewWidth() <= 792);
+                check(choice.previewX() + choice.previewWidth() == choice.inputsX());
+                check((choice.previewWidth() - 8) * 9 == 324 * 16); // Keep the 16:9 viewport in both layouts.
+                check(choice.heroX() * 2 + choice.heroWidth() == 960); // Center the complete source group.
+                check(choice.inputsX() + 144 == choice.heroWidth());
                 check(news ? choice.previewX() >= 200 : choice.previewX() == 0); // No invisible news gap.
                 check(choice.networkX() + 38 <= (weather ? 696 : 846)); // No weather/clock overlap.
                 check(weather || choice.networkX() + 38 >= 838); // Close the weather gap.
@@ -37,6 +39,15 @@ public final class HomeAppearanceTest {
         check(new HomeAppearance(1, false, 0, true, true).backgroundColor() != defaults.backgroundColor());
         check(new HomeAppearance(2, false, 0, true, true).backgroundColor() != defaults.backgroundColor());
         check(defaults.showNews && defaults.showWeather && defaults.background == 0); // Candidates never mutate saved/default choices.
+        check(SourceMenu.PORTS[0] == 1 && SourceMenu.PORTS[1] == 2 && SourceMenu.PORTS[2] == 3);
+        check(SourceMenu.PORTS[SourceMenu.FILES] == 0 && SourceMenu.ICONS[SourceMenu.FILES].equals("folder"));
+        check(java.util.Arrays.equals(SourceMenu.order(null), new int[]{1,2,3,0,0}));
+        check(java.util.Arrays.equals(SourceMenu.order("333x-21"), new int[]{3,2,1,0,0}));
+        check(SourceMenu.used("", 2).equals("213"));
+        check(SourceMenu.used("213", 3).equals("321"));
+        check(SourceMenu.used("321", 3).equals("321"));
+        check(SourceMenu.used("bad", 0).equals("123"));
+        check(SourceMenu.used("321", 1).equals("132"));
 
         int[][] directions = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
         for (int start = 0; start < AppearanceMenu.COUNT; start++) {

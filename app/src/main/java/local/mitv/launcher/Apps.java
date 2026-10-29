@@ -57,7 +57,7 @@ final class Apps {
                 result.add(app);
             }
         }
-        Collator collator = Collator.getInstance(Locale.SIMPLIFIED_CHINESE);
+        Collator collator = Collator.getInstance(UiLocale.locale(context));
         Collections.sort(result, (a, b) -> collator.compare(a.label, b.label));
         all.clear();
         for (App app : result) all.put(app.pkg, app);

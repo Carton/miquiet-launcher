@@ -17,10 +17,10 @@ final class SaverBrowser {
         } catch (IOException error) { return false; }
     }
     static File[] entries(File root, File directory) throws IOException {
-        if (!inside(root,directory)) throw new IOException("这个目录不在所选存储设备内");
+        if (!inside(root,directory)) throw new PhotoFailure(PhotoFailure.Reason.OUTSIDE_ROOT);
         File[] entries = directory.listFiles(file -> !file.getName().startsWith(".") && file.canRead()
             && inside(root,file) && (file.isDirectory() || SaverPolicy.imageName(file.getName())));
-        if (entries == null) throw new IOException("无法读取此文件夹，请重新连接存储设备或选择其他位置");
+        if (entries == null) throw new PhotoFailure(PhotoFailure.Reason.UNREADABLE_FOLDER);
         Arrays.sort(entries,(a,b) -> {
             if (a.isDirectory() != b.isDirectory()) return a.isDirectory() ? -1 : 1;
             return a.getName().compareToIgnoreCase(b.getName());

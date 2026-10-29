@@ -52,7 +52,7 @@ public final class ScreensaverActivity extends Activity {
         root.addView(photo, new FrameLayout.LayoutParams(-1, -1));
         clock = Ui.text(this, "", 38, 0xaaffffff); clock.setGravity(Gravity.CENTER); clock.setShadowLayer(3, 0, 1, Color.BLACK);
         root.addView(clock);
-        hint = Ui.text(this, preview ? "左右键切换图片 · 返回键退出预览" : "按任意键返回桌面", 16, 0x88ffffff);
+        hint = Ui.text(this, preview ? ScreensaverActivity.this.getString(R.string.left_right_change_photo_back_exit_preview) : ScreensaverActivity.this.getString(R.string.press_any_key_to_return_home), 16, 0x88ffffff);
         hint.setGravity(Gravity.CENTER); hint.setShadowLayer(3,0,1,Color.BLACK);
         FrameLayout.LayoutParams hintParams = new FrameLayout.LayoutParams(-1, Ui.dp(this, 45), Gravity.BOTTOM);
         root.addView(hint, hintParams);
@@ -78,9 +78,9 @@ public final class ScreensaverActivity extends Activity {
         final int index=slide;
         final int token = ++generation;
         if(pending!=null)pending.cancel(false);
-        if(preview)hint.setText("左右键切换图片 · "+(index+1)+"/"+count+" · 返回键退出预览");
+        if(preview)hint.setText(ScreensaverActivity.this.getString(R.string.left_right_change_photo)+(index+1)+"/"+count+ScreensaverActivity.this.getString(R.string.back_exit_preview));
         ambient.scene = index % 3; ambient.invalidate();
-        android.text.SpannableString time = new android.text.SpannableString(new SimpleDateFormat("HH:mm\nMM月dd日 EEEE", Locale.CHINA).format(new Date()));
+        android.text.SpannableString time = new android.text.SpannableString(new SimpleDateFormat(ScreensaverActivity.this.getString(R.string.screensaver_clock_format), UiLocale.locale(this)).format(new Date()));
         time.setSpan(new android.text.style.RelativeSizeSpan(.45f),6,time.length(),android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         clock.setText(time);
         // Move the entire clock every slide rather than keeping bright text fixed on the panel.

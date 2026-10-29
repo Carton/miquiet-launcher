@@ -4,26 +4,28 @@ package local.mitv.launcher;
 final class DashboardPolicy {
     private DashboardPolicy() {}
 
-    static String description(int code) {
-        if (code == 0) return "晴";
-        if (code == 1) return "晴间多云";
-        if (code == 2) return "多云";
-        if (code == 3) return "阴";
-        if (code == 45 || code == 48) return "雾";
-        if (code >= 51 && code <= 57) return "毛毛雨";
-        if (code == 61) return "小雨";
-        if (code == 63) return "中雨";
-        if (code == 65) return "大雨";
-        if (code == 66 || code == 67) return "冻雨";
-        if (code == 71) return "小雪";
-        if (code == 73) return "中雪";
-        if (code == 75) return "大雪";
-        if (code == 77) return "雪粒";
-        if (code >= 80 && code <= 82) return "阵雨";
-        if (code == 85 || code == 86) return "阵雪";
-        if (code == 95) return "雷雨";
-        if (code == 96 || code == 99) return "雷雨冰雹";
-        return "天气未知";
+    enum Weather { CLEAR, FAIR, PARTLY_CLOUDY, OVERCAST, FOG, DRIZZLE, LIGHT_RAIN, RAIN, HEAVY_RAIN, FREEZING_RAIN, LIGHT_SNOW, SNOW, HEAVY_SNOW, SNOW_GRAINS, SHOWERS, SNOW_SHOWERS, THUNDERSTORM, HAIL, UNKNOWN }
+
+    static Weather condition(int code) {
+        if (code == 0) return Weather.CLEAR;
+        if (code == 1) return Weather.FAIR;
+        if (code == 2) return Weather.PARTLY_CLOUDY;
+        if (code == 3) return Weather.OVERCAST;
+        if (code == 45 || code == 48) return Weather.FOG;
+        if (code >= 51 && code <= 57) return Weather.DRIZZLE;
+        if (code == 61) return Weather.LIGHT_RAIN;
+        if (code == 63) return Weather.RAIN;
+        if (code == 65) return Weather.HEAVY_RAIN;
+        if (code == 66 || code == 67) return Weather.FREEZING_RAIN;
+        if (code == 71) return Weather.LIGHT_SNOW;
+        if (code == 73) return Weather.SNOW;
+        if (code == 75) return Weather.HEAVY_SNOW;
+        if (code == 77) return Weather.SNOW_GRAINS;
+        if (code >= 80 && code <= 82) return Weather.SHOWERS;
+        if (code == 85 || code == 86) return Weather.SNOW_SHOWERS;
+        if (code == 95) return Weather.THUNDERSTORM;
+        if (code == 96 || code == 99) return Weather.HAIL;
+        return Weather.UNKNOWN;
     }
 
     static String icon(int code, boolean day) {

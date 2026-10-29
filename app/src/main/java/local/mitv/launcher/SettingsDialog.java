@@ -25,7 +25,7 @@ final class SettingsDialog {
     private SettingsDialog() {}
 
     static Dialog show(Activity activity, Runnable[] actions, Runnable closed) {
-        if (actions.length != SettingsMenu.LABELS.length) throw new IllegalArgumentException("Menu action count");
+        if (actions.length != SettingsMenu.COUNT) throw new IllegalArgumentException("Menu action count");
         Dialog dialog = new Dialog(activity);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         LinearLayout content = new LinearLayout(activity);
@@ -37,7 +37,7 @@ final class SettingsDialog {
         ImageView gear = new ImageView(activity); gear.setImageResource(R.drawable.menu_settings);
         gear.setImageTintList(ColorStateList.valueOf(Ui.ACCENT));
         heading.addView(gear,new LinearLayout.LayoutParams(Ui.dp(activity,28),Ui.dp(activity,28)));
-        TextView title = Ui.text(activity,"桌面设置",26,Color.WHITE);
+        TextView title = Ui.text(activity,activity.getString(R.string.desktop_settings),26,Color.WHITE);
         LinearLayout.LayoutParams titleLayout = new LinearLayout.LayoutParams(-2,-2);
         titleLayout.leftMargin = Ui.dp(activity,12); heading.addView(title,titleLayout);
         content.addView(heading,new LinearLayout.LayoutParams(-1,Ui.dp(activity,40)));
@@ -45,7 +45,7 @@ final class SettingsDialog {
         LinearLayout grid = new LinearLayout(activity); grid.setOrientation(LinearLayout.VERTICAL);
         LinearLayout.LayoutParams gridLayout = new LinearLayout.LayoutParams(-1,0,1);
         gridLayout.topMargin = Ui.dp(activity,14); content.addView(grid,gridLayout);
-        TextView detail = Ui.text(activity,SettingsMenu.DETAILS[0],12,0xffc7e5da);
+        TextView detail = Ui.text(activity,activity.getString(UiLabels.SETTINGS_DETAILS[0]),12,0xffc7e5da);
         detail.setSingleLine(true); detail.setEllipsize(TextUtils.TruncateAt.END);
         detail.setGravity(Gravity.CENTER_VERTICAL);
         LinearLayout.LayoutParams detailLayout = new LinearLayout.LayoutParams(-1,Ui.dp(activity,20));
@@ -63,7 +63,7 @@ final class SettingsDialog {
                 LinearLayout tile = new LinearLayout(activity); tiles[index]=tile;
                 tile.setOrientation(LinearLayout.VERTICAL); tile.setGravity(Gravity.CENTER);
                 tile.setPadding(Ui.dp(activity,6),Ui.dp(activity,5),Ui.dp(activity,6),Ui.dp(activity,5));
-                tile.setContentDescription(SettingsMenu.LABELS[index]);
+                tile.setContentDescription(activity.getString(UiLabels.SETTINGS[index]));
                 StateListDrawable states = new StateListDrawable();
                 states.addState(new int[]{android.R.attr.state_focused},Ui.shape(activity,0xff31564e,Color.WHITE,10));
                 states.addState(new int[]{android.R.attr.state_pressed},Ui.shape(activity,0xff31564e,Ui.ACCENT,10));
@@ -73,12 +73,12 @@ final class SettingsDialog {
                 icon.setImageTintList(iconColors); icon.setDuplicateParentStateEnabled(true);
                 icon.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
                 tile.addView(icon,new LinearLayout.LayoutParams(Ui.dp(activity,32),Ui.dp(activity,32)));
-                TextView label = Ui.text(activity,SettingsMenu.LABELS[index],17,Color.WHITE);
+                TextView label = Ui.text(activity,activity.getString(UiLabels.SETTINGS[index]),17,Color.WHITE);
                 label.setSingleLine(true); label.setEllipsize(TextUtils.TruncateAt.END); label.setGravity(Gravity.CENTER);
                 LinearLayout.LayoutParams labelLayout = new LinearLayout.LayoutParams(-1,-2);
                 labelLayout.topMargin=Ui.dp(activity,8); tile.addView(label,labelLayout);
                 tile.setOnFocusChangeListener((v,focused)->{if(focused){
-                    detail.setText(SettingsMenu.DETAILS[index]);
+                    detail.setText(activity.getString(UiLabels.SETTINGS_DETAILS[index]));
                     android.util.Log.i("QuietTVSettings","Focus tile="+index);
                 }});
                 tile.setOnClickListener(v->{android.util.Log.i("QuietTVSettings","Open tile="+index);dialog.dismiss();actions[index].run();});

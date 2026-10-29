@@ -48,7 +48,7 @@ def main():
     adb("shell", "settings", "put", "secure", "accessibility_enabled", "1")
     for _ in range(10):
         state = adb("shell", "dumpsys", "accessibility")
-        if "Service[label=简净桌面 Home 接管" in state:
+        if any(label in state for label in ("Service[label=简净桌面 Home 接管", "Service[label=MiTV Quiet Launcher Home bridge")):
             current = adb("shell", "settings", "get", "secure", "enabled_accessibility_services")
             if not all(item in current.split(":") for item in others):
                 raise RuntimeError("An existing accessibility service is missing")

@@ -52,26 +52,27 @@ def main():
     parser.add_argument("--home-tool", action="store_true")
     parser.add_argument("--data-test", action="store_true", help="Build Android data/TLS test helper after building the APK")
     parser.add_argument("--saver-test", action="store_true", help="Build Android local-image test helper after building the APK")
+    parser.add_argument("--locale-test", action="store_true", help="Build packaged Android resource-selection test helper after building the APK")
     args = parser.parse_args()
     build = ROOT / "nor/build"
     build.mkdir(parents=True, exist_ok=True)
-    if args.home_tool or args.data_test or args.saver_test:
-        folder = build / ("saver-test" if args.saver_test else "data-test" if args.data_test else "home-tool")
+    if args.home_tool or args.data_test or args.saver_test or args.locale_test:
+        folder = build / ("locale-test" if args.locale_test else "saver-test" if args.saver_test else "data-test" if args.data_test else "home-tool")
         target = folder / "classes"
         output = folder / "dex"
         reset_generated(target)
         reset_generated(output)
-        source = ROOT / ("tests/SaverDataTest.java" if args.saver_test else "tests/DashboardDataTest.java" if args.data_test else "tools/android/HomeTool.java")
+        source = ROOT / ("tests/LocaleDataTest.java" if args.locale_test else "tests/SaverDataTest.java" if args.saver_test else "tests/DashboardDataTest.java" if args.data_test else "tools/android/HomeTool.java")
         run([JDK / ("bin/javac" + BIN), "-source", "8", "-target", "8", "-Xlint:-options", "-encoding", "UTF-8",
              "-bootclasspath", ANDROID_JAR, "-classpath", build / "classes", "-d", target, source])
         jar = folder / "classes.jar"
         with zipfile.ZipFile(jar, "w", zipfile.ZIP_DEFLATED) as archive:
             for file in sorted(target.rglob("*.class")):
                 archive.write(file, file.relative_to(target).as_posix())
-        classpath = ["--classpath", build / "classes.jar"] if args.data_test or args.saver_test else []
+        classpath = ["--classpath", build / "classes.jar"] if args.data_test or args.saver_test or args.locale_test else []
         run([JDK / ("bin/java" + BIN), "-cp", TOOLS / "lib/d8.jar", "com.android.tools.r8.D8",
              "--min-api", "23", "--lib", ANDROID_JAR, *classpath, "--output", output, jar])
-        helper = ROOT / "nor/dist" / ("quiet-saver-tests.jar" if args.saver_test else "quiet-data-tests.jar" if args.data_test else "quiet-home-tool.jar")
+        helper = ROOT / "nor/dist" / ("quiet-locale-tests.jar" if args.locale_test else "quiet-saver-tests.jar" if args.saver_test else "quiet-data-tests.jar" if args.data_test else "quiet-home-tool.jar")
         helper.parent.mkdir(exist_ok=True)
         with zipfile.ZipFile(helper, "w", zipfile.ZIP_DEFLATED) as archive:
             archive.write(output / "classes.dex", "classes.dex")
@@ -86,6 +87,7 @@ def main():
              ROOT / "app/src/main/java/local/mitv/launcher/InputNames.java",
              ROOT / "tests/HomeEditingTest.java",
              ROOT / "app/src/main/java/local/mitv/launcher/HomeAppearance.java",
+             ROOT / "app/src/main/java/local/mitv/launcher/SourceMenu.java",
              ROOT / "app/src/main/java/local/mitv/launcher/AppearanceMenu.java",
              ROOT / "app/src/main/java/local/mitv/launcher/AppearanceStore.java",
              ROOT / "tests/HomeAppearanceTest.java",
@@ -104,6 +106,7 @@ def main():
              ROOT / "app/src/main/java/local/mitv/launcher/RssFeed.java",
              ROOT / "app/src/main/java/local/mitv/launcher/ArticleHtml.java",
              ROOT / "app/src/main/java/local/mitv/launcher/SaverBrowser.java",
+             ROOT / "app/src/main/java/local/mitv/launcher/PhotoFailure.java",
              ROOT / "app/src/main/java/local/mitv/launcher/PhotoUploadServer.java",
              ROOT / "tests/RssFeedTest.java",
              ROOT / "tests/GameNewsTest.java",

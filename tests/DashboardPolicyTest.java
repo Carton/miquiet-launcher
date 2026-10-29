@@ -7,12 +7,12 @@ public final class DashboardPolicyTest {
         if (!condition) throw new AssertionError("Dashboard assertion " + assertions);
     }
     public static void main(String[] args) {
-        check(DashboardPolicy.description(0).equals("晴"));
-        check(DashboardPolicy.description(63).equals("中雨"));
-        check(DashboardPolicy.description(75).equals("大雪"));
-        check(DashboardPolicy.description(45).equals("雾"));
-        check(DashboardPolicy.description(99).equals("雷雨冰雹"));
-        check(DashboardPolicy.description(-1).equals("天气未知"));
+        check(DashboardPolicy.condition(0) == DashboardPolicy.Weather.CLEAR);
+        check(DashboardPolicy.condition(63) == DashboardPolicy.Weather.RAIN);
+        check(DashboardPolicy.condition(75) == DashboardPolicy.Weather.HEAVY_SNOW);
+        check(DashboardPolicy.condition(45) == DashboardPolicy.Weather.FOG);
+        check(DashboardPolicy.condition(99) == DashboardPolicy.Weather.HAIL);
+        check(DashboardPolicy.condition(-1) == DashboardPolicy.Weather.UNKNOWN);
         check(DashboardPolicy.icon(0, false).equals("moon"));
         check(DashboardPolicy.icon(0, true).equals("sun"));
         check(DashboardPolicy.icon(2, false).equals("cloud_moon"));

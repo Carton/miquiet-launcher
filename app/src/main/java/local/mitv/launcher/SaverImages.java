@@ -25,9 +25,9 @@ final class SaverImages {
 
     /** Copy into app-private storage so removing a USB drive cannot break a saved slideshow. */
     static synchronized void add(Context context, InputStream source) throws Exception {
-        if (list(context).size() >= SaverPolicy.MAX_IMAGES) throw new java.io.IOException("最多保存24张图片");
+        if (list(context).size() >= SaverPolicy.MAX_IMAGES) throw new PhotoFailure(PhotoFailure.Reason.LIMIT);
         File dir = directory(context);
-        if (!dir.isDirectory() && !dir.mkdirs()) throw new java.io.IOException("无法创建图片目录");
+        if (!dir.isDirectory() && !dir.mkdirs()) throw new PhotoFailure(PhotoFailure.Reason.DIRECTORY);
         File target = new File(dir, System.currentTimeMillis() + "-" + UUID.randomUUID() + ".tmp");
         try {
             try (FileOutputStream output = new FileOutputStream(target)) {
@@ -35,21 +35,21 @@ final class SaverImages {
                 while ((count = source.read(buffer)) != -1) {
                     if (Thread.currentThread().isInterrupted()) throw new java.io.InterruptedIOException();
                     total += count;
-                    if (total > 32 * 1024 * 1024) throw new java.io.IOException("单张图片不能超过32MB");
+                    if (total > 32 * 1024 * 1024) throw new PhotoFailure(PhotoFailure.Reason.TOO_LARGE);
                     output.write(buffer, 0, count);
                 }
             }
             BitmapFactory.Options bounds = new BitmapFactory.Options(); bounds.inJustDecodeBounds = true;
             BitmapFactory.decodeFile(target.getPath(), bounds);
             if (bounds.outWidth < 1 || bounds.outHeight < 1 || bounds.outWidth > 50000 || bounds.outHeight > 50000) {
-                throw new java.io.IOException("图片格式无效或尺寸过大");
+                throw new PhotoFailure(PhotoFailure.Reason.INVALID_IMAGE);
             }
             // A header alone is insufficient: reject images that cannot produce pixels.
             Bitmap probe = decode(target,256,256);
-            if (probe == null) throw new java.io.IOException("图片已损坏或电视不支持此格式");
+            if (probe == null) throw new PhotoFailure(PhotoFailure.Reason.UNSUPPORTED_IMAGE);
             probe.recycle();
             File ready = new File(dir, target.getName().replace(".tmp", ".img"));
-            if (!target.renameTo(ready)) throw new java.io.IOException("保存图片失败");
+            if (!target.renameTo(ready)) throw new PhotoFailure(PhotoFailure.Reason.SAVE_FAILED);
         } finally { if (target.exists()) target.delete(); }
     }
 

@@ -16,6 +16,7 @@ import android.widget.ImageView;
 import java.util.List;
 
 final class PreviewController {
+    private final Context context;
     private final TvView tv;
     private final TextView status;
     private final ImageView fallback;
@@ -31,6 +32,7 @@ final class PreviewController {
     };
 
     PreviewController(Context context, TvView tv, TextView status, ImageView fallback) {
+        this.context = context;
         this.tv = tv; this.status = status;
         this.fallback = fallback;
         manager = (TvInputManager) context.getSystemService(Context.TV_INPUT_SERVICE);
@@ -42,15 +44,15 @@ final class PreviewController {
                 Log.i("QuietTV", "Preview video available: " + inputId);
             }
             @Override public void onVideoUnavailable(String inputId, int reason) {
-                message(reason == TvInputManager.VIDEO_UNAVAILABLE_REASON_TUNING ? "正在连接信号源…" : "暂无视频信号 · 按确定进入信号源");
+                message(reason == TvInputManager.VIDEO_UNAVAILABLE_REASON_TUNING ? context.getString(R.string.connecting_to_input) : context.getString(R.string.no_video_signal_press_ok_to_open));
                 Log.i("QuietTV", "Preview video unavailable: " + inputId + " reason=" + reason);
             }
             @Override public void onConnectionFailed(String inputId) {
                 current = null;
-                message("该输入暂不可预览 · 按确定进入信号源");
+                message(context.getString(R.string.preview_unavailable_press_ok_to_open_input));
                 Log.w("QuietTV", "Preview connection failed: " + inputId);
             }
-            @Override public void onDisconnected(String inputId) { message("信号已断开"); current = null; }
+            @Override public void onDisconnected(String inputId) { message(context.getString(R.string.input_disconnected)); current = null; }
             @Override public void onTracksChanged(String inputId, List<TvTrackInfo> tracks) { fitVideo(); }
             @Override public void onTrackSelected(String inputId, int type, String trackId) {
                 if (type == TvTrackInfo.TYPE_VIDEO) fitVideo();
@@ -83,20 +85,20 @@ final class PreviewController {
             }
             if (input == null) {
                 tv.reset(); current = null;
-                message("HDMI" + port + " 未连接 · 按确定打开信号源");
+                message("HDMI" + port + context.getString(R.string.disconnected_press_ok_to_open_input));
                 return;
             }
             if (input.equals(current)) return;
             tv.reset();
             tv.setLayoutParams(new FrameLayout.LayoutParams(-1,-1,Gravity.CENTER));
             current = input;
-            message("正在连接 HDMI" + port + "…");
+            message(context.getString(R.string.connecting_to_hdmi) + port + "…");
             tv.setStreamVolume(0f);
             tv.tune(input, TvContract.buildChannelUriForPassthroughInput(input));
             Log.i("QuietTV", "Preview tune: " + input);
         } catch (RuntimeException e) {
             current = null;
-            message("系统未开放此输入的预览 · 按确定进入信号源");
+            message(context.getString(R.string.preview_not_supported_press_ok_to_open));
             Log.w("QuietTV", "Preview rejected", e);
         }
     }

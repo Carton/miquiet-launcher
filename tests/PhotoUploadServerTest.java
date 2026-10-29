@@ -25,6 +25,11 @@ public final class PhotoUploadServerTest {
         return request(port,"POST /upload HTTP/1.1\r\nHost: localhost\r\nX-QuietTV-Code: " + code
             + "\r\nContent-Length: " + length + "\r\n" + extras + "\r\n",body);
     }
+    private static PhotoUploadServer.Labels labels(boolean english) throws java.io.IOException {
+        final String page = new String(java.nio.file.Files.readAllBytes(java.nio.file.Paths.get(
+            "app/src/main/res/" + (english ? "raw-en" : "raw") + "/upload_page.html")), StandardCharsets.UTF_8);
+        return message -> message == PhotoUploadServer.Message.PAGE ? page : message.name();
+    }
     public static void main(String[] args) throws Exception {
         AtomicInteger saved = new AtomicInteger(); byte[] fixture = new byte[]{9,1,2,3};
         int port;
@@ -33,7 +38,7 @@ public final class PhotoUploadServerTest {
             int count = 1; while (input.read() != -1) count++;
             if (count != fixture.length) throw new java.io.IOException("incomplete image");
             saved.incrementAndGet();
-        })) {
+        }, labels(false))) {
             port = server.port();
             check(server.code().matches("[0-9]{6}"));
             check(server.url().equals("http://"+InetAddress.getLoopbackAddress().getHostAddress()+":"+port+"/"));
@@ -50,7 +55,7 @@ public final class PhotoUploadServerTest {
             check(upload(port,server.code(),"",fixture,fixture.length).startsWith("HTTP/1.1 200"));
             check(saved.get() == 1);
             check(upload(port,"wrong","",fixture,fixture.length).startsWith("HTTP/1.1 403"));
-            check(upload(port,"wrong","",fixture,fixture.length).contains("连接码不正确"));
+            check(upload(port,"wrong","",fixture,fixture.length).contains("INCORRECT_CODE"));
             check(saved.get() == 1);
             check(upload(port,server.code(),"",null,PhotoUploadServer.MAX_BYTES+1).startsWith("HTTP/1.1 413"));
             check(upload(port,server.code(),"",null,0).startsWith("HTTP/1.1 413"));
@@ -66,6 +71,12 @@ public final class PhotoUploadServerTest {
         }
         try (Socket ignored = new Socket(InetAddress.getLoopbackAddress(),port)) { throw new AssertionError("Server still accepts after close"); }
         catch (java.net.ConnectException expected) { assertions++; }
+        try (PhotoUploadServer english = new PhotoUploadServer(InetAddress.getLoopbackAddress(),0,input -> {},labels(true))) {
+            String page = request(english.port(),"GET / HTTP/1.1\r\nHost: localhost\r\n\r\n",null);
+            check(page.contains("lang='en'") && page.contains("Add photos to the TV screensaver"));
+            check(page.contains("connectFromScan()") && page.contains("hashchange"));
+            check(upload(english.port(),"wrong","",fixture,fixture.length).contains("INCORRECT_CODE"));
+        }
         System.out.println("PASS: " + assertions + " local upload assertions");
     }
 }

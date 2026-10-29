@@ -16,7 +16,7 @@ final class UploadQrView extends View {
         qr=QrCode.encodeText(address,QrCode.Ecc.MEDIUM);
         ink.setColor(Color.BLACK);ink.setAntiAlias(false);
         setBackgroundColor(Color.WHITE);
-        setContentDescription("扫码打开照片上传页，连接码已包含");
+        setContentDescription(context.getString(R.string.scan_to_open_photo_upload_the_connection));
     }
     @Override protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);

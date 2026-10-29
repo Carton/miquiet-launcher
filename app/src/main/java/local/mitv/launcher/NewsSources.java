@@ -3,7 +3,6 @@ package local.mitv.launcher;
 /** Fixed publisher endpoints: no dependency on a public aggregation proxy. */
 final class NewsSources {
     static final String[] IDS = {"china", "world", "finance", "tech", "game", "ai"};
-    static final String[] LABELS = {"国内", "国际", "财经", "科技", "游戏", "AI"};
     static final String[] PUBLISHERS = {"央视网", "央视网", "华尔街见闻", "科学网·科技日报", "游民星空", "AIHOT"};
     static final String[] URLS = {
         "https://news.cctv.com/2019/07/gaiban/cmsdatainterface/page/china_1.jsonp",

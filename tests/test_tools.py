@@ -17,7 +17,7 @@ import research_news
 
 
 class EnableHomeTests(unittest.TestCase):
-    def run_activation(self, original, model="TestTV", read_fails=False):
+    def run_activation(self, original, model="TestTV", read_fails=False, service_label="简净桌面 Home 接管"):
         calls = []
         current = original
 
@@ -41,7 +41,7 @@ class EnableHomeTests(unittest.TestCase):
             elif command == ["shell", "appops", "get", "local.mitv.launcher", "GET_USAGE_STATS"]:
                 value = "GET_USAGE_STATS: allow"
             elif command == ["shell", "dumpsys", "accessibility"]:
-                value = "Service[label=简净桌面 Home 接管]"
+                value = "Service[label=" + service_label + "]"
             else:
                 value = ""
             return SimpleNamespace(stdout=(value + "\n").encode("utf-8"))
@@ -83,6 +83,11 @@ class EnableHomeTests(unittest.TestCase):
         self.assertEqual(current, original + ":local.mitv.launcher/local.mitv.launcher.HomeBridgeService")
         self.assertEqual(saved["services"], original)
         self.assertIn(["shell", "appops", "set", "local.mitv.launcher", "GET_USAGE_STATS", "allow"], calls)
+
+    def test_english_service_label_does_not_break_activation(self):
+        error, _, current, _ = self.run_activation("voice/.Service", service_label="MiTV Quiet Launcher Home bridge")
+        self.assertIsNone(error)
+        self.assertIn("voice/.Service", current)
 
 
 class ScreensaverTests(unittest.TestCase):

@@ -13,27 +13,27 @@ final class InputSettings {
         String[] labels = new String[3];
         for (int port = 1; port <= 3; port++) {
             String name = InputNames.normalize(prefs.getString(InputNames.key(port), ""));
-            labels[port - 1] = "HDMI" + port + "    " + (name.isEmpty() ? "未命名" : name);
+            labels[port - 1] = "HDMI" + port + "    " + (name.isEmpty() ? activity.getString(R.string.unnamed) : name);
         }
-        new AlertDialog.Builder(activity).setTitle("信号源名称")
+        new AlertDialog.Builder(activity).setTitle(activity.getString(R.string.input_names))
             .setItems(labels, (dialog, index) -> edit(activity, prefs, index + 1, changed))
-            .setNegativeButton("关闭", null).show();
+            .setNegativeButton(activity.getString(R.string.close), null).show();
     }
 
     static void edit(Activity activity, SharedPreferences prefs, int port, Runnable changed) {
         EditText name = new EditText(activity);
         name.setSingleLine(true);
         name.setTextSize(20);
-        name.setHint("例如：游戏机、机顶盒");
+        name.setHint(activity.getString(R.string.example_console_set_top_box));
         name.setText(prefs.getString(InputNames.key(port), ""));
         name.setSelection(name.length());
         LinearLayout content = new LinearLayout(activity);
         content.setPadding(Ui.dp(activity, 24), Ui.dp(activity, 8), Ui.dp(activity, 24), 0);
         content.addView(name, new LinearLayout.LayoutParams(-1, -2));
-        AlertDialog dialog = new AlertDialog.Builder(activity).setTitle("HDMI" + port + " 名称")
-            .setMessage("最多 8 个字符；留空使用端口名。仅修改本桌面的显示名称。")
-            .setView(content).setPositiveButton("保存", null).setNegativeButton("取消", null)
-            .setNeutralButton("恢复默认", (d, which) -> {
+        AlertDialog dialog = new AlertDialog.Builder(activity).setTitle("HDMI" + port + activity.getString(R.string.name))
+            .setMessage(activity.getString(R.string.up_to_8_characters_leave_empty_to))
+            .setView(content).setPositiveButton(activity.getString(R.string.save), null).setNegativeButton(activity.getString(R.string.cancel), null)
+            .setNeutralButton(activity.getString(R.string.restore_default), (d, which) -> {
                 prefs.edit().remove(InputNames.key(port)).apply();
                 changed.run();
             }).create();
@@ -41,7 +41,7 @@ final class InputSettings {
         dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
             String value = InputNames.normalize(name.getText().toString());
             if (!InputNames.valid(value)) {
-                name.setError("最多输入 8 个字符");
+                name.setError(activity.getString(R.string.use_8_characters_or_fewer));
                 name.requestFocus();
                 return;
             }

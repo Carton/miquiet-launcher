@@ -18,7 +18,7 @@ final class DeviceActions {
             return true;
         } catch (RuntimeException e) {
             Log.w("QuietTV", "Cannot launch " + intent, e);
-            Toast.makeText(activity, "暂时无法打开该入口，请使用电视设置", Toast.LENGTH_SHORT).show();
+            Toast.makeText(activity, activity.getString(R.string.this_shortcut_is_unavailable_please_use_tv), Toast.LENGTH_SHORT).show();
             return false;
         }
     }
@@ -49,9 +49,9 @@ final class DeviceActions {
     void accessibility() {
         Intent system = new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS);
         if (system.resolveActivity(activity.getPackageManager()) != null) start(system);
-        else new AlertDialog.Builder(activity).setTitle("首次接管设置")
-            .setMessage("这台电视未提供无障碍设置页。首次接管需要在电脑端完成；之后可在此暂停、恢复或返回原厂桌面。")
-            .setPositiveButton("知道了", null).show();
+        else new AlertDialog.Builder(activity).setTitle(activity.getString(R.string.first_time_takeover_setup))
+            .setMessage(activity.getString(R.string.this_tv_has_no_accessibility_settings_page))
+            .setPositiveButton(activity.getString(R.string.ok), null).show();
     }
 
     boolean factory() {

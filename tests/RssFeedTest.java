@@ -34,7 +34,7 @@ public final class RssFeedTest {
         } catch (org.xml.sax.SAXException expected) { assertions++; }
         try { RssFeed.parse("<rss><item></rss>"); throw new AssertionError("Malformed XML accepted"); }
         catch (org.xml.sax.SAXException expected) { assertions++; }
-        check(NewsSources.IDS.length == 6 && NewsSources.LABELS.length == 6);
+        check(NewsSources.IDS.length == 6);
         check(NewsSources.index(-1) == 0 && NewsSources.index(8) == 0);
         check(NewsSources.index("ai") == 5 && NewsSources.index("game") == 4);
         check(NewsSources.articleHost(3,"news.sciencenet.cn") && NewsSources.articleHost(3,"www.stdaily.com")

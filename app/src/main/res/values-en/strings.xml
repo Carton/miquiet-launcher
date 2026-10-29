@@ -1,0 +1,315 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="image_transfer_interrupted">Image transfer interrupted</string>
+    <string name="app_name">MiTV Quiet Launcher</string>
+    <string name="home_service_name">MiTV Quiet Launcher Home bridge</string>
+    <string name="switch_off">Off</string>
+    <string name="accessibility_description">Opens MiTV Quiet Launcher only when the factory home screen appears. Does not read screen content. Pause takeover and return to the factory launcher from Desktop settings.</string>
+    <string name="about" formatted="false">"About"</string>
+    <string name="accessibility_is_granted_takeover_is_paused" formatted="false">"Accessibility is granted; takeover is paused"</string>
+    <string name="accessibility_permission_has_not_been_granted" formatted="false">"Accessibility permission has not been granted"</string>
+    <string name="add_photos" formatted="false">"Add photos"</string>
+    <string name="added_to_home" formatted="false">"Added to home"</string>
+    <string name="all_inputs" formatted="false">"All inputs"</string>
+    <string name="appearance_content" formatted="false">"Appearance &amp; content"</string>
+    <string name="apply_to_home" formatted="false">"Apply to home"</string>
+    <string name="apps_input_names_appearance_and_visible_content" formatted="false">"Apps, input names, appearance and visible content"</string>
+    <string name="reader_back" formatted="false">"‹ Back"</string>
+    <string name="back" formatted="false">"Back"</string>
+    <string name="back_exit_preview" formatted="false">" · Back: exit preview"</string>
+    <string name="background" formatted="false">"Background"</string>
+    <string name="bluetooth" formatted="false">"Bluetooth"</string>
+    <string name="browse_tv_storage_and_connected_devices" formatted="false">"Browse TV storage and connected devices"</string>
+    <string name="cached" formatted="false">" · Cached"</string>
+    <string name="camera_photos" formatted="false">"Camera photos"</string>
+    <string name="cancel" formatted="false">"Cancel"</string>
+    <string name="cannot_read_this_folder_reconnect_the_storage" formatted="false">"Cannot read this folder. Reconnect the storage device or choose another location."</string>
+    <string name="casting" formatted="false">"Casting"</string>
+    <string name="cctv" formatted="false">"CCTV"</string>
+    <string name="cctv_updating" formatted="false">"CCTV · Updating"</string>
+    <string name="charcoal" formatted="false">"Charcoal"</string>
+    <string name="china" formatted="false">"China"</string>
+    <string name="china_world_science" formatted="false">"China   World   Science"</string>
+    <string name="choose_a_photo_to_upload" formatted="false">"Choose a photo to upload"</string>
+    <string name="choose_home_apps" formatted="false">"Choose home apps"</string>
+    <string name="choose_photo_location" formatted="false">"Choose photo location"</string>
+    <string name="choose_photos_then_save_to_tv_screensaver" formatted="false">"Choose photos, then Save to TV screensaver.\nClosing this window or leaving this page stops receiving."</string>
+    <string name="choose_weather_location" formatted="false">"Choose weather location"</string>
+    <string name="clear_selection" formatted="false">"Clear"</string>
+    <string name="weather_clear" formatted="false">"Clear"</string>
+    <string name="clear_the_current_selection" formatted="false">"Clear the current selection?"</string>
+    <string name="close" formatted="false">"Close"</string>
+    <string name="cloudy" formatted="false">"Cloudy"</string>
+    <string name="connect_remotes_headphones_and_other_devices" formatted="false">"Connect remotes, headphones and other devices"</string>
+    <string name="connecting_to_hdmi" formatted="false">"Connecting to HDMI"</string>
+    <string name="connecting_to_input" formatted="false">"Connecting to input…"</string>
+    <string name="connection_code" formatted="false">"\nConnection code: "</string>
+    <string name="action_continue" formatted="false">"Continue"</string>
+    <string name="could_not_connect_securely_return_to_the" formatted="false">"Could not connect securely. Return to the summary"</string>
+    <string name="could_not_create_the_photo_folder" formatted="false">"Could not create the photo folder"</string>
+    <string name="could_not_open_the_article_retry_or" formatted="false">"Could not open the article. Retry or return to the summary"</string>
+    <string name="could_not_save_photo" formatted="false">"Could not save photo"</string>
+    <string name="could_not_save_please_try_again" formatted="false">"Could not save. Please try again"</string>
+    <string name="could_not_save_this_photo" formatted="false">"Could not save this photo"</string>
+    <string name="could_not_start_uploads_check_the_network" formatted="false">"Could not start uploads. Check the network and try again"</string>
+    <string name="d_pad_select_ok_change_back_cancel" formatted="false">"D-pad: select · OK: change · Back: cancel"</string>
+    <string name="desktop_settings" formatted="false">"Desktop settings"</string>
+    <string name="desktop_settings_home_setup_appearance_content" formatted="false">"Desktop settings  /  Home setup  /  Appearance &amp; content"</string>
+    <string name="disconnected_press_ok_to_open_input" formatted="false">" disconnected · Press OK to open input"</string>
+    <string name="done" formatted="false">"Done"</string>
+    <string name="done_uploading" formatted="false">"Done uploading"</string>
+    <string name="downloads" formatted="false">"Downloads"</string>
+    <string name="drizzle" formatted="false">"Drizzle"</string>
+    <string name="duplicate_request_header" formatted="false">"Duplicate request header"</string>
+    <string name="each_photo_must_be_no_larger_than" formatted="false">"Each photo must be no larger than 32 MB"</string>
+    <string name="each_photo_must_be_non_empty_and" formatted="false">"Each photo must be non-empty and no larger than 32 MB"</string>
+    <string name="enable_home_takeover" formatted="false">"Enable Home takeover"</string>
+    <string name="enter_a_city_or_district_e_g" formatted="false">"Enter a city or district, e.g. Shanghai"</string>
+    <string name="ethernet_connected_open_network_settings" formatted="false">"Ethernet connected. Open network settings"</string>
+    <string name="example_console_set_top_box" formatted="false">"Example: Console, Set-top box"</string>
+    <string name="exploring_nature_and_science" formatted="false">"Exploring nature and science"</string>
+    <string name="factory_home" formatted="false">"Factory home"</string>
+    <string name="failed" formatted="false">", failed "</string>
+    <string name="fair" formatted="false">"Fair"</string>
+    <string name="feed_content" formatted="false">" · Feed content · "</string>
+    <string name="files" formatted="false">"Files"</string>
+    <string name="finance" formatted="false">"Finance"</string>
+    <string name="first_300_items_only" formatted="false">"First 300 items only · "</string>
+    <string name="first_time_takeover_setup" formatted="false">"First-time takeover setup"</string>
+    <string name="focus_style" formatted="false">"Focus style"</string>
+    <string name="fog" formatted="false">"Fog"</string>
+    <string name="forest" formatted="false">"Forest"</string>
+    <string name="freezing_rain" formatted="false">"Freezing rain"</string>
+    <string name="gaming" formatted="false">"Gaming"</string>
+    <string name="go_back_to_choose_another_location_reconnect" formatted="false">"Go Back to choose another location; reconnect the USB drive if disconnected"</string>
+    <string name="article_source_label" formatted="false">"Source: "</string>
+    <string name="hailstorm" formatted="false">"Hailstorm"</string>
+    <string name="heavy_rain" formatted="false">"Heavy rain"</string>
+    <string name="heavy_snow" formatted="false">"Heavy snow"</string>
+    <string name="help" formatted="false">"Help"</string>
+    <string name="screensaver_clock_format" formatted="false">"HH:mm\nEEE, MMM d"</string>
+    <string name="hold_an_app_to_add_or_remove" formatted="false">"    ·    Hold an app to add or remove its home shortcut"</string>
+    <string name="hold_ok_to_rename" formatted="false">", hold OK to rename"</string>
+    <string name="home_content" formatted="false">"Home content"</string>
+    <string name="home_mock_preview_without_live_news_weather" formatted="false">"Home mock preview, without live news, weather or video"</string>
+    <string name="home_preview" formatted="false">"Home preview"</string>
+    <string name="home_setup" formatted="false">"Home setup"</string>
+    <string name="home_takeover" formatted="false">"Home takeover"</string>
+    <string name="home_takeover_is_on" formatted="false">"Home takeover is on"</string>
+    <string name="home_takeover_paused" formatted="false">"Home takeover paused"</string>
+    <string name="idle_time" formatted="false">"Idle time: "</string>
+    <string name="import_results" formatted="false">"Import results"</string>
+    <string name="import_selected" formatted="false">"Import selected"</string>
+    <string name="imported" formatted="false">"Imported "</string>
+    <string name="importing_saver_photos" formatted="false">"Importing saver photos"</string>
+    <string name="incorrect_code_check_the_six_digits_shown" formatted="false">"Incorrect code. Check the six digits shown on the TV"</string>
+    <string name="input_disconnected" formatted="false">"Input disconnected"</string>
+    <string name="input_names" formatted="false">"Input names"</string>
+    <string name="input_preview" formatted="false">"Input preview"</string>
+    <string name="input_preview_press_ok_for_full_screen" formatted="false">"Input preview. Press OK for full screen"</string>
+    <string name="inputs" formatted="false">"Inputs"</string>
+    <string name="invalid_request" formatted="false">"Invalid request"</string>
+    <string name="large" formatted="false">"Large"</string>
+    <string name="left_right_change_photo" formatted="false">"Left/Right: change photo · "</string>
+    <string name="left_right_change_photo_back_exit_preview" formatted="false">"Left/Right: change photo · Back: exit preview"</string>
+    <string name="light_rain" formatted="false">"Light rain"</string>
+    <string name="light_snow" formatted="false">"Light snow"</string>
+    <string name="loading" formatted="false">"Loading…"</string>
+    <string name="loading_photos" formatted="false">"Loading photos…"</string>
+    <string name="loading_preview" formatted="false">"Loading preview…"</string>
+    <string name="loading_the_latest_headlines" formatted="false">"Loading the latest headlines…"</string>
+    <string name="loading_timed_out_retry_or_return_to" formatted="false">"Loading timed out. Retry or return to the summary"</string>
+    <string name="local_screensaver" formatted="false">"Local screensaver"</string>
+    <string name="screensaver_title_prefix" formatted="false">"Local screensaver · "</string>
+    <string name="location_search_failed_please_try_again" formatted="false">"Location search failed. Please try again"</string>
+    <string name="manage_home_takeover_and_restoration" formatted="false">"Manage Home takeover and restoration"</string>
+    <string name="manage_photos_and_idle_slideshows" formatted="false">"Manage photos and idle slideshows"</string>
+    <string name="min" formatted="false">" min"</string>
+    <string name="mitv_quiet_launcher_version" formatted="false">"MiTV Quiet Launcher\nVersion "</string>
+    <string name="mmm_d_hh_mm" formatted="false">"MMM d HH:mm"</string>
+    <string name="more" formatted="false">"More ›"</string>
+    <string name="move_left_right_ok_save_back_cancel" formatted="false">"Move: Left/Right · OK: save · Back: cancel"</string>
+    <string name="moving_left_right_to_move_ok_to" formatted="false">", moving. Left/Right to move, OK to save, Back to cancel"</string>
+    <string name="my_apps" formatted="false">"My apps"</string>
+    <string name="name" formatted="false">" name"</string>
+    <string name="navy" formatted="false">"Navy"</string>
+    <string name="network" formatted="false">"Network"</string>
+    <string name="network_settings" formatted="false">"Network settings"</string>
+    <string name="new_discoveries_in_everyday_life" formatted="false">"New discoveries in everyday life"</string>
+    <string name="news_is_refreshing" formatted="false">" news is refreshing"</string>
+    <string name="news_is_updating_please_wait" formatted="false">" news is updating. Please wait"</string>
+    <string name="news_update_failed_will_retry_automatically" formatted="false">"News update failed\nWill retry automatically"</string>
+    <string name="next_news_page_hold_ok_to_refresh" formatted="false">"Next news page; hold OK to refresh"</string>
+    <string name="no_apps_found" formatted="false">"No apps found"</string>
+    <string name="no_data_yet" formatted="false">"No data yet"</string>
+    <string name="no_imported_photos_built_in_scenes_are" formatted="false">"No imported photos. Built-in scenes are being used.\n\nChoose Add photos to import from TV storage or a USB drive,\nor Upload photos to send them from a browser."</string>
+    <string name="no_local_network_found_connect_wi_fi" formatted="false">"No local network found. Connect Wi-Fi or Ethernet first"</string>
+    <string name="no_location_found_try_a_city_name" formatted="false">"No location found. Try a city name or pinyin"</string>
+    <string name="no_recent_news_select_a_category_to" formatted="false">"No recent news. Select a category to retry"</string>
+    <string name="no_selectable_photos_here" formatted="false">"No selectable photos here"</string>
+    <string name="no_summary_is_available_for_this_story" formatted="false">"No summary is available for this story."</string>
+    <string name="no_supported_photos_in_this_folder_go" formatted="false">"No supported photos in this folder.\nGo Back to another location, or upload from a browser.\nJPG, PNG, WebP and BMP are supported."</string>
+    <string name="no_video_signal_press_ok_to_open" formatted="false">"No video signal · Press OK to open input"</string>
+    <string name="state_disabled" formatted="false">"Off"</string>
+    <string name="offline_open_network_settings" formatted="false">"Offline. Open network settings"</string>
+    <string name="ok" formatted="false">"OK"</string>
+    <string name="ok_to_read_the_summary" formatted="false">", OK to read the summary"</string>
+    <string name="ok_to_refresh_and_open_xiaomi_weather" formatted="false">", OK to refresh and open Xiaomi Weather; hold OK to set location"</string>
+    <string name="ok_to_switch_and_refresh_left_right" formatted="false">", OK to switch and refresh; Left/Right for other categories"</string>
+    <string name="state_enabled" formatted="false">"On"</string>
+    <string name="switch_on" formatted="false">"On"</string>
+    <string name="only_saved_screensaver_copies_are_removed_originals" formatted="false">"Only saved screensaver copies are removed. Originals are kept."</string>
+    <string name="open_a_photo_location_first" formatted="false">"Open a photo location first"</string>
+    <string name="open_accessibility_settings" formatted="false">"Open accessibility settings"</string>
+    <string name="open_factory_home" formatted="false">"Open factory home"</string>
+    <string name="open_location" formatted="false">", open location"</string>
+    <string name="open_meteo_https_open_meteo_com_location" formatted="false">"\n\nOpen-Meteo: https://open-meteo.com/\nLocation search: Open-Meteo / GeoNames (https://www.geonames.org/)\nData license: https://creativecommons.org/licenses/by/4.0/\nWeather icons: Tabler Icons · MIT\nSettings icons: Lucide · ISC / Feather MIT (https://lucide.dev/)\nUpload QR codes: Project Nayuki QR Code generator · MIT (https://www.nayuki.io/page/qr-code-generator-library)\nNetwork location: IPWhois (approximate IP location; can be changed manually)\nNews: CCTV, WallstreetCN, ScienceNet, Science and Technology Daily, GamerSky (PC games) and AIHOT. Content belongs to its respective owners and is not covered by the source-code license. Category and reading interactions reference NewsNow (MIT) and Read You (GPL-3.0); their app code is not included.\n\nWhen enabled, weather refreshes about every 15 minutes and news every 10 minutes. Failed or hour-old weather shows --; click weather to refresh and open Xiaomi Weather. Failed news updates retain recent cached stories. Science stories are kept for 7 days, other categories for 48 hours. Science sources are interleaved and original publication times are retained.\n\n"</string>
+    <string name="open_network_settings" formatted="false">", open network settings"</string>
+    <string name="open_the_tv_s_casting_app" formatted="false">"Open the TV\'s casting app"</string>
+    <string name="open_the_tv_s_native_settings" formatted="false">"Open the TV\'s native settings"</string>
+    <string name="opening" formatted="false">"Opening"</string>
+    <string name="opening_article" formatted="false">"Opening article…"</string>
+    <string name="original_feed_brief_may_be_an_excerpt" formatted="false">" · Original feed / brief; may be an excerpt"</string>
+    <string name="overcast" formatted="false">"Overcast"</string>
+    <string name="page_not_found" formatted="false">"Page not found"</string>
+    <string name="pause_takeover" formatted="false">"Pause takeover"</string>
+    <string name="photo" formatted="false">"Photo "</string>
+    <string name="photo_is_damaged_or_its_format_is" formatted="false">"Photo is damaged or its format is unsupported"</string>
+    <string name="photo_library" formatted="false">"Photo library · "</string>
+    <string name="photo_library_full_remove_some_saved_copies" formatted="false">"Photo library full. Remove some saved copies first"</string>
+    <string name="photo_not_saved_please_try_again" formatted="false">"Photo not saved. Please try again"</string>
+    <string name="photo_read_permission_not_granted" formatted="false">"Photo read permission not granted"</string>
+    <string name="photo_count_suffix" formatted="false">" photos"</string>
+    <string name="photo_failure_count_suffix" formatted="false">" photos: "</string>
+    <string name="picture" formatted="false">"Picture"</string>
+    <string name="pictures" formatted="false">"Pictures"</string>
+    <string name="press_any_key_to_return_home" formatted="false">"Press any key to return home"</string>
+    <string name="preview_not_supported_press_ok_to_open" formatted="false">"Preview not supported · Press OK to open input"</string>
+    <string name="preview_press_ok_for_full_screen" formatted="false">" preview. Press OK for full screen"</string>
+    <string name="preview_saver" formatted="false">"Preview saver"</string>
+    <string name="preview_unavailable_press_ok_to_open_input" formatted="false">"Preview unavailable · Press OK to open input"</string>
+    <string name="previewing_not_saved_back_cancel" formatted="false">"Previewing · Not saved · Back: cancel"</string>
+    <string name="rain" formatted="false">"Rain"</string>
+    <string name="read_article" formatted="false">"Read article"</string>
+    <string name="read_feed_content" formatted="false">"Read feed content"</string>
+    <string name="refresh" formatted="false">"Refresh"</string>
+    <string name="refresh_list" formatted="false">"Refresh list"</string>
+    <string name="refresh_news" formatted="false">"Refresh news"</string>
+    <string name="refresh_now" formatted="false">"Refresh now · "</string>
+    <string name="refreshing_weather" formatted="false">"Refreshing weather"</string>
+    <string name="remove" formatted="false">"Remove"</string>
+    <string name="remove_2" formatted="false">"Remove "</string>
+    <string name="remove_selected" formatted="false">"Remove selected"</string>
+    <string name="removed" formatted="false">"Removed "</string>
+    <string name="removed_from_home" formatted="false">"Removed from home"</string>
+    <string name="request_headers_too_large" formatted="false">"Request headers too large"</string>
+    <string name="restore_default" formatted="false">"Restore default"</string>
+    <string name="retry" formatted="false">"Retry"</string>
+    <string name="return_to_the_news_list_and_choose" formatted="false">"Return to the news list and choose another article"</string>
+    <string name="sample_content_no_network_or_video" formatted="false">"Sample content · No network or video"</string>
+    <string name="sample_news_content" formatted="false">"Sample news content"</string>
+    <string name="save" formatted="false">"Save"</string>
+    <string name="photo_saved_prefix" formatted="false">"Saved "</string>
+    <string name="saved_photos" formatted="false">"Saved photos"</string>
+    <string name="saved_screensaver_photos_are_not_affected" formatted="false">"Saved screensaver photos are not affected."</string>
+    <string name="saved_to_tv_screensaver" formatted="false">"Saved to TV screensaver"</string>
+    <string name="saver_photos" formatted="false">"Saver photos"</string>
+    <string name="saver_photos_saved" formatted="false">"Saver photos · Saved "</string>
+    <string name="scan_to_open_photo_upload_the_connection" formatted="false">"Scan to open photo upload; the connection code is included"</string>
+    <string name="scan_with_your_phone_to_choose_photos" formatted="false">"Scan with your phone to choose photos.\nUse the same Wi-Fi or local network.\n\nOr open:\n"</string>
+    <string name="science" formatted="false">"Science"</string>
+    <string name="screensaver_copies_saved_on_this_tv" formatted="false">"Screensaver copies saved on this TV"</string>
+    <string name="screensaver_idle_time" formatted="false">"Screensaver idle time"</string>
+    <string name="screensaver_photo" formatted="false">"Screensaver photo"</string>
+    <string name="screensaver_photos" formatted="false">" screensaver photos?"</string>
+    <string name="search" formatted="false">"Search"</string>
+    <string name="searching_for_locations" formatted="false">"Searching for locations…"</string>
+    <string name="sec" formatted="false">" sec"</string>
+    <string name="select_across_folders_then_import_selected_reconnect" formatted="false">"Select across folders, then Import selected · Reconnect the USB drive and refresh if it is missing"</string>
+    <string name="select_all" formatted="false">"Select all"</string>
+    <string name="select_photo" formatted="false">", select photo"</string>
+    <string name="select_photos_imported_copies_work_without_the" formatted="false">"Select photos · Imported copies work without the USB drive · Back goes up"</string>
+    <string name="select_photos_then_import_selected_up_to" formatted="false">"Select photos, then Import selected · Up to 300 recent photos"</string>
+    <string name="select_photos_view_selection_to_enlarge_removing" formatted="false">"Select photos · View selection to enlarge · Removing copies keeps the originals"</string>
+    <string name="photo_selected_suffix" formatted="false">", selected"</string>
+    <string name="choice_selected_suffix" formatted="false">", selected"</string>
+    <string name="show_news" formatted="false">"Show news: "</string>
+    <string name="show_weather" formatted="false">"Show weather: "</string>
+    <string name="showers" formatted="false">"Showers"</string>
+    <string name="signal" formatted="false">"signal "</string>
+    <string name="signal_strength_unknown" formatted="false">"signal strength unknown"</string>
+    <string name="slide_interval" formatted="false">"Slide interval: "</string>
+    <string name="slideshow_interval" formatted="false">"Slideshow interval"</string>
+    <string name="snow" formatted="false">"Snow"</string>
+    <string name="snow_grains" formatted="false">"Snow grains"</string>
+    <string name="snow_showers" formatted="false">"Snow showers"</string>
+    <string name="soft_fill" formatted="false">"Soft fill"</string>
+    <string name="sound" formatted="false">"Sound"</string>
+    <string name="sound_settings" formatted="false">"Sound settings"</string>
+    <string name="source_and_releases_https_github_com_carton" formatted="false">"\n\nSource and releases:\nhttps://github.com/Carton/mitv-quiet-launcher"</string>
+    <string name="source_sample_content" formatted="false">"Source · Sample content"</string>
+    <string name="sources_licenses" formatted="false">"Sources &amp; licenses"</string>
+    <string name="standard" formatted="false">"Standard"</string>
+    <string name="stop" formatted="false">"Stop"</string>
+    <string name="stopped" formatted="false">"; stopped"</string>
+    <string name="stopping_imported_photos_will_be_kept" formatted="false">"Stopping. Imported photos will be kept"</string>
+    <string name="tabler_icons_mit_lucide_isc_feather_mit" formatted="false">"Tabler Icons · MIT; Lucide · ISC / Feather MIT. See the project\'s third-party notices."</string>
+    <string name="reader_text_larger" formatted="false">"Text +"</string>
+    <string name="reader_text_smaller" formatted="false">"Text −"</string>
+    <string name="photo_capacity_suffix" formatted="false">"/24 photos"</string>
+    <string name="preview_weather_sample" formatted="false">"26°C Clear"</string>
+    <string name="text_size" formatted="false">"Text size"</string>
+    <string name="the_automatic_saver_starts_only_while_this" formatted="false">"The automatic saver starts only while this launcher is idle in the foreground. Press any key to return. In manual preview, Left/Right changes photos and Back exits.\n\nPreview, import or remove photos in the library, or upload from a computer or phone browser.\n\nPhotos are copied to private TV storage and remain available after removing a USB drive. Removing a saved copy never deletes the original. Up to 24 photos.\n\nWithout imported photos, three built-in scenes and a moving clock are used. The saver has no network access or ads."</string>
+    <string name="the_saver_holds_24_photos_remove_some" formatted="false">"The saver holds 24 photos. Remove some saved copies first"</string>
+    <string name="the_tv_album_has_no_photos_yet" formatted="false">"The TV album has no photos yet.\nGo Back to import from Downloads, Pictures or a USB drive,\nor upload from a browser."</string>
+    <string name="the_tv_s_built_in_reader_is" formatted="false">"The TV\'s built-in reader is unavailable"</string>
+    <string name="this_app_has_no_launcher_entry_open" formatted="false">"This app has no launcher entry. Open it from TV settings"</string>
+    <string name="this_article_is_not_supported_in_tv" formatted="false">"This article is not supported in TV reading mode. Return to the summary"</string>
+    <string name="this_article_is_unavailable_return_to_the" formatted="false">"This article is unavailable. Return to the summary"</string>
+    <string name="this_folder_is_outside_the_selected_storage" formatted="false">"This folder is outside the selected storage device"</string>
+    <string name="this_link_cannot_be_opened_on_the" formatted="false">"This link cannot be opened on the TV"</string>
+    <string name="this_photo_cannot_be_decoded_choose_another" formatted="false">"This photo cannot be decoded. Choose another photo"</string>
+    <string name="this_shortcut_is_unavailable_please_use_tv" formatted="false">"This shortcut is unavailable. Please use TV settings"</string>
+    <string name="this_tv_has_no_accessibility_settings_page" formatted="false">"This TV has no accessibility settings page. Complete first-time setup from a computer; you can then pause or resume takeover here, or return to factory home."</string>
+    <string name="thunder" formatted="false">"Thunder"</string>
+    <string name="today_s_sample_headline" formatted="false">"Today\'s sample headline"</string>
+    <string name="too_many_incorrect_codes_close_and_reopen" formatted="false">"Too many incorrect codes. Close and reopen the upload page on the TV"</string>
+    <string name="turn_off_local_screensaver" formatted="false">"Turn off local screensaver"</string>
+    <string name="turn_on_local_screensaver" formatted="false">"Turn on local screensaver"</string>
+    <string name="tv_album" formatted="false">"TV album"</string>
+    <string name="tv_album_recent_photos" formatted="false">"TV album · Recent photos"</string>
+    <string name="tv_album_unavailable_use_folders_or_upload" formatted="false">"TV album unavailable. Use folders or upload from a browser"</string>
+    <string name="tv_internal_storage" formatted="false">"TV internal storage"</string>
+    <string name="tv_picture_and_display_settings" formatted="false">"TV picture and display settings"</string>
+    <string name="tv_settings" formatted="false">"TV settings"</string>
+    <string name="tv_sound_and_audio_output_settings" formatted="false">"TV sound and audio output settings"</string>
+    <string name="unknown" formatted="false">"Unknown"</string>
+    <string name="unknown_2" formatted="false">"Unknown"</string>
+    <string name="unnamed" formatted="false">"Unnamed"</string>
+    <string name="unreadable_file_or_unsupported_format" formatted="false">"Unreadable file or unsupported format"</string>
+    <string name="unsupported_format_or_image_dimensions_too_large" formatted="false">"Unsupported format or image dimensions too large"</string>
+    <string name="up_down_scroll_back_close" formatted="false">"Up/Down: scroll · Back: close"</string>
+    <string name="up_to_24_photos_can_be_saved" formatted="false">"Up to 24 photos can be saved"</string>
+    <string name="up_to_8_characters_leave_empty_to" formatted="false">"Up to 8 characters. Leave empty to use the port name. This label only changes this launcher."</string>
+    <string name="updated" formatted="false">"Updated "</string>
+    <string name="updating" formatted="false">" · Updating"</string>
+    <string name="upload_from_a_browser" formatted="false">"Upload from a browser"</string>
+    <string name="upload_photos" formatted="false">"Upload photos"</string>
+    <string name="usb_drive" formatted="false">"USB drive · "</string>
+    <string name="use_8_characters_or_fewer" formatted="false">"Use 8 characters or fewer"</string>
+    <string name="use_automatic_network_location" formatted="false">"Use automatic network location"</string>
+    <string name="use_the_photo_picker_on_this_page" formatted="false">"Use the photo picker on this page"</string>
+    <string name="view_data_sources_and_open_source_licenses" formatted="false">"View data sources and open-source licenses"</string>
+    <string name="view_selection" formatted="false">"View selection"</string>
+    <string name="view_the_project_name_version_and_source" formatted="false">"View the project name, version and source URL"</string>
+    <string name="weather_location" formatted="false">"Weather location"</string>
+    <string name="weather_open_meteo_cc_by_4_0" formatted="false">"Weather: Open-Meteo · CC BY 4.0; icons: Tabler Icons · MIT"</string>
+    <string name="weather_settings" formatted="false">"Weather settings"</string>
+    <string name="weather_unavailable_ok_to_refresh_and_open" formatted="false">"Weather unavailable. OK to refresh and open Xiaomi Weather; hold OK to set location or retry"</string>
+    <string name="white_outline" formatted="false">"White outline"</string>
+    <string name="wi_fi_and_network_connections" formatted="false">"Wi-Fi and network connections"</string>
+    <string name="wi_fi_connected" formatted="false">"Wi-Fi connected, "</string>
+    <string name="world" formatted="false">"World"</string>
+    <string name="you_can_still_upload_photos_from_a" formatted="false">"You can still upload photos from a browser. Open Add photos again to request read permission."</string>
+    <string name="news_ai">AI</string>
+</resources>

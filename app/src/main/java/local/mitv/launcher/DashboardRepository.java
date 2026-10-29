@@ -28,7 +28,6 @@ final class DashboardRepository {
     static final long WEATHER_MAX_AGE = 6 * 60 * 60_000L;
     static final long NEWS_MAX_AGE = 48 * 60 * 60_000L;
     static final String NEWS_BASE = "https://news.cctv.com/2019/07/gaiban/cmsdatainterface/page/";
-    static final String WEATHER_CREDIT = "天气：Open-Meteo · CC BY 4.0；图标：Tabler Icons · MIT";
 
     static final class Weather {
         final double temperature;
@@ -211,7 +210,7 @@ final class DashboardRepository {
     void searchPlaces(String query, PlacesListener listener) {
         worker.execute(() -> {
             try {
-                JSONObject data = new JSONObject(get("https://geocoding-api.open-meteo.com/v1/search?count=8&language=zh&format=json&name="
+                JSONObject data = new JSONObject(get("https://geocoding-api.open-meteo.com/v1/search?count=8&language=" + (UiLocale.english(context) ? "en" : "zh") + "&format=json&name="
                     + URLEncoder.encode(query, "UTF-8")));
                 JSONArray rows = data.optJSONArray("results");
                 List<Place> places = new ArrayList<>();
@@ -223,7 +222,7 @@ final class DashboardRepository {
                     places.add(new Place(label, lat, lon));
                 }
                 deliver(() -> listener.result(places, null));
-            } catch (Exception error) { deliver(() -> listener.result(Collections.emptyList(), "位置搜索失败，请稍后重试")); }
+            } catch (Exception error) { deliver(() -> listener.result(Collections.emptyList(), context.getString(R.string.location_search_failed_please_try_again))); }
         });
     }
 
