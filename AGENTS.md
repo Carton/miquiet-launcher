@@ -25,6 +25,7 @@
 | 范围 | 入口 |
 | --- | --- |
 | 首页、应用栏、状态栏 | `MainActivity`、`Apps`、`Ui` |
+| 首页外观与内容 | `AppearanceActivity`、`HomePreviewView`、`HomeAppearance`、`AppearanceStore` |
 | 设置矩阵、遥控器导航 | `SettingsDialog`、`SettingsMenu` |
 | 原厂入口／信号源 | `DeviceActions`、`PreviewController` |
 | Home接管 | `LauncherPolicy`、`HomeBridgeService`、`ForegroundMonitor`、`DesktopLaunch`、`BootReceiver` |

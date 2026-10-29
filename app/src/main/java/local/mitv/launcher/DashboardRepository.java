@@ -82,6 +82,7 @@ final class DashboardRepository {
         catch (Exception ignored) {}
         for (int i = 0; i < NewsSources.IDS.length; i++) {
             news.add(Collections.emptyList());
+            if (!prefs.getBoolean(HomeAppearance.SHOW_NEWS, true)) continue;
             final int category = i;
             worker.execute(() -> {
                 try {
@@ -105,15 +106,18 @@ final class DashboardRepository {
     boolean busy(int category) { return newsBusy[NewsSources.index(category)]; }
     static long newsMaxAge(int category) { return category==3 ? ScienceNews.MAX_AGE : NEWS_MAX_AGE; }
     void refreshWeather(boolean force) {
-        if (!closed && !weatherBusy && (force || System.currentTimeMillis() >= nextWeather)) fetchWeather();
+        if (!closed && prefs.getBoolean(HomeAppearance.SHOW_WEATHER, true) && !weatherBusy
+                && (force || System.currentTimeMillis() >= nextWeather)) fetchWeather();
     }
     boolean refreshNews(int category, boolean force) {
         int index = NewsSources.index(category);
-        if (closed || newsBusy[index] || (!force && System.currentTimeMillis() < nextNews[index])) return false;
+        if (closed || !prefs.getBoolean(HomeAppearance.SHOW_NEWS, true) || newsBusy[index]
+                || (!force && System.currentTimeMillis() < nextNews[index])) return false;
         fetchNews(index); return true;
     }
 
     private void fetchWeather() {
+        if (closed || !prefs.getBoolean(HomeAppearance.SHOW_WEATHER, true)) return;
         weatherBusy = true;
         nextWeather = System.currentTimeMillis() + 15 * 60_000L;
         final int generation = locationGeneration;

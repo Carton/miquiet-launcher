@@ -80,11 +80,16 @@ def main():
     if args.test:
         target = build / "test-classes"
         reset_generated(target)
-        run([JDK / ("bin/javac" + BIN), "--release", "8", "-encoding", "UTF-8", "-d", target,
+        run([JDK / ("bin/javac" + BIN), "--release", "8", "-encoding", "UTF-8", "-classpath", ANDROID_JAR, "-d", target,
              ROOT / "app/src/main/java/local/mitv/launcher/LauncherPolicy.java",
              ROOT / "app/src/main/java/local/mitv/launcher/FavoriteMove.java",
              ROOT / "app/src/main/java/local/mitv/launcher/InputNames.java",
              ROOT / "tests/HomeEditingTest.java",
+             ROOT / "app/src/main/java/local/mitv/launcher/HomeAppearance.java",
+             ROOT / "app/src/main/java/local/mitv/launcher/AppearanceMenu.java",
+             ROOT / "app/src/main/java/local/mitv/launcher/AppearanceStore.java",
+             ROOT / "tests/HomeAppearanceTest.java",
+             ROOT / "tests/AppearanceStoreTest.java",
              ROOT / "app/src/main/java/local/mitv/launcher/ForegroundState.java",
              ROOT / "app/src/main/java/local/mitv/launcher/DashboardPolicy.java",
              ROOT / "app/src/main/java/local/mitv/launcher/SaverPolicy.java",
@@ -110,6 +115,8 @@ def main():
              ROOT / "tests/LauncherPolicyTest.java"])
         run([JDK / ("bin/java" + BIN), "-cp", target, "local.mitv.launcher.LauncherPolicyTest"])
         run([JDK / ("bin/java" + BIN), "-cp", target, "local.mitv.launcher.HomeEditingTest"])
+        run([JDK / ("bin/java" + BIN), "-cp", target, "local.mitv.launcher.HomeAppearanceTest"])
+        run([JDK / ("bin/java" + BIN), "-cp", str(target) + os.pathsep + str(ANDROID_JAR), "local.mitv.launcher.AppearanceStoreTest"])
         run([JDK / ("bin/java" + BIN), "-cp", target, "local.mitv.launcher.DashboardPolicyTest"])
         run([JDK / ("bin/java" + BIN), "-cp", target, "local.mitv.launcher.SaverPolicyTest"])
         run([JDK / ("bin/java" + BIN), "-cp", target, "local.mitv.launcher.NewsReaderPolicyTest"])

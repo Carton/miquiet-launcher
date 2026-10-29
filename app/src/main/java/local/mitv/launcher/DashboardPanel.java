@@ -27,6 +27,7 @@ final class DashboardPanel {
     private final SharedPreferences prefs;
     private final Runnable originalWeather;
     private final DashboardRepository data;
+    private final HomeAppearance appearance;
     final FrameLayout weather, news;
     private final ImageView weatherIcon;
     private final TextView temperature, description, newsMeta;
@@ -37,12 +38,13 @@ final class DashboardPanel {
     private final TextView next;
     private List<DashboardRepository.Story> shown = new ArrayList<>();
 
-    DashboardPanel(Activity activity, SharedPreferences prefs, Runnable originalWeather) {
+    DashboardPanel(Activity activity, SharedPreferences prefs, Runnable originalWeather, HomeAppearance appearance) {
         this.activity = activity; this.prefs = prefs; this.originalWeather = originalWeather;
+        this.appearance = appearance;
         data = new DashboardRepository(activity, prefs, this::render);
         category = NewsSources.index(prefs.getInt("news_tab", 0));
         weather = new FrameLayout(activity);
-        Ui.focusable(weather, Color.TRANSPARENT, 7);
+        Ui.homeFocusable(weather, Color.TRANSPARENT, 7, appearance);
         weather.setOnClickListener(v -> {
             data.refreshWeather(true);
             originalWeather.run();
@@ -58,7 +60,7 @@ final class DashboardPanel {
         Ui.place(weather, description, 54, 34, 92, 0);
 
         news = new FrameLayout(activity);
-        news.setBackground(Ui.shape(activity, 0xff282b30, 0, 8));
+        news.setBackground(Ui.shape(activity, appearance.newsColor(), 0, 8));
         tabScroll = new HorizontalScrollView(activity);
         tabScroll.setFocusable(false); tabScroll.setHorizontalScrollBarEnabled(false);
         tabScroll.setFadingEdgeLength(Ui.dp(activity, 6)); tabScroll.setHorizontalFadingEdgeEnabled(true);
@@ -77,9 +79,9 @@ final class DashboardPanel {
         });
         for (int i = 0; i < tabs.length; i++) {
             final int tab = i;
-            tabs[i] = Ui.text(activity, NewsSources.LABELS[i], 15, Color.WHITE);
+            tabs[i] = Ui.text(activity, NewsSources.LABELS[i], appearance.textSize(15), Color.WHITE);
             tabs[i].setId(View.generateViewId()); tabs[i].setGravity(Gravity.CENTER);
-            Ui.focusable(tabs[i], Color.TRANSPARENT, 5);
+            Ui.homeFocusable(tabs[i], Color.TRANSPARENT, 5, appearance);
             tabs[i].setOnClickListener(v -> {
                 category = tab; page = 0; prefs.edit().putInt("news_tab", category).apply(); refreshNews();
             });
@@ -95,13 +97,13 @@ final class DashboardPanel {
         tabScroll.post(() -> tabScroll.scrollTo(Ui.dp(activity,Math.max(0,category-2)*60),0));
         for (int i = 0; i < headlines.length; i++) {
             final int index = i;
-            headlines[i] = Ui.text(activity, "", 14, 0xffe2e4e8);
+            headlines[i] = Ui.text(activity, "", appearance.textSize(14), 0xffe2e4e8);
             headlines[i].setGravity(Gravity.CENTER_VERTICAL);
             headlines[i].setPadding(Ui.dp(activity, 6), 0, Ui.dp(activity, 6), 0);
             headlines[i].setMaxLines(3);
             headlines[i].setEllipsize(TextUtils.TruncateAt.END);
             headlines[i].setLineSpacing(Ui.dp(activity, 2), 1);
-            Ui.focusable(headlines[i], Color.TRANSPARENT, 5);
+            Ui.homeFocusable(headlines[i], Color.TRANSPARENT, 5, appearance);
             headlines[i].setOnClickListener(v -> { if (index < shown.size()) showStory(shown.get(index)); });
             Ui.place(news, headlines[i], 184, 80, 8, 48 + i * 83);
         }
@@ -111,14 +113,19 @@ final class DashboardPanel {
         Ui.place(news, newsMeta, 128, 25, 14, 300);
         next = Ui.text(activity, "更多 ›", 11, Ui.MUTED);
         next.setGravity(Gravity.CENTER);
-        Ui.focusable(next, Color.TRANSPARENT, 4);
+        Ui.homeFocusable(next, Color.TRANSPARENT, 4, appearance);
         next.setOnClickListener(v -> { page++; render(); });
         next.setOnLongClickListener(v -> { refreshNews(); return true; });
         Ui.place(news, next, 48, 25, 146, 300);
         render();
     }
 
-    void tick() { data.refresh(category); render(); }
+    void tick() {
+        if (!appearance.showNews && !appearance.showWeather) return;
+        if (appearance.showWeather) data.refreshWeather(false);
+        if (appearance.showNews) data.refreshNews(category, false);
+        render();
+    }
     private void refreshNews() {
         boolean requested = data.refreshNews(category,true); render();
         Toast.makeText(activity, NewsSources.LABELS[category] + (requested ? "新闻正在刷新" : "新闻正在更新，请稍候"), Toast.LENGTH_SHORT).show();
@@ -154,7 +161,7 @@ final class DashboardPanel {
             tabs[i].setTextColor(i == category ? Ui.ACCENT : Ui.MUTED);
             tabs[i].setText(NewsSources.LABELS[i]);
             tabs[i].setContentDescription(NewsSources.LABELS[i] + (i == category ? "，已选择" : "") + "，确定切换并刷新，左右查看其他分类");
-            Ui.focusable(tabs[i], i == category ? 0xff303e3e : Color.TRANSPARENT, 5);
+            Ui.homeFocusable(tabs[i], i == category ? 0xff303e3e : Color.TRANSPARENT, 5, appearance);
         }
         for (int i = 0; i < headlines.length; i++) {
             TextView view = headlines[i];

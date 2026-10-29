@@ -51,6 +51,7 @@ public final class MainActivity extends Activity {
     private Ui.Icon networkIcon;
     private DashboardPanel dashboard;
     private SaverSettings saverSettings;
+    private HomeAppearance appearance;
     private boolean desktopResumed;
     private final Runnable idleSaver = () -> {
         android.os.PowerManager power = (android.os.PowerManager)getSystemService(POWER_SERVICE);
@@ -97,7 +98,8 @@ public final class MainActivity extends Activity {
         changes.addDataScheme("package");
         registerReceiver(packageChanges, changes);
         actions = new DeviceActions(this);
-        dashboard = new DashboardPanel(this, prefs, () -> launchPackage("com.xiaomi.tweather"));
+        appearance = AppearanceStore.read(prefs);
+        dashboard = new DashboardPanel(this, prefs, () -> launchPackage("com.xiaomi.tweather"), appearance);
         saverSettings = new SaverSettings(this,prefs);
         buildLayout();
     }
@@ -111,7 +113,7 @@ public final class MainActivity extends Activity {
 
     private void buildLayout() {
         root = new FrameLayout(this);
-        root.setBackgroundColor(Ui.BACKGROUND);
+        root.setBackgroundColor(appearance.backgroundColor());
         setContentView(root);
         // The TV reports a 960 x 540 dp landscape display; center the design on other sizes.
         FrameLayout page = new FrameLayout(this);
@@ -124,11 +126,11 @@ public final class MainActivity extends Activity {
         Ui.place(page, moveHint, 470, 34, 130, 8);
 
         FrameLayout sound = iconButton("声音设置", "sound", () -> actions.panel("sound_settings"));
-        Ui.place(page, sound, 38, 34, 610, 8);
+        Ui.place(page, sound, 38, 34, appearance.networkX() - 44, 8);
         FrameLayout network = iconButton("网络设置", "wifi", () -> actions.panel("connect_settings"));
         networkIcon = (Ui.Icon)network.getChildAt(0);
-        Ui.place(page, network, 38, 34, 654, 8);
-        Ui.place(page, dashboard.weather, 146, 34, 696, 8);
+        Ui.place(page, network, 38, 34, appearance.networkX(), 8);
+        if (appearance.showWeather) Ui.place(page, dashboard.weather, 146, 34, 696, 8);
         clock = Ui.text(this, "", 19, Color.WHITE);
         clock.setGravity(Gravity.CENTER);
         Ui.place(page, clock, 64, 34, 846, 8);
@@ -136,17 +138,17 @@ public final class MainActivity extends Activity {
         Ui.place(page, settingsButton, 38, 34, 910, 8);
 
         FrameLayout hero = new FrameLayout(this);
-        hero.setBackground(Ui.shape(this, Ui.PANEL, 0, 8));
+        hero.setBackground(Ui.shape(this, appearance.panelColor(), 0, 8));
         Ui.place(page, hero, 936, 332, 12, 54);
-        Ui.place(hero, dashboard.news, 200, 332, 0, 0);
+        if (appearance.showNews) Ui.place(hero, dashboard.news, 200, 332, 0, 0);
 
         previewBox = new FrameLayout(this);
-        Ui.focusable(previewBox, 0xff222b3c, 8);
+        Ui.homeFocusable(previewBox, 0xff222b3c, 8, appearance);
         previewBox.setContentDescription("信号源预览，确定进入全屏");
-        Ui.place(hero, previewBox, 584, 332, 208, 0);
+        Ui.place(hero, previewBox, appearance.previewWidth(), 332, appearance.previewX(), 0);
         FrameLayout videoViewport = new FrameLayout(this);
         videoViewport.setClipChildren(true);
-        Ui.place(previewBox, videoViewport, 576, 324, 4, 4);
+        Ui.place(previewBox, videoViewport, appearance.previewWidth() - 8, 324, 4, 4);
         TvView tv = new TvView(this);
         tv.setFocusable(false);
         tv.setClickable(false);
@@ -161,13 +163,13 @@ public final class MainActivity extends Activity {
         } catch (android.content.pm.PackageManager.NameNotFoundException ignored) {
             // The solid blue background remains usable if the original launcher is unavailable.
         }
-        Ui.place(previewBox, fallback, 576, 324, 4, 4);
-        TextView hint = Ui.text(this, "正在连接信号源…", 16, 0xffd6dce7);
+        Ui.place(previewBox, fallback, appearance.previewWidth() - 8, 324, 4, 4);
+        TextView hint = Ui.text(this, "正在连接信号源…", appearance.textSize(16), 0xffd6dce7);
         hint.setGravity(Gravity.CENTER);
-        Ui.place(previewBox, hint, 556, 260, 14, 12);
-        previewTitle = Ui.text(this, inputDisplay(selectedPort), 18, Color.WHITE);
+        Ui.place(previewBox, hint, appearance.previewWidth() - 28, 260, 14, 12);
+        previewTitle = Ui.text(this, inputDisplay(selectedPort), appearance.textSize(18), Color.WHITE);
         previewTitle.setShadowLayer(4, 0, 1, Color.BLACK);
-        Ui.place(previewBox, previewTitle, 550, 30, 16, 288);
+        Ui.place(previewBox, previewTitle, appearance.previewWidth() - 34, 30, 16, 288);
         preview = new PreviewController(this, tv, hint, fallback);
         previewBox.setOnClickListener(v -> actions.fullscreen(selectedPort));
 
@@ -177,10 +179,10 @@ public final class MainActivity extends Activity {
         for (int i = 0; i < labels.length; i++) {
             final int index = i;
             FrameLayout row = new FrameLayout(this);
-            Ui.focusable(row, Ui.PANEL, 5);
+            Ui.homeFocusable(row, appearance.panelColor(), 5, appearance);
             row.setContentDescription(labels[i]);
             Ui.place(row, new Ui.Icon(this, icons[i], Color.WHITE), 25, 25, 10, 20);
-            TextView label = Ui.text(this, labels[i], 18, Color.WHITE);
+            TextView label = Ui.text(this, labels[i], appearance.textSize(18), Color.WHITE);
             label.setSingleLine(true);
             label.setEllipsize(TextUtils.TruncateAt.END);
             if (ports[i] > 0) {
@@ -229,10 +231,10 @@ public final class MainActivity extends Activity {
 
     private void topButton(FrameLayout page, String label, String icon, int x, int width, Runnable action) {
         FrameLayout view = new FrameLayout(this);
-        Ui.focusable(view, 0xff27292d, 20);
+        Ui.homeFocusable(view, appearance.newsColor(), 20, appearance);
         view.setContentDescription(label);
         Ui.place(view, new Ui.Icon(this, icon, Ui.MUTED), 20, 20, 12, 7);
-        TextView text = Ui.text(this, label, 15, 0xffd1d2d5);
+        TextView text = Ui.text(this, label, appearance.textSize(15), 0xffd1d2d5);
         text.setGravity(Gravity.CENTER_VERTICAL);
         Ui.place(view, text, width - 42, 34, 38, 0);
         view.setOnClickListener(v -> action.run());
@@ -242,7 +244,7 @@ public final class MainActivity extends Activity {
     private FrameLayout iconButton(String description, String kind, Runnable action) {
         FrameLayout box = new FrameLayout(this);
         box.setContentDescription(description);
-        Ui.focusable(box, Color.TRANSPARENT, 7);
+        Ui.homeFocusable(box, Color.TRANSPARENT, 7, appearance);
         Ui.place(box, new Ui.Icon(this, kind, Ui.MUTED), 25, 25, 6, 4);
         box.setOnClickListener(v -> action.run());
         return box;
@@ -314,7 +316,7 @@ public final class MainActivity extends Activity {
 
     private FrameLayout appTile(String label, Apps.App app, boolean allApps, String iconKind) {
         FrameLayout tile = new FrameLayout(this);
-        Ui.focusable(tile, Color.TRANSPARENT, 10);
+        Ui.homeFocusable(tile, Color.TRANSPARENT, 10, appearance);
         tile.setPadding(dp(3), dp(3), dp(3), dp(3));
         tile.setContentDescription(label);
         if (allApps) {
@@ -326,11 +328,11 @@ public final class MainActivity extends Activity {
             ImageView image = new ImageView(this);
             image.setImageDrawable(app.icon);
             image.setScaleType(ImageView.ScaleType.FIT_CENTER);
-            image.setBackground(Ui.shape(this, Ui.PANEL, 0, 20));
+            image.setBackground(Ui.shape(this, appearance.panelColor(), 0, 20));
             image.setClipToOutline(true);
             Ui.place(tile, image, 94, 94, 19, 2);
         }
-        TextView title = Ui.text(this, label, 15, Ui.MUTED);
+        TextView title = Ui.text(this, label, appearance.textSize(15), Ui.MUTED);
         title.setGravity(Gravity.CENTER);
         title.setSingleLine(true);
         title.setEllipsize(TextUtils.TruncateAt.END);
@@ -414,9 +416,10 @@ public final class MainActivity extends Activity {
 
     private void homeSettings() {
         new AlertDialog.Builder(this).setTitle("首页配置")
-            .setItems(new String[]{"选择首页应用", "信号源名称"}, (dialog, which) -> {
+            .setItems(new String[]{"选择首页应用", "信号源名称", "外观与内容"}, (dialog, which) -> {
                 if (which == 0) configureFavorites();
-                else InputSettings.show(this, prefs, this::refreshInputNames);
+                else if (which == 1) InputSettings.show(this, prefs, this::refreshInputNames);
+                else startActivity(new Intent(this, AppearanceActivity.class));
             }).setNegativeButton("关闭", null).show();
     }
 
@@ -477,7 +480,7 @@ public final class MainActivity extends Activity {
         LinearLayout content = new LinearLayout(this);
         content.setOrientation(LinearLayout.VERTICAL);
         content.setPadding(dp(18), dp(16), dp(18), dp(16));
-        content.setBackgroundColor(Ui.BACKGROUND);
+        content.setBackgroundColor(appearance.backgroundColor());
         TextView heading = Ui.text(this, title + "    ·    长按应用配置首页", 20, Color.WHITE);
         content.addView(heading, new LinearLayout.LayoutParams(-1, dp(42)));
         GridView grid = new GridView(this);
@@ -500,7 +503,7 @@ public final class MainActivity extends Activity {
         grid.setOnItemSelectedListener(new android.widget.AdapterView.OnItemSelectedListener() {
             @Override public void onItemSelected(android.widget.AdapterView<?> parent, View view, int position, long id) {
                 for (int i = 0; i < grid.getChildCount(); i++) grid.getChildAt(i).setBackgroundColor(Color.TRANSPARENT);
-                if (view != null) view.setBackground(Ui.shape(MainActivity.this, 0xff464a50, Color.WHITE, 10));
+                if (view != null) view.setBackground(Ui.shape(MainActivity.this, appearance.focusColor(), appearance.focusStroke(), 10));
             }
             @Override public void onNothingSelected(android.widget.AdapterView<?> parent) {}
         });
@@ -560,6 +563,13 @@ public final class MainActivity extends Activity {
     @Override protected void onResume() {
         super.onResume();
         moveKeyToRelease = KeyEvent.KEYCODE_UNKNOWN;
+        HomeAppearance saved = AppearanceStore.read(prefs);
+        if (!saved.equals(appearance)) {
+            dashboard.close();
+            appearance = saved;
+            dashboard = new DashboardPanel(this, prefs, () -> launchPackage("com.xiaomi.tweather"), appearance);
+            buildLayout();
+        }
         desktopResumed = true; resetSaverTimer();
         android.util.Log.i("QuietTV", "Desktop resumed at=" + android.os.SystemClock.elapsedRealtime());
         if (preview != null) {

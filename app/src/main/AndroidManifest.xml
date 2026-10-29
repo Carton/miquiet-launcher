@@ -28,6 +28,9 @@
         <activity android:name=".NewsReaderActivity" android:exported="false"
             android:screenOrientation="landscape"
             android:configChanges="keyboard|keyboardHidden|navigation|orientation|screenSize" />
+        <activity android:name=".AppearanceActivity" android:exported="false"
+            android:screenOrientation="landscape"
+            android:configChanges="keyboard|keyboardHidden|navigation|orientation|screenSize" />
         <activity android:name=".ScreensaverActivity" android:exported="false"
             android:screenOrientation="landscape" android:excludeFromRecents="true"
             android:configChanges="keyboard|keyboardHidden|navigation|orientation|screenSize" />

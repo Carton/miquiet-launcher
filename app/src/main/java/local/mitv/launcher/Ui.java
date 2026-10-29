@@ -30,9 +30,13 @@ final class Ui {
     }
 
     static void focusable(View view, int normal, int radius) {
+        homeFocusable(view, normal, radius, HomeAppearance.DEFAULT);
+    }
+
+    static void homeFocusable(View view, int normal, int radius, HomeAppearance appearance) {
         StateListDrawable states = new StateListDrawable();
-        states.addState(new int[]{android.R.attr.state_focused}, shape(view.getContext(), 0xff464a50, Color.WHITE, radius));
-        states.addState(new int[]{android.R.attr.state_pressed}, shape(view.getContext(), 0xff464a50, ACCENT, radius));
+        states.addState(new int[]{android.R.attr.state_focused}, shape(view.getContext(), appearance.focusColor(), appearance.focusStroke(), radius));
+        states.addState(new int[]{android.R.attr.state_pressed}, shape(view.getContext(), appearance.focusColor(), ACCENT, radius));
         states.addState(new int[]{}, shape(view.getContext(), normal, 0, radius));
         view.setBackground(states); view.setFocusable(true); view.setFocusableInTouchMode(true); view.setClickable(true);
     }
