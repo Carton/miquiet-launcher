@@ -1,5 +1,9 @@
 # 实机验证记录
 
+## 2026-10-29 开发版本纠正为 0.8.7 / versionCode21
+
+经 GitHub Release 与 Actions 记录核对，正式 [v0.8.6](https://github.com/Carton/mitv-quiet-launcher/releases/tag/v0.8.6) 已于北京时间 2026-10-27 23:18 发布，标签对应 `d7e23b0`，不包含本轮搜索精简、排序、HDMI 命名和外观配置改动。本轮此前构建和实机测试沿用了 0.8.6/versionCode20；为区分正式版与后续开发，现将 Manifest 与 Gradle 元数据同步为 0.8.7/versionCode21。此次仅更正本地开发版本，不修改已发布的 v0.8.6 标签或 Release，也未发布 v0.8.7；电视上此前安装的测试包仍显示 0.8.6，后续覆盖更新才显示新版本。
+
 ## 2026-10-29 0.8.6：同签名覆盖部署与外观页实机检查
 
 在用户本轮指定的 MiTV4-ANSM0、Android 6.0.1/API 23 上，从 0.8.5/versionCode19 同签名覆盖安装 0.8.6/versionCode20。安装前备份旧 APK 与接管状态，安装后远端 APK SHA-256 与本地成品一致，应用 UID、存储读取授权、既有无障碍服务名单及本项目实际绑定保留，GET_USAGE_STATS 仍为 allow。未清理应用数据、修改用户照片或重新写入系统接管设置。
