@@ -21,9 +21,18 @@ final class HomePreviewView extends View {
     private final List<Apps.App> favorites = new ArrayList<>();
     private final String[] inputNames = new String[4];
     private final int selectedPort;
+    private final Ui.Icon sound, network, settings, factory, allApps;
+    private final Drawable weatherIcon;
 
     HomePreviewView(Context context, SharedPreferences prefs) {
         super(context);
+        sound = previewIcon(context, "sound", Ui.MUTED);
+        network = previewIcon(context, "wifi", Ui.MUTED);
+        network.setNetwork(true, true, 3);
+        settings = previewIcon(context, "settings", Ui.MUTED);
+        factory = previewIcon(context, "factory", Color.WHITE);
+        allApps = previewIcon(context, "apps", Color.WHITE);
+        weatherIcon = context.getDrawable(R.drawable.weather_sun).mutate();
         Apps apps = new Apps(context);
         for (String pkg : apps.favorites()) {
             if (favorites.size() == 5) break;
@@ -38,6 +47,17 @@ final class HomePreviewView extends View {
     }
 
     void setAppearance(HomeAppearance value) { appearance = value; invalidate(); }
+
+    private static Ui.Icon previewIcon(Context context, String kind, int color) {
+        Ui.Icon icon = new Ui.Icon(context, kind, color);
+        icon.layout(0, 0, 32, 32);
+        return icon;
+    }
+
+    private void icon(Canvas canvas, Ui.Icon icon, float x, float y, float size) {
+        canvas.save(); canvas.translate(x, y); canvas.scale(size / 32f, size / 32f);
+        icon.draw(canvas); canvas.restore();
+    }
 
     private void box(Canvas canvas, int color, float left, float top, float width, float height, int radius) {
         paint.setColor(color); paint.setStyle(Paint.Style.FILL);
@@ -55,11 +75,14 @@ final class HomePreviewView extends View {
         canvas.drawColor(appearance.backgroundColor());
         box(canvas, appearance.newsColor(), 12, 8, 110, 34, 20);
         label(canvas, "信号源", 31, 31, appearance.textSize(15), Color.WHITE, 88);
-        label(canvas, "♪", appearance.networkX() - 30, 31, 20, Ui.MUTED, 30);
-        label(canvas, "Wi-Fi", appearance.networkX() + 1, 30, 12, Ui.MUTED, 42);
-        if (appearance.showWeather) label(canvas, "☀ 26°C 晴", 704, 31, 17, Color.WHITE, 138);
+        icon(canvas, sound, appearance.networkX() - 38, 14, 25);
+        icon(canvas, network, appearance.networkX() + 6, 14, 25);
+        if (appearance.showWeather) {
+            weatherIcon.setBounds(696, 10, 726, 40); weatherIcon.draw(canvas);
+            label(canvas, "26°C 晴", 734, 31, 17, Color.WHITE, 108);
+        }
         label(canvas, "20:30", 850, 31, 19, Color.WHITE, 60);
-        label(canvas, "⚙", 921, 31, 22, Ui.MUTED, 30);
+        icon(canvas, settings, 916, 14, 25);
         box(canvas, appearance.panelColor(), 12, 54, 936, 332, 8);
         if (appearance.showNews) {
             box(canvas, appearance.newsColor(), 12, 54, 200, 332, 8);
@@ -102,7 +125,7 @@ final class HomePreviewView extends View {
                 icon.setBounds(x + 24, 410, x + 108, 494); icon.draw(canvas);
             } else {
                 title = index == favorites.size() ? "原厂桌面" : "我的应用";
-                label(canvas, index == favorites.size() ? "⌂" : "▦", x + 47, 467, 40, Color.WHITE, 60);
+                icon(canvas, index == favorites.size() ? factory : allApps, x + 42, 426, 49);
             }
             label(canvas, title, x + 4, 520, appearance.textSize(15), Ui.MUTED, 122);
         }

@@ -3,8 +3,10 @@ package local.mitv.launcher;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.ColorFilter;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.graphics.PixelFormat;
 import android.graphics.RectF;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.StateListDrawable;
@@ -47,6 +49,30 @@ final class Ui {
         text.setFontFeatureSettings("tnum");
         text.setIncludeFontPadding(false);
         return text;
+    }
+
+    static Drawable checkmark(Context context) {
+        Drawable mark = new Drawable() {
+            private final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+            private final Path path = new Path();
+            {
+                paint.setColor(Color.WHITE); paint.setStyle(Paint.Style.STROKE); paint.setStrokeWidth(3);
+                paint.setStrokeCap(Paint.Cap.ROUND); paint.setStrokeJoin(Paint.Join.ROUND);
+                path.moveTo(6, 16); path.lineTo(13, 23); path.lineTo(26, 8);
+            }
+            @Override public void draw(Canvas canvas) {
+                canvas.save();
+                canvas.translate(getBounds().left, getBounds().top);
+                canvas.scale(getBounds().width() / 32f, getBounds().height() / 32f);
+                canvas.drawPath(path, paint);
+                canvas.restore();
+            }
+            @Override public void setAlpha(int alpha) { paint.setAlpha(alpha); }
+            @Override public void setColorFilter(ColorFilter filter) { paint.setColorFilter(filter); }
+            @Override public int getOpacity() { return PixelFormat.TRANSLUCENT; }
+        };
+        mark.setBounds(0, 0, dp(context, 14), dp(context, 14));
+        return mark;
     }
 
     static void place(FrameLayout parent, View view, int width, int height, int x, int y) {

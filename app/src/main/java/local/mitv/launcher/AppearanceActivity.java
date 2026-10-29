@@ -111,7 +111,9 @@ public final class AppearanceActivity extends Activity {
 
     private void choice(int index, String label, boolean selected, String group) {
         Button button = controls[index];
-        button.setText((selected ? "✓ " : "") + label);
+        button.setText(label);
+        button.setCompoundDrawables(selected ? Ui.checkmark(this) : null, null, null, null);
+        button.setCompoundDrawablePadding(Ui.dp(this, 4));
         button.setSelected(selected);
         button.setContentDescription(group + "，" + label + (selected ? "，已选择" : ""));
         StateListDrawable states = new StateListDrawable();
