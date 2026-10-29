@@ -28,4 +28,4 @@ $b64 = [Convert]::ToBase64String([IO.File]::ReadAllBytes("nor\.local\launcher.ke
 gh secret set QUIET_TV_KEYSTORE -R Carton/mitv-quiet-launcher --body "$b64"
 ```
 
-之后每个版本一条命令：`python -B tools/release.py 0.8.5`。脚本递增 versionCode、写入 versionName、提交并推送 `v0.8.5` tag；GitHub Actions（`.github/workflows/build.yml`）自动构建并创建带 `quiet-tv.apk` 的 Release。Secret 未设置时只构建不发 Release。也可在 Actions 页 Run workflow 手动填 tag 发布。
+之后每个版本一条命令：`python -B tools/release.py 0.8.7`。发布前先提交并同步 master 与 origin/master；可用 `--dry-run` 检查版本。若目标 versionName 尚未写入，脚本递增 versionCode；若已在开发阶段准备好同一 versionName，则沿用当前 versionCode。Manifest 和 Gradle 元数据会同步，有实际修改才创建版本提交，最后推送 `v0.8.7` tag。GitHub Actions（`.github/workflows/build.yml`）自动构建并创建带 `quiet-tv.apk` 的 Release。Secret 未设置时只构建不发 Release。也可在 Actions 页 Run workflow 手动填 tag 发布。

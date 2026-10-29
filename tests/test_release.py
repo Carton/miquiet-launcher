@@ -5,7 +5,7 @@ import sys
 import unittest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "tools"))
-from release import version_bump
+from release import gradle_version, version_bump
 
 
 class VersionBumpTest(unittest.TestCase):
@@ -22,6 +22,27 @@ class VersionBumpTest(unittest.TestCase):
         for bad in ("0.9", "abc", "0.8.5-beta", ""):
             with self.assertRaises(ValueError, msg=bad):
                 version_bump(text, bad)
+
+    def test_reuses_prepared_version_without_an_empty_commit(self):
+        text = '<manifest android:versionCode="21" android:versionName="0.8.7">'
+        updated, code = version_bump(text, "0.8.7")
+        self.assertEqual(updated, text)
+        self.assertEqual(code, 21)
+
+    def test_synchronizes_stale_gradle_metadata(self):
+        text = "defaultConfig {\n        versionCode 18\n        versionName '0.8.4'\n}\n"
+        updated = gradle_version(text, "0.8.7", 21)
+        self.assertEqual(updated, "defaultConfig {\n        versionCode 21\n        versionName '0.8.7'\n}\n")
+        self.assertEqual(gradle_version(updated, "0.8.7", 21), updated)
+
+    def test_preserves_gradle_quoting(self):
+        text = 'versionCode 20\nversionName "0.8.6"\n'
+        self.assertEqual(gradle_version(text, "0.8.7", 21), 'versionCode 21\nversionName "0.8.7"\n')
+
+    def test_rejects_missing_or_duplicate_gradle_metadata(self):
+        for text in ("", "versionCode 20\n", "versionCode 20\nversionCode 21\nversionName '0.8.7'\n"):
+            with self.assertRaises(ValueError):
+                gradle_version(text, "0.8.7", 21)
 
     def test_rejects_manifest_without_version(self):
         with self.assertRaises(ValueError):

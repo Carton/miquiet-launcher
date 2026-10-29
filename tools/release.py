@@ -11,20 +11,31 @@ import sys
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 MANIFEST = ROOT / "app/src/main/AndroidManifest.xml"
+GRADLE = ROOT / "app/build.gradle"
 
 
 def version_bump(manifest_text, new_version):
-    """Return (updated_text, new_version_code); raise ValueError on malformed input."""
+    """Bump a new version, or reuse the code of an already-prepared version."""
     if not re.fullmatch(r"\d+\.\d+\.\d+", new_version):
         raise ValueError(f"版本号需为 x.y.z 形式，收到: {new_version}")
     code = re.search(r'android:versionCode="(\d+)"', manifest_text)
     name = re.search(r'android:versionName="([^"]+)"', manifest_text)
     if not code or not name:
         raise ValueError("AndroidManifest.xml 中未找到 versionCode/versionName")
-    new_code = int(code.group(1)) + 1
+    new_code = int(code.group(1)) + (name.group(1) != new_version)
     text = manifest_text.replace(code.group(0), f'android:versionCode="{new_code}"', 1)
     text = text.replace(name.group(0), f'android:versionName="{new_version}"', 1)
     return text, new_code
+
+
+def gradle_version(gradle_text, new_version, new_code):
+    """Keep the Gradle build's version aligned with the direct SDK build."""
+    code = r"(?m)^([ \t]*versionCode[ \t]+)\d+([ \t]*)$"
+    name = r"(?m)^([ \t]*versionName[ \t]+)(['\"])[^'\"\r\n]+\2([ \t]*)$"
+    if len(re.findall(code, gradle_text)) != 1 or len(re.findall(name, gradle_text)) != 1:
+        raise ValueError("app/build.gradle 中需有唯一的 versionCode/versionName")
+    text = re.sub(code, lambda match: f"{match.group(1)}{new_code}{match.group(2)}", gradle_text)
+    return re.sub(name, lambda match: f"{match.group(1)}{match.group(2)}{new_version}{match.group(2)}{match.group(3)}", text)
 
 
 def sh(*args, check=True):
@@ -42,7 +53,10 @@ def main():
     args = parser.parse_args()
 
     try:
-        text, code = version_bump(MANIFEST.read_text(encoding="utf-8"), args.version)
+        original_manifest = MANIFEST.read_text(encoding="utf-8")
+        original_gradle = GRADLE.read_text(encoding="utf-8")
+        text, code = version_bump(original_manifest, args.version)
+        gradle = gradle_version(original_gradle, args.version, code)
     except ValueError as error:
         sys.exit(str(error))
     print(f"versionName -> {args.version}, versionCode -> {code}, tag v{args.version}")
@@ -62,9 +76,16 @@ def main():
     if sh("git", "rev-parse", "-q", "--verify", f"refs/tags/{tag}", check=False).returncode == 0:
         sys.exit(f"tag {tag} 已存在")
 
-    MANIFEST.write_text(text, encoding="utf-8", newline="\n")
-    sh("git", "add", MANIFEST)
-    sh("git", "commit", "-m", f"chore: bump version to {args.version}")
+    changed = []
+    for path, original, updated in [(MANIFEST, original_manifest, text), (GRADLE, original_gradle, gradle)]:
+        if original != updated:
+            path.write_text(updated, encoding="utf-8", newline="\n")
+            changed.append(path)
+    if changed:
+        sh("git", "add", *changed)
+        sh("git", "commit", "-m", f"chore: bump version to {args.version}")
+    else:
+        print("版本已准备好，直接创建发布标签")
     sh("git", "push", "origin", "master")
     sh("git", "tag", tag)
     sh("git", "push", "origin", tag)
