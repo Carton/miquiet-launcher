@@ -2,9 +2,9 @@
 
 [简体中文](README.md) | **English**
 
-A lightweight, open-source home screen for **Xiaomi TV / Mi TV**: keep your favorite apps, input shortcuts and TV settings, with weather, news and a local photo screensaver. Written in native Java under the MIT License; installed over ADB with no root and no modification or replacement of factory APKs. Home takeover is reversible at any time, and the factory launcher always remains available.
+A lightweight, open-source home screen for **Xiaomi TV / Mi TV**: keep your favorite apps, input shortcuts and TV settings, with weather, news and a local photo screensaver. Written in native Java under the MIT License; installed over ADB with no root and no modification or replacement of factory APKs. Home takeover is reversible at any time, and the stock launcher always remains available.
 
-The interface aims to preserve the factory launcher's navigation layout and familiar remote controls: a status bar at the top, input preview and shortcuts in the center, and an app dock below. News and weather can each be hidden for a minimal home screen with familiar navigation.
+The interface aims to preserve the stock launcher's navigation layout and familiar remote controls: a status bar at the top, input preview and shortcuts in the center, and an app dock below. News and weather can each be hidden for a minimal home screen with familiar navigation.
 
 New users can start with the [quick-start guide (Chinese)](docs/quick-start.md): enable wireless ADB on the TV and hand the rest to an agent. Development entry point for agents: [AGENTS.md](AGENTS.md).
 
@@ -24,15 +24,15 @@ See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) for screenshot provenance a
 
 - Move with the directional pad and open with OK; select the input preview to open the factory full-screen source (the tested firmware registers TvInputInfo only for HDMI3; HDMI1/2 go through the factory player entry).
 - Menu or the top-right rounded gear opens the settings grid; TV settings is the first tile. Back or Menu dismisses it; the bottom-right About tile shows the project name, version and source repository.
-- “Desktop settings → Home configuration → Choose home apps” picks the apps shown; “My Apps” is always kept and lists installed apps. Hold a home app to enter move mode, use Left/Right repeatedly, then OK to save or Back to cancel. Leaving the desktop also cancels an unsaved move. Uncheck an app in the picker, or hold it in “My Apps”, to remove its shortcut without uninstalling it.
-- “Home configuration → Input names” names HDMI1/2/3 locally (up to 8 characters); holding a home HDMI entry also opens its editor. The sidebar keeps the port number below the name, and the preview title shows e.g. “Game console · HDMI1”. Leave the name empty or choose “Restore default” to use the port name. These labels do not change system input settings or automatically identify devices.
-- “Home configuration → Appearance and content” opens a dedicated page with controls on the left and a local home mock preview on the right. Choose charcoal, navy or forest backgrounds; standard or larger news headlines, app and shortcut names; and white-outline or soft-fill home focus. Use the D-pad and OK to preview choices, then “Apply to home” to save. Back, Menu or Cancel discards unsaved changes. Defaults retain the original appearance; the preview does not request news, weather or video.
+- “Launcher settings → Home settings → Choose home screen apps” picks the apps shown; “My apps” is always kept and lists installed apps. Hold a home app to enter move mode, use Left/Right repeatedly, then OK to save or Back to cancel. Leaving the desktop also cancels an unsaved move. Uncheck an app in the picker, or hold it in “My apps”, to remove its shortcut without uninstalling it.
+- “Home settings → Input names” names HDMI1/2/3 locally (up to 8 characters); holding a home HDMI entry also opens its editor. The sidebar keeps the port number below the name, and the preview title shows e.g. “Game console · HDMI1”. Leave the name empty or choose “Restore default” to use the port name. These labels do not change system input settings or automatically identify devices.
+- “Home settings → Appearance & content” opens a dedicated page with controls on the left and a local home mock preview on the right. Choose charcoal, navy or forest backgrounds; standard or larger news headlines, app and shortcut names; and white-outline or soft-fill home focus. Use the D-pad and OK to preview choices, then “Apply to home” to save. Back, Menu or Cancel discards unsaved changes. Defaults retain the original appearance; the preview does not request news, weather or video.
 - The same page has independent “Show news” and “Show weather” switches, both on by default. Hiding news centers the 16:9 preview and input shortcuts together without stretching the preview; hiding weather moves the status icons toward the clock. Hidden modules stop starting automatic refresh requests. Cached content and weather location preferences remain available when re-enabled.
 - Input shortcuts start in HDMI1, HDMI2, HDMI3, Files, All order. Opening an HDMI input moves it to the top and remembers the order across restarts; the other HDMI entries retain their relative order. Files and All stay at the bottom. Moving focus only changes the preview, without reordering.
 - The interface follows the TV's system language: English uses English UI and English news publishers; Chinese and other languages use the Chinese default and its Chinese publishers. No separate launcher language setting is needed. App names and custom HDMI labels retain their original text, and each edition keeps its own news cache.
-- The bottom “factory launcher” button pauses takeover and opens the factory launcher; explicitly reopening MiTV Quiet Launcher resumes the previous takeover state.
+- The bottom “Stock launcher” button pauses takeover and opens the stock launcher; explicitly reopening MiTV Quiet Launcher resumes the previous takeover state.
 - The weather bar shows Celsius, a short description and an icon, without the city; OK refreshes the weather and opens Xiaomi Weather; hold to choose a location, network locating or refresh now.
-- News has six categories (English UI: Top News, World, Finance, Science, Gaming, AI; Chinese UI: China, World, Finance, Tech, Games, AI), switched with Left/Right; headlines open summaries with paging. “Read” in a summary opens a TV-friendly reader in the system WebView: scripts disabled, directional scrolling, adjustable text size, retry after network failures. Sources whose article pages are too heavy or bot-gated (BBC News, MarketWatch, Phys.org) show the feed summary without a reader button; the others use source summaries or extracted bodies.
+- News has six categories (English UI: Top News, World, Finance, Science, Gaming, AI; Chinese UI: China, World, Finance, Tech, Games, AI), switched with Left/Right; headlines open summaries with paging. “Read article” in a summary opens a TV-friendly reader in the system WebView: scripts disabled, directional scrolling, adjustable text size, retry after network failures. Sources whose article pages are too heavy or bot-gated (BBC News, MarketWatch, Phys.org) show the feed summary without a reader button; the others use source summaries or extracted bodies.
 - Weather refreshes about every 15 minutes and the active news category every 10 minutes; stale weather shows “--” and failed news updates keep cached items marked. Science news keeps 7 days, other categories 48 hours.
 
 ## Home takeover
@@ -43,7 +43,7 @@ The tested firmware has no standard accessibility settings page; enable or resto
 python tools/enable_home.py --serial TV_SERIAL --expected-model MODEL
 ```
 
-The tool backs up existing accessibility grants, enables this project's Home bridge service and verifies the actual binding; it also grants GET_USAGE_STATS to this app only, covering firmware that does not emit factory-Home window events. The bridge matches only the factory main home page — it does not read screen content or save usage history, and factory settings, the player and other sub-pages are unaffected.
+The tool backs up existing accessibility grants, enables this project's Home bridge service and verifies the actual binding; it also grants GET_USAGE_STATS to this app only, covering firmware that does not emit window events for the stock home page. The bridge matches only the stock launcher's main home page — it does not read screen content or save usage history, and the stock launcher's settings, the player and other sub-pages are unaffected.
 
 ## Local photo screensaver
 
@@ -93,13 +93,13 @@ adb -s TV_SERIAL shell am start -W -n local.mitv.launcher/.MainActivity
 
 ## Recovery
 
-The bottom “factory launcher” button returns to the factory home; full recovery and takeover revocation from a computer:
+The bottom “Stock launcher” button returns to the stock launcher; full recovery and takeover revocation from a computer:
 
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File tools/restore_tv.ps1 -Serial TV_SERIAL -ExpectedModel MODEL
 ```
 
-The script disables the Home bridge through the app's own recovery entry and returns to the factory launcher, removing only this project's accessibility entry and GET_USAGE_STATS grant; factory packages are untouched. Add `-EnableNewLauncher` to just open the launcher, and run `enable_home.py` again to re-enable takeover. A reboot may turn network ADB off — re-enable it in the TV settings.
+The script disables the Home bridge through the app's own recovery entry and returns to the stock launcher, removing only this project's accessibility entry and GET_USAGE_STATS grant; factory packages are untouched. Add `-EnableNewLauncher` to just open the launcher, and run `enable_home.py` again to re-enable takeover. A reboot may turn network ADB off — re-enable it in the TV settings.
 
 ## Adjust the news sources
 

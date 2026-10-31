@@ -9,7 +9,7 @@
     <string name="accessibility_is_granted_takeover_is_paused" formatted="false">"Accessibility access granted; takeover paused"</string>
     <string name="accessibility_permission_has_not_been_granted" formatted="false">"Accessibility access has not been granted"</string>
     <string name="add_photos" formatted="false">"Add photos"</string>
-    <string name="added_to_home" formatted="false">"Added to home"</string>
+    <string name="added_to_home" formatted="false">"Added to home screen"</string>
     <string name="all_inputs" formatted="false">"All inputs"</string>
     <string name="appearance_content" formatted="false">"Appearance &amp; content"</string>
     <string name="apply_to_home" formatted="false">"Apply to home"</string>
@@ -54,7 +54,7 @@
     <string name="could_not_start_uploads_check_the_network" formatted="false">"Could not start uploads. Check the network and try again"</string>
     <string name="d_pad_select_ok_change_back_cancel" formatted="false">"D-pad: select · OK: change · Back: cancel"</string>
     <string name="desktop_settings" formatted="false">"Launcher settings"</string>
-    <string name="desktop_settings_home_setup_appearance_content" formatted="false">"Launcher settings  /  Home setup  /  Appearance &amp; content"</string>
+    <string name="desktop_settings_home_setup_appearance_content" formatted="false">"Launcher settings  /  Home settings  /  Appearance &amp; content"</string>
     <string name="disconnected_press_ok_to_open_input" formatted="false">" disconnected · Press OK to open input"</string>
     <string name="done" formatted="false">"Done"</string>
     <string name="done_uploading" formatted="false">"Done uploading"</string>
@@ -93,7 +93,7 @@
     <string name="home_content" formatted="false">"Home content"</string>
     <string name="home_mock_preview_without_live_news_weather" formatted="false">"Home screen preview; no live news, weather or video"</string>
     <string name="home_preview" formatted="false">"Home preview"</string>
-    <string name="home_setup" formatted="false">"Home setup"</string>
+    <string name="home_setup" formatted="false">"Home settings"</string>
     <string name="home_takeover" formatted="false">"Home takeover"</string>
     <string name="home_takeover_is_on" formatted="false">"Home takeover is on"</string>
     <string name="home_takeover_paused" formatted="false">"Home takeover paused"</string>
@@ -201,7 +201,7 @@
     <string name="remove_2" formatted="false">"Remove "</string>
     <string name="remove_selected" formatted="false">"Remove selected"</string>
     <string name="removed" formatted="false">"Removed "</string>
-    <string name="removed_from_home" formatted="false">"Removed from home"</string>
+    <string name="removed_from_home" formatted="false">"Removed from home screen"</string>
     <string name="request_headers_too_large" formatted="false">"Request headers too large"</string>
     <string name="restore_default" formatted="false">"Restore default"</string>
     <string name="retry" formatted="false">"Retry"</string>
