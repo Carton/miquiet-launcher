@@ -1,6 +1,6 @@
 # 数据源与第三方许可
 
-桌面本身从头编写，未修改或重新打包小米原厂 APK。HDMI无信号背景在设备运行时通过原厂资源包加载，不作为独立素材打包进本项目APK。README的实机截图展示运行时界面，其中原厂背景、第三方应用图标和新闻文字的权利仍归原权利人，不因此成为本项目MIT源码或可独立复用的素材。
+桌面本身从头编写，未修改或重新打包小米原厂 APK。HDMI无信号背景在设备运行时通过原厂资源包加载，不作为独立素材打包进本项目APK。README的实机截图展示运行时界面，其中原厂背景、第三方应用图标和新闻文字的权利仍归原权利人，不因此成为本项目MIT源码或可独立复用的素材。英文README的首页截图为模拟器截屏并合成了YouTube、Netflix、Prime Video、Disney+、Spotify的真实公开标识（Wikimedia Commons），仅用于展示应用栏布局；这些商标与标识不随本项目授权，也不代表相关应用已测试兼容。
 
 ## Tabler Icons — MIT
 
@@ -51,7 +51,7 @@ Copyright (c) 2020-2024 Paweł Kuna。完整许可见 [LICENSE](third_party/tabl
 - 游戏：[游民星空单机资讯](https://www.gamersky.com/pcgame/)，直接访问原站`db2.gamersky.com/LabelJsonpAjax.aspx`的node129列表。只解码JSONP包装内JSON和HTML文本，不执行脚本。对标题／摘要筛选，保留PC／Steam／模拟器关联和单机新作内容，过滤明显手游、电竞、主播直播及没有PC关联的主机动态；这不是完整的游戏平台识别器。点击阅读时提取游民原站`Mid2L_con`或`MidLcon`正文。
 - AI：[AIHOT RSS](https://aihot.news/feed.xml)，用户指定的AI动态聚合源。使用其中文标题、聚合摘要、日期和`aihot.news/items/`链接。摘要和阅读保留AIHOT署名，删掉转成不可点击文字的“阅读原文／via AIHOT”链接尾注，不自动跳转社交网站；订阅内容不等于上游完整原文。
 
-0.7.0／0.7.1曾使用机核及量子位，0.7.2已替换并移除两者的链接白名单。0.7.2的六分类联网结果见历史验收，0.8.1又在电视Android 6验证科学网20条、科技日报10条原始列表，合并12条，以及两家正文提取。原始响应和本机证据只保存在忽略的`nor/research/`下。桌面显示实际来源与文章时间，不把抓取时间冒充发布时间；条数不足时不拿过期内容补齐。
+0.7.0／0.7.1曾使用机核及量子位，0.7.2已替换并移除两者的链接白名单。英文系统语言下（0.8.8开发起）使用独立的国外英文源，均为各出版社公开订阅接口，优先选择国际主流媒体：BBC News、卫报The Guardian（world）、MarketWatch Top Stories、Phys.org＋ScienceDaily（双源交错，同中文科技类规则）、GameSpot、The Verge AI（Atom格式，含全文）。前三类中BBC与卫报、The Verge在大陆网络需代理访问，其余可直连。英文缓存键带`news_en_`前缀，与中文缓存互不影响。RSS与Atom由同一SAX解析器处理（不允许DTD与外部实体；Atom的`link href`、`summary`/`content`、ISO 8601时间在Android 6上先归一化为RFC 822时区再解析；ScienceDaily在`</rss>`后附加缓存注释，解析前截断到根元素闭合）。阅读器模板覆盖卫报`maincontent`与ScienceDaily `story_text`；GameSpot与The Verge直接使用源内全文。BBC文章页约430KB逼近512KB读取上限且正文容器为动态哈希类名、MarketWatch文章页反爬、Phys.org对应用UA返回拦截页，这三类只展示源摘要，不发起文章请求。为固定英文主机在Android 6额外捆绑DigiCert Global Root G3、USERTrust RSA与Starfield G2三个公共根（BBC／卫报／Verge的GlobalSign链在AOSP 6.0原生受信），证书链与主机名校验保持不变。0.7.2的六分类联网结果见历史验收，0.8.1又在电视Android 6验证科学网20条、科技日报10条原始列表，合并12条，以及两家正文提取。原始响应和本机证据只保存在忽略的`nor/research/`下。桌面显示实际来源与文章时间，不把抓取时间冒充发布时间；条数不足时不拿过期内容补齐。
 
 RSS 由 Android 自带 SAX XML 解析器读取，不执行脚本，不允许 DTD 或外部实体。订阅中较长的内容直接送入内置阅读器，明确标为“订阅内容，可能为节选”；财经与AIHOT也直接使用快讯／聚合摘要。游戏和其他短摘要在用户打开时才尝试获取原站。静态正文请求使用相同的 HTTPS 校验和定长上限，模板不支持则保留摘要。阅读文档关闭脚本，并移除脚本、外部样式和嵌入表单等元素；正文内链接转为普通文字，避免电视方向键焦点跳转。原文和图片版权仍归原权利人，不属于本项目开源代码，不打包进安装文件、不提交到 Git。
 

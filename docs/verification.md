@@ -1,5 +1,17 @@
 # 实机验证记录
 
+## 2026-10-30 开发：英文界面改用国外英文新闻源并复核英文文案（未部署）
+
+英文系统语言下，六个新闻分类切换为独立的国外英文源：BBC News（Top News 标签，原 China）、卫报 The Guardian world（World）、MarketWatch Top Stories（Finance）、Phys.org＋ScienceDaily 双源交错（Science，与中文科技类同样 7 天有效期、版本化双源缓存、单源故障保留另一源）、GameSpot（Gaming）、The Verge AI（AI，Atom 格式含全文）。选源先按“无代理直连可达”筛出可用的国际源（BBC、卫报、Al Jazeera、Eurogamer 等直连不可达；CNBC、France 24、GameSpot、Phys.org 等可直连），应用户要求改为优先国际主流媒体：最终 BBC／卫报／Verge 三家需要电视网络提供代理，MarketWatch、Phys.org、ScienceDaily、GameSpot 仍可直连；无代理时这三类照常更新，其余标记失败稍后重试。中文界面来源、解析与缓存键完全不变；英文缓存使用独立 `news_en_*` 键。
+
+适配要点：RSS 解析器扩展 Atom（entry/link href/summary/content/ISO 8601 时间，item 上限与 DTD 禁止共用同一防护）；Android 6 Harmony SimpleDateFormat 不支持 Java 7 的 `X` 时区字母，ISO 时间先归一化为 RFC 822 偏移再解析（PC 上 `XXX` 可过但设备崩溃，属设备端实测才发现的兼容问题）；ScienceDaily 在 `</rss>` 后附缓存注释和多余 `-->`，解析前截断到根元素闭合；阅读器模板覆盖卫报 `maincontent` 与 ScienceDaily `story_text`，GameSpot／The Verge 用源内全文；BBC 文章页约 430KB 逼近 512KB 上限且类名为动态哈希、MarketWatch 反爬、Phys.org 拦截应用 UA，这三类仅显示源摘要不提供阅读按钮。GlobalSign R3／R1、DigiCert G3、USERTrust、Starfield G2 均在 API23 AOSP 信任库内实测确认（拉取设备证书库逐一比对），仍按既有模式为固定英文主机捆绑后三者作兜底。
+
+英文文案全面复核：312 对字符串自查后交独立评审，共修正 48 处（“原厂桌面”改用 Android TV 社区惯用的 “Stock launcher” 并统一相关描述、“桌面设置”改为 “Launcher settings”、新闻刷新 Toast 的 “Top News news is refreshing” 重复词、天气 Fair/Thunder 标签、屏保 “saver” 系列改全称、多处 “Go Back” 改为遥控器语义 “Press Back”、无障碍与权限提示、照片库 “location”→“source” 消除与天气位置的歧义、致谢页英文源列表等）；宽度受限按钮（86dp 全选/取消、108dp 预览）按实际约束改写。
+
+验证：纯 Java 测试 1464 项通过（新增 Atom 解析、ISO 时区归一化、新白名单与模板用例；中文用例数不变），34 项 Python 测试、1799 项 API23 成员引用检查、79 项打包资源断言与 APK v1/v2/v3 验签通过。API23 模拟器（英文 en-AU）配置系统代理指向宿主机回环别名与本机代理端口后：英文六类实测全部通过（BBC 12、卫报 12＋正文模板 5307 字符、MarketWatch 10、Phys.org 30＋ScienceDaily 60 合并 12、GameSpot 12、The Verge Atom 10＋源内全文 1415 字符）；中文六类回归同样通过（科学网 20＋科技日报 10，代理不影响国内源）。设备端 `app_process` 测试不继承系统代理，`check_dashboard.py --proxy` 显式指定后验证；真实应用路径（ActivityThread 的框架 ProxySelector）已由启动器实际更新 BBC 验证。无代理直连时 BBC 解析到被污染的 DNS（69.63.x）并连接超时，符合预期。英文 README 截图重拍为最终版（`docs/images/home-en.png`、`settings-en.png`：BBC 实时标题、Stock launcher、Launcher settings），中文 README 仍用 0.8.0 实机截图。`home-en.png` 应用栏的五个品牌图标为后期合成（模拟器无第三方应用；真实公开标识取自 Wikimedia Commons），已在[图片说明](images/README.md)标注，不冒充实机安装状态。原始探测记录留在 `nor/research/en-news/`。
+
+限制：英文源仅在 API23 模拟器（本机网络＋宿主机代理）验证，未在小米实机英文环境部署；BBC／卫报／Verge 依赖电视网络可达的代理，未测试真实透明代理路由；模拟器无 TV 输入 HAL，英文截图预览区显示“不支持预览”占位。MarketWatch 每次仅 10 条且文章页反爬；The Verge 依赖 Atom 结构，改版需同步解析器。
+
 ## 2026-10-29 0.8.8 开发：中英文资源、固定比例与最近 HDMI
 
 正式 v0.8.7 已发布，本轮开发版本准备为 0.8.8/versionCode22，未发布新标签。关闭新闻时，576×324 的 16:9 视频区域与右侧入口整体居中。HDMI 默认按 1/2/3 排列，确认打开端口后置顶并记忆；聚焦只切换预览，文件管理与全部固定在最后。

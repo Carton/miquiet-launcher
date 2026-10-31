@@ -12,11 +12,11 @@ New users can start with the [quick-start guide (Chinese)](docs/quick-start.md):
 
 Home screen:
 
-![MiTV Quiet Launcher running on a TV: news, inputs, favorite apps and the status bar](docs/images/home.png)
+![MiTV Quiet Launcher running in English: news, inputs, favorite apps and the status bar](docs/images/home-en.png)
 
 Settings menu (4 columns × 3 rows):
 
-![MiTV Quiet Launcher settings on a TV: icon-and-label grid with visible remote focus](docs/images/settings.png)
+![MiTV Quiet Launcher settings in English: icon-and-label grid with visible remote focus](docs/images/settings-en.png)
 
 See the [image notes](docs/images/README.md) for provenance and rights.
 
@@ -29,10 +29,10 @@ See the [image notes](docs/images/README.md) for provenance and rights.
 - “Home configuration → Appearance and content” opens a dedicated page with controls on the left and a local home mock preview on the right. Choose charcoal, navy or forest backgrounds; standard or larger news headlines, app and shortcut names; and white-outline or soft-fill home focus. Use the D-pad and OK to preview choices, then “Apply to home” to save. Back, Menu or Cancel discards unsaved changes. Defaults retain the original appearance; the preview does not request news, weather or video.
 - The same page has independent “Show news” and “Show weather” switches, both on by default. Hiding news centers the 16:9 preview and input shortcuts together without stretching the preview; hiding weather moves the status icons toward the clock. Hidden modules stop starting automatic refresh requests. Cached content and weather location preferences remain available when re-enabled.
 - Input shortcuts start in HDMI1, HDMI2, HDMI3, Files, All order. Opening an HDMI input moves it to the top and remembers the order across restarts; the other HDMI entries retain their relative order. Files and All stay at the bottom. Moving focus only changes the preview, without reordering.
-- The interface follows the TV's system language: English uses English UI; Chinese and other languages use the Chinese default. No separate launcher language setting is needed. App names, custom HDMI labels and news content retain their original text, and news sources stay the same.
+- The interface follows the TV's system language: English uses English UI and English news publishers; Chinese and other languages use the Chinese default and its Chinese publishers. No separate launcher language setting is needed. App names and custom HDMI labels retain their original text, and each edition keeps its own news cache.
 - The bottom “factory launcher” button pauses takeover and opens the factory launcher; explicitly reopening MiTV Quiet Launcher resumes the previous takeover state.
 - The weather bar shows Celsius, a short description and an icon, without the city; OK refreshes the weather and opens Xiaomi Weather; hold to choose a location, network locating or refresh now.
-- News has six categories (China, World, Finance, Tech, Games, AI), switched with Left/Right; headlines open summaries with paging. “Read” in a summary opens a TV-friendly reader in the system WebView: scripts disabled, directional scrolling, adjustable text size, retry after network failures. Finance and AI flashes use the source summaries directly.
+- News has six categories (English UI: Top News, World, Finance, Science, Gaming, AI; Chinese UI: China, World, Finance, Tech, Games, AI), switched with Left/Right; headlines open summaries with paging. “Read” in a summary opens a TV-friendly reader in the system WebView: scripts disabled, directional scrolling, adjustable text size, retry after network failures. Sources whose article pages are too heavy or bot-gated (BBC News, MarketWatch, Phys.org) show the feed summary without a reader button; the others use source summaries or extracted bodies.
 - Weather refreshes about every 15 minutes and the active news category every 10 minutes; stale weather shows “--” and failed news updates keep cached items marked. Science news keeps 7 days, other categories 48 hours.
 
 ## Home takeover
@@ -105,13 +105,16 @@ The script disables the Home bridge through the app's own recovery entry and ret
 
 The default categories, sources and game filters reflect the author's personal reading preferences; adapt them to your own:
 
-| Category | Current source |
-| --- | --- |
-| China / World | CCTV News |
-| Finance | Wallstreetcn live updates |
-| Tech | ScienceNet international research RSS + Science and Technology Daily, interleaved |
-| Games | GamerSky single-player news, filtered by title/summary keywords for PC-related content |
-| AI | [AIHOT RSS](https://aihot.news/feed.xml) |
+| Category | Chinese UI source | English UI source |
+| --- | --- | --- |
+| Top News / China | CCTV News | BBC News RSS |
+| World | CCTV News | The Guardian world RSS |
+| Finance | Wallstreetcn live updates | MarketWatch Top Stories RSS |
+| Science / Tech | ScienceNet international research RSS + Science and Technology Daily, interleaved | Phys.org + ScienceDaily RSS, interleaved |
+| Games | GamerSky single-player news, filtered by title/summary keywords for PC-related content | GameSpot news feed |
+| AI | [AIHOT RSS](https://aihot.news/feed.xml) | The Verge AI feed (Atom, full text) |
+
+The English edition prefers the major international publishers (BBC, The Guardian, The Verge); on mainland-Chinese networks those three need a proxy (for example a transparent proxy on the TV network), while MarketWatch, Phys.org, ScienceDaily and GameSpot stay directly reachable. Each edition caches separately (`news_en_*` keys). The English reader shows The Guardian, ScienceDaily, GameSpot (feed text) and The Verge articles; BBC pages are too heavy for the TV reader, so those items show the feed summary only.
 
 Changing sources currently requires editing the code; there is no TV interface for adding arbitrary RSS feeds yet. Main customization points:
 
@@ -126,16 +129,19 @@ Rebuild and reinstall after changes, and verify with `tools/check_dashboard.py -
 
 - Icons reuse MIT-licensed [Tabler Icons](https://github.com/tabler/tabler-icons) (weather) and [Lucide](https://github.com/lucide-icons/lucide) (settings); original SVGs, licenses and conversion scripts are kept.
 - Weather uses the Open-Meteo API with Open-Meteo / GeoNames location search; Android 6 lacks some newer CA roots, so public CAs are added for fixed weather/news hosts only, keeping chain and hostname validation.
-- News connects directly to CCTV, Wallstreetcn, ScienceNet, Science and Technology Daily, GamerSky and AIHOT; the category and reader interactions reference NewsNow and Read You without copying their code. News content is not covered by this project's source license.
+- News connects directly to CCTV, Wallstreetcn, ScienceNet, Science and Technology Daily, GamerSky and AIHOT on the Chinese edition, and to BBC News, The Guardian, MarketWatch, Phys.org, ScienceDaily, GameSpot and The Verge on the English edition; the category and reader interactions reference NewsNow and Read You without copying their code. News content is not covered by this project's source license.
 - The source code is under the [MIT License](LICENSE); see [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) for third-party and data boundaries.
 
 On-device check tools (ADB enabled on the TV):
 
 ```powershell
 python -B tools/check_dashboard.py --serial TV_SERIAL --expected-model MODEL --news
+python -B tools/check_dashboard.py --serial TV_SERIAL --expected-model MODEL --news --english --proxy PROXY_HOST:PORT
 python -B tools/check_home.py --serial TV_SERIAL --max-seconds 8
 python -B tools/research_news.py   # desktop news-source research, no TV connection
 ```
+
+On the API 23 emulator use the built-in host-loopback alias from the Android emulator docs plus the host's proxy port; a real TV needs the address of a proxy reachable from the TV network.
 
 `nor/` holds untracked build artifacts, the signing key, factory APK backups and research material; back up `nor/.local/launcher.keystore` and the factory APKs separately. Maintainers run `python -B tools/audit_public.py --history` before publishing; see the [publication checks](docs/publishing.md).
 

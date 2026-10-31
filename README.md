@@ -29,10 +29,10 @@
 - “首页配置 → 外观与内容”打开独立配置页：左侧设置、右侧本地首页示意预览。背景色有炭灰、深海蓝、墨绿；新闻标题、应用与入口名称可选标准或大字，首页焦点可选白色描边或柔和底色。方向键选择，确定修改候选，选择“应用到首页”保存；返回、菜单键或“取消”均放弃未保存修改。默认保留原有外观，预览不请求新闻、天气或视频。
 - 同页可独立开关“显示新闻”“显示天气”，默认均开启。关闭新闻后，16:9 预览与右侧入口作为整体水平居中，预览不拉伸；关闭天气后状态栏图标靠拢时钟。关闭的模块不再发起自动刷新请求，缓存与天气位置设置保留，可随时重新开启。
 - 信号源入口默认按 HDMI1、HDMI2、HDMI3、文件管理、全部排列；确认打开 HDMI 后，该端口移到最上面，其余 HDMI 保持先后顺序并记忆到下次启动。“文件管理”和“全部”固定在最后；方向键经过端口只切换预览，不改变排序。
-- 界面跟随电视系统语言：系统选择英文时显示英文，中文及其他语言保留中文界面。无需在桌面重复设置语言；应用原名、自定义 HDMI 名称和新闻正文保留原文，新闻源不随语言改变。
+- 界面跟随电视系统语言：系统选择英文时显示英文并使用英文新闻源，中文及其他语言保留中文界面与中文新闻源。无需在桌面重复设置语言；应用原名、自定义 HDMI 名称保留原文，两种语言的新闻缓存相互独立。
 - 底部“原厂桌面”按钮暂停接管并打开原厂；显式重开简净桌面后恢复此前开启的接管。
 - 天气栏显示摄氏度、简短描述和天气图标，不显示城市；确定刷新并打开小米天气，长按可选择位置、网络自动定位或立即刷新。
-- 新闻栏有国内、国际、财经、科技、游戏、AI 六个分类，左右键切换并刷新；标题打开摘要，底部翻页。摘要中的“阅读”用系统 WebView 进入电视正文模式：关闭脚本、方向键滚动、可调字号，网络失败可重试；财经与 AI 快讯直接使用原站摘要。
+- 新闻栏有国内、国际、财经、科技、游戏、AI 六个分类（英文界面显示 Top News、World、Finance、Science、Gaming、AI 并使用英文源），左右键切换并刷新；标题打开摘要，底部翻页。摘要中的“阅读”用系统 WebView 进入电视正文模式：关闭脚本、方向键滚动、可调字号，网络失败可重试；财经与 AI 快讯直接使用原站摘要。英文源中文章页过重或反爬的（BBC News、MarketWatch、Phys.org）只显示源摘要，不提供阅读按钮。
 - 天气约每 15 分钟、当前新闻分类约每 10 分钟刷新；天气失效显示“--”，新闻失效保留缓存并标记。科技新闻保留 7 天，其他 48 小时。
 
 ## Home 接管
@@ -105,13 +105,16 @@ powershell -NoProfile -ExecutionPolicy Bypass -File tools/restore_tv.ps1 -Serial
 
 默认分类、来源和游戏过滤规则按作者个人阅读偏好选择，可按自己的兴趣修改，不必沿用：
 
-| 类别 | 当前来源 |
-| --- | --- |
-| 国内、国际 | 央视网 |
-| 财经 | 华尔街见闻快讯 |
-| 科技 | 科学网国际科研RSS＋科技日报国际科技／创新连线，交错展示 |
-| 游戏 | 游民星空单机资讯，按标题／摘要关键词过滤与PC游戏无关的内容 |
-| AI | [AIHOT RSS](https://aihot.news/feed.xml) |
+| 类别 | 中文界面来源 | 英文界面来源 |
+| --- | --- | --- |
+| 国内／Top News | 央视网 | BBC News RSS |
+| 国际 | 央视网 | 卫报 The Guardian world RSS |
+| 财经 | 华尔街见闻快讯 | MarketWatch Top Stories RSS |
+| 科技 | 科学网国际科研RSS＋科技日报国际科技／创新连线，交错展示 | Phys.org＋ScienceDaily RSS，交错展示 |
+| 游戏 | 游民星空单机资讯，按标题／摘要关键词过滤与PC游戏无关的内容 | GameSpot 新闻 RSS |
+| AI | [AIHOT RSS](https://aihot.news/feed.xml) | The Verge AI（Atom，含全文） |
+
+英文版优先选择国际主流媒体（BBC、卫报、The Verge）；这三家在大陆网络需要代理（例如电视所在网络的透明代理）才能访问，MarketWatch、Phys.org、ScienceDaily、GameSpot 仍可直连。英文版缓存使用独立键（`news_en_*`），英文阅读器支持卫报、ScienceDaily、GameSpot（直接用源内正文）与 The Verge 文章；BBC 文章页对电视阅读器过重，仅显示源摘要。
 
 更换来源目前需要修改源码，还没有电视端任意添加 RSS 的设置界面。主要修改位置：
 
@@ -126,13 +129,14 @@ powershell -NoProfile -ExecutionPolicy Bypass -File tools/restore_tv.ps1 -Serial
 
 - 图标复用 MIT 许可的 [Tabler Icons](https://github.com/tabler/tabler-icons)（天气）与 [Lucide](https://github.com/lucide-icons/lucide)（设置），保留原始 SVG、许可与转换脚本。
 - 天气使用 Open-Meteo API，位置搜索 Open-Meteo / GeoNames；Android 6 缺少部分较新的根证书，仅为固定天气／新闻主机补充公开 CA，保留证书链与主机名校验。
-- 新闻直连央视网、华尔街见闻、科学网、科技日报、游民星空和 AIHOT；分类与阅读交互参考 NewsNow、Read You，未复制其代码。新闻内容不属于本项目开源范围。
+- 新闻直连央视网、华尔街见闻、科学网、科技日报、游民星空和 AIHOT，英文界面直连 BBC News、卫报、MarketWatch、Phys.org、ScienceDaily、GameSpot 和 The Verge；分类与阅读交互参考 NewsNow、Read You，未复制其代码。新闻内容不属于本项目开源范围。
 - 源码采用 [MIT 许可证](LICENSE)，第三方与数据边界详见 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。
 
 实机检查工具（电视需开启 ADB）：
 
 ```powershell
 python -B tools/check_dashboard.py --serial TV_SERIAL --expected-model MODEL --news
+python -B tools/check_dashboard.py --serial TV_SERIAL --expected-model MODEL --news --english --proxy PROXY_HOST:PORT  # BBC／卫报／Verge 需代理；API23 模拟器使用其内置宿主机别名（Android 模拟器文档的 host loopback alias）加宿主机代理端口
 python -B tools/check_home.py --serial TV_SERIAL --max-seconds 8
 python -B tools/research_news.py   # 电脑端新闻源调研，不连接电视
 ```
