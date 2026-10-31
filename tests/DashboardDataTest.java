@@ -113,18 +113,85 @@ public final class DashboardDataTest {
         check(games.get(0).publisher.equals("游民星空") && games.get(0).title.equals("Steam & 新作") && games.get(0).body.isEmpty());
         try { DashboardRepository.parseFeed(rss,4); throw new AssertionError("Old RSS cache accepted as game JSONP"); }
         catch (IllegalArgumentException expected) { assertions++; }
+        // English edition: BBC/Guardian/MarketWatch/GameSpot RSS, The Verge Atom; science pair unchanged.
+        StringBuilder enText = new StringBuilder(); for (int i = 0; i < 60; i++) enText.append("English dashboard story body for the TV reader. ");
+        SimpleDateFormat isoDate = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ",Locale.US);
+        isoDate.setTimeZone(TimeZone.getTimeZone("GMT"));
+        String enRss = "<rss><channel>"
+            + "<item><title>BBC &amp; markets</title><link>https://www.bbc.co.uk/news/articles/c1v2d3e4f5g6</link>"
+            + "<pubDate>" + rssDate.format(new Date(now-60_000)) + "</pubDate><description>BBC summary</description></item>"
+            + "<item><title>Guardian world report</title><link>https://www.theguardian.com/world/2026/oct/30-report</link>"
+            + "<pubDate>" + rssDate.format(new Date(now-120_000)) + "</pubDate><description><![CDATA[<p>" + enText + "</p>]]></description></item>"
+            + "<item><title>MarketWatch earnings</title><link>https://www.marketwatch.com/story/earnings-24babdfc</link>"
+            + "<pubDate>" + rssDate.format(new Date(now-180_000)) + "</pubDate><description>MarketWatch summary</description></item>"
+            + "<item><title>GameSpot guide</title><link>https://www.gamespot.com/articles/guide/1100-654321/</link>"
+            + "<pubDate>" + rssDate.format(new Date(now-240_000)) + "</pubDate><description><![CDATA[<p>" + enText + "</p>]]></description></item>"
+            + "<item><title>Attacker link</title><link>https://www.bbc.co.uk.attacker.test/2026/a.html</link>"
+            + "<pubDate>" + rssDate.format(new Date(now-30_000)) + "</pubDate><description>bad</description></item>"
+            + "<item><title>Old item</title><link>https://www.bbc.co.uk/news/2026/10/old.html</link>"
+            + "<pubDate>" + rssDate.format(new Date(now-49*60*60_000L)) + "</pubDate><description>old</description></item></channel></rss>";
+        String enAtom = "<feed xmlns='http://www.w3.org/2005/Atom'>"
+            + "<entry><title type='html'>Verge AI &amp; chips</title>"
+            + "<link rel='alternate' href='https://www.theverge.com/ai-artificial-intelligence/1023188/verge-story'/>"
+            + "<published>" + isoDate.format(new Date(now-300_000)) + "</published>"
+            + "<content type='html'>&lt;p&gt;" + enText + "&lt;/p&gt;</content></entry>"
+            + "<entry><title>Attacker atom</title><link rel='alternate' href='https://www.theverge.com.attacker.test/1/x'/>"
+            + "<published>" + isoDate.format(new Date(now-30_000)) + "</published><content>bad</content></entry></feed>";
+        List<DashboardRepository.Story> bbcEn = DashboardRepository.parseFeed(enRss,0,true);
+        check(bbcEn.size()==1 && bbcEn.get(0).publisher.equals("BBC News") && bbcEn.get(0).title.equals("BBC & markets"));
+        check(bbcEn.get(0).brief.equals("BBC summary") && bbcEn.get(0).body.isEmpty());
+        check(!NewsSources.readerHost(new URL(bbcEn.get(0).url).getHost(),true));
+        List<DashboardRepository.Story> worldEn = DashboardRepository.parseFeed(enRss,1,true);
+        check(worldEn.size()==1 && worldEn.get(0).publisher.equals("The Guardian") && !worldEn.get(0).body.isEmpty());
+        check(NewsSources.readerHost(new URL(worldEn.get(0).url).getHost(),true));
+        List<DashboardRepository.Story> financeEn = DashboardRepository.parseFeed(enRss,2,true);
+        check(financeEn.size()==1 && financeEn.get(0).publisher.equals("MarketWatch"));
+        List<DashboardRepository.Story> gameEn = DashboardRepository.parseFeed(enRss,4,true);
+        check(gameEn.size()==1 && gameEn.get(0).publisher.equals("GameSpot") && !gameEn.get(0).body.isEmpty()
+            && gameEn.get(0).brief.length()==361);
+        List<DashboardRepository.Story> aiEn = DashboardRepository.parseFeed(enAtom,5,true);
+        check(aiEn.size()==1 && aiEn.get(0).publisher.equals("The Verge") && aiEn.get(0).title.equals("Verge AI & chips"));
+        check(!aiEn.get(0).body.isEmpty() && NewsSources.readerHost(new URL(aiEn.get(0).url).getHost(),true));
+        String physEn = enRss.replace("https://www.bbc.co.uk/news/articles/c1v2d3e4f5g6","https://phys.org/news/2026-10-antimatter.html")
+            .replace("BBC &amp; markets","Phys antimatter").replace("BBC summary","Phys summary");
+        String dailyEn = enRss.replace("https://www.theguardian.com/world/2026/oct/30-report","https://www.sciencedaily.com/releases/2026/10/251030111.htm")
+            .replace("Guardian world report","Daily materials").replace("<p>" + enText + "</p>","Daily summary")
+            .replace(rssDate.format(new Date(now-120_000)),"Fri, 30 Oct 2026 09:35:00 EDT");
+        List<DashboardRepository.Story> scienceEn = DashboardRepository.parseFeed(DashboardRepository.packScience(new String[]{physEn,dailyEn}),3,true);
+        check(scienceEn.size()==2 && scienceEn.get(0).publisher.equals("Phys.org") && scienceEn.get(1).publisher.equals("ScienceDaily"));
+        check(DashboardRepository.parseFeed(DashboardRepository.packScience(new String[]{physEn.replace("phys.org/news/","phys.org/press/"),dailyEn}),3,true).size()==1);
+        try { DashboardRepository.parseFeed(feed(new JSONArray()),0,true); throw new AssertionError("Chinese JSONP accepted as English feed"); }
+        catch (org.xml.sax.SAXException expected) { assertions++; }
+        check(DashboardRepository.parseFeed(enRss.replace("https://www.bbc.co.uk/","https://news.cctv.com/"),0,true).isEmpty());
         System.out.println("PASS: " + assertions + " Android data assertions");
         if (args.length >= 2) {
             SSLSocketFactory sockets;
+            String mode = "", proxy = null;
+            java.util.List<java.io.InputStream> roots = new java.util.ArrayList<>();
             try (FileInputStream isrg = new FileInputStream(args[0]); FileInputStream google = new FileInputStream(args[1])) {
-                sockets = LegacyTls.factory(isrg, google);
+                roots.add(isrg); roots.add(google);
+                for (int i = 2; i < args.length; i++) {
+                    if (args[i].startsWith("--proxy=")) proxy = args[i].substring(8);
+                    else if (args[i].startsWith("--")) mode = args[i];
+                    else {
+                        try { roots.add(new FileInputStream(args[i])); } catch (java.io.IOException ignored) { /* Optional root. */ }
+                    }
+                }
+                sockets = LegacyTls.factory(roots.toArray(new java.io.InputStream[0]));
+            } finally { for (int i = 2; i < roots.size(); i++) { try { roots.get(i).close(); } catch (java.io.IOException ignored) {} } }
+            if (proxy != null) {
+                // app_process has no ActivityThread, so the framework never installs its
+                // ProxySelector; route these test connections explicitly like a proxied TV app.
+                String[] hostPort = proxy.split(":");
+                System.setProperty("http.proxyHost", hostPort[0]);
+                System.setProperty("http.proxyPort", hostPort.length > 1 ? hostPort[1] : "80");
+                System.setProperty("https.proxyHost", hostPort[0]);
+                System.setProperty("https.proxyPort", hostPort.length > 1 ? hostPort[1] : "80");
             }
-            if (args.length == 3 && args[2].equals("--news")) {
-                liveNews(sockets); return;
-            }
-            if (args.length == 3 && args[2].equals("--science")) {
-                liveScience(sockets); return;
-            }
+            if (mode.equals("--news")) { liveNews(sockets,false); return; }
+            if (mode.equals("--news-en")) { liveNews(sockets,true); return; }
+            if (mode.equals("--science")) { liveScience(sockets,false); return; }
+            if (mode.equals("--science-en")) { liveScience(sockets,true); return; }
             for (String host : new String[]{"ipwho.is", "api.open-meteo.com", "geocoding-api.open-meteo.com"}) {
                 HttpsURLConnection connection = (HttpsURLConnection)new URL("https://" + host + "/").openConnection();
                 connection.setSSLSocketFactory(sockets); connection.setConnectTimeout(8000); connection.setReadTimeout(8000);
@@ -141,10 +208,11 @@ public final class DashboardDataTest {
         }
     }
 
-    private static void liveNews(SSLSocketFactory sockets) throws Exception {
+    private static void liveNews(SSLSocketFactory sockets, boolean english) throws Exception {
+        String[] urls = NewsSources.urls(english);
         for (int i = 0; i < NewsSources.IDS.length; i++) {
-            if(i==3){liveScience(sockets);continue;}
-            HttpsURLConnection connection = (HttpsURLConnection)new URL(NewsSources.URLS[i]).openConnection();
+            if(i==3){liveScience(sockets,english);continue;}
+            HttpsURLConnection connection = (HttpsURLConnection)new URL(urls[i]).openConnection();
             connection.setSSLSocketFactory(sockets); connection.setConnectTimeout(8000); connection.setReadTimeout(8000);
             connection.setInstanceFollowRedirects(false); connection.setRequestProperty("User-Agent","QuietTV/0.7");
             try {
@@ -157,9 +225,33 @@ public final class DashboardDataTest {
                         output.write(buffer,0,count);
                     }
                 }
-                List<DashboardRepository.Story> stories = DashboardRepository.parseFeed(output.toString("UTF-8"),i);
+                List<DashboardRepository.Story> stories = DashboardRepository.parseFeed(output.toString("UTF-8"),i,english);
                 if (stories.isEmpty()) throw new AssertionError("No recent " + NewsSources.IDS[i] + " stories");
                 System.out.println("NEWS LIVE: " + NewsSources.IDS[i] + " count=" + stories.size() + " newest=" + stories.get(0).time);
+                if (english && i == 1) {
+                    // The Guardian's short standfirsts fall back to a page extraction template;
+                    // items that already carry feed text never fetch the page in production.
+                    int pages = 0; String body = null; DashboardRepository.Story proven = null;
+                    for (DashboardRepository.Story candidate : stories) {
+                        if (!candidate.body.isEmpty() || body != null) continue;
+                        if (pages >= 4) break;
+                        pages++;
+                        try {
+                            String extracted = ArticleHtml.extract(read(sockets,candidate.url),new URL(candidate.url).getHost());
+                            if (extracted != null && extracted.length() > 100) { body = extracted; proven = candidate; }
+                        } catch (java.io.IOException error) { /* Oversize or slow live pages are skipped. */ }
+                    }
+                    check(pages == 0 || body != null);
+                    System.out.println(body != null
+                        ? "READER LIVE: " + proven.publisher + " chars=" + body.length() + " url=" + proven.url
+                        : "READER LIVE: The Guardian items carry feed text; page template not exercised");
+                }
+                if (english && i == 5) {
+                    // The Verge publishes full articles inside its Atom feed; the reader shows that text.
+                    DashboardRepository.Story story = stories.get(0);
+                    check(story.body.length() > 100);
+                    System.out.println("READER LIVE: " + story.publisher + " feed chars=" + story.body.length() + " url=" + story.url);
+                }
             } finally { connection.disconnect(); }
         }
     }
@@ -179,15 +271,21 @@ public final class DashboardDataTest {
         } finally {connection.disconnect();}
     }
 
-    private static void liveScience(SSLSocketFactory sockets)throws Exception {
-        ScienceNews.Batch batch=ScienceNews.load(new String[]{"",""},new ScienceNews.Loader(){
-            @Override public String get(int source)throws Exception{return read(sockets,NewsSources.SCIENCE_URLS[source]);}
+    private static void liveScience(SSLSocketFactory sockets,boolean english)throws Exception {
+        int edition=english?ScienceNews.EN:ScienceNews.ZH;
+        final String[] science=NewsSources.scienceUrls(english);
+        ScienceNews.Batch batch=ScienceNews.load(edition,new String[]{"",""},new ScienceNews.Loader(){
+            @Override public String get(int source)throws Exception{return read(sockets,science[source]);}
         },System.currentTimeMillis());
+        if (batch.partial) System.out.println("SCIENCE PARTIAL: source0=" + (batch.responses[0].isEmpty() ? "EMPTY" : "ok")
+            + " source1=" + (batch.responses[1].isEmpty() ? "EMPTY" : "ok"));
         check(!batch.partial);
-        List<DashboardRepository.Story> stories=DashboardRepository.parseFeed(DashboardRepository.packScience(batch.responses),3);
-        check(stories.size()>=2 && stories.get(0).publisher.equals("科学网") && stories.get(1).publisher.equals("科技日报"));
+        List<DashboardRepository.Story> stories=DashboardRepository.parseFeed(DashboardRepository.packScience(batch.responses),3,english);
+        check(stories.size()>=2 && stories.get(0).publisher.equals(english?"Phys.org":"科学网")
+            && stories.get(1).publisher.equals(english?"ScienceDaily":"科技日报"));
         for(int i=0;i<2;i++) {
-            System.out.println("SCIENCE LIVE: "+ScienceNews.PUBLISHERS[i]+" count="+ScienceNews.parse(i,batch.responses[i]).size());
+            System.out.println("SCIENCE LIVE: "+stories.get(i).publisher+" count="+ScienceNews.parse(edition,i,batch.responses[i]).size());
+            if(english && i==0) continue; // Phys.org blocks the app user agent: feed summaries only, no reader.
             DashboardRepository.Story story=stories.get(i);
             String body=ArticleHtml.extract(read(sockets,story.url),new URL(story.url).getHost());
             check(body!=null && body.length()>100);

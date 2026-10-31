@@ -25,12 +25,20 @@ final class LegacyTls {
             || host.equals("geocoding-api.open-meteo.com") || host.equals("api-one.wallstcn.com")
             || host.equals("www.sciencenet.cn") || host.equals("news.sciencenet.cn")
             || host.equals("www.stdaily.com") || host.equals("db2.gamersky.com")
-            || host.equals("www.gamersky.com") || host.equals("aihot.news"))) return;
+            || host.equals("www.gamersky.com") || host.equals("aihot.news")
+            // English edition feeds; their roots already ship with most Android 6 builds.
+            || host.equals("feeds.bbci.co.uk") || host.equals("www.theguardian.com")
+            || host.equals("feeds.content.dowjones.io") || host.equals("phys.org")
+            || host.equals("www.sciencedaily.com") || host.equals("www.gamespot.com")
+            || host.equals("www.theverge.com"))) return;
         synchronized (LegacyTls.class) {
             if (sockets == null) {
                 try (InputStream isrg = resources.openRawResource(R.raw.isrg_root_x1);
-                     InputStream google = resources.openRawResource(R.raw.gts_root_r4)) {
-                    sockets = factory(isrg, google);
+                     InputStream google = resources.openRawResource(R.raw.gts_root_r4);
+                     InputStream digicert = resources.openRawResource(R.raw.digicert_global_root_g3);
+                     InputStream usertrust = resources.openRawResource(R.raw.usertrust_rsa_root);
+                     InputStream starfield = resources.openRawResource(R.raw.starfield_root_g2)) {
+                    sockets = factory(isrg, google, digicert, usertrust, starfield);
                 }
             }
             connection.setSSLSocketFactory(sockets);

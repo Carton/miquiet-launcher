@@ -28,6 +28,28 @@ public final class RssFeedTest {
         check(RssFeed.date("Sat, 24 Oct 2026 11:56:34 GMT trailing") == 0);
         check(RssFeed.date("") == 0);
         check(RssFeed.parse("<rss><channel/></rss>").isEmpty());
+        check(RssFeed.parse("<rss><channel/></rss>\n<!-- cached Fri, 30 Oct 2026 08:13:25 EDT --> -->").isEmpty());
+        check(RssFeed.parse(xml + "\n<!-- cached --> -->").size() == 2);
+        try { RssFeed.parse(xml.substring(0, xml.lastIndexOf("</rss>"))); throw new AssertionError("Truncated feed accepted"); }
+        catch (org.xml.sax.SAXException expected) { assertions++; }
+        String atom = "<?xml version='1.0'?><feed xmlns='http://www.w3.org/2005/Atom'><title type='text'>Feed title is not an item</title>"
+            + "<entry><title type='html'>AI &amp; policy</title>"
+            + "<link rel='alternate' type='text/html' href='https://www.theverge.com/ai-artificial-intelligence/1023054/altman-story'/>"
+            + "<link rel='enclosure' type='image/jpeg' href='https://example.test/img.jpg'/>"
+            + "<published>2026-10-30T09:01:14-04:00</published><updated>2026-10-30T11:00:00Z</updated>"
+            + "<summary>Short summary</summary><content type='html'>&lt;p&gt;Full story body&lt;/p&gt;</content></entry>"
+            + "<entry><title>Updated only</title><link rel='alternate' href='https://www.theverge.com/ai-artificial-intelligence/2/x'/>"
+            + "<updated>2026-10-30T12:00:00Z</updated></entry></feed>";
+        List<RssFeed.Item> entries = RssFeed.parse(atom + "\\n<!-- cached --> -->");
+        check(entries.size() == 2);
+        check(entries.get(0).title.equals("AI & policy"));
+        check(entries.get(0).url.equals("https://www.theverge.com/ai-artificial-intelligence/1023054/altman-story"));
+        check(entries.get(0).description.equals("Short summary") && entries.get(0).body().equals("<p>Full story body</p>"));
+        check(entries.get(1).url.equals("https://www.theverge.com/ai-artificial-intelligence/2/x"));
+        check(RssFeed.date("2026-10-30T09:01:14-04:00") == RssFeed.date("2026-10-30T13:01:14Z"));
+        check(RssFeed.date("2026-10-30T13:01Z") > 0 && RssFeed.date("2026-10-30 13:01") == 0);
+        check(RssFeed.date("2026-10-30T13:01:14.500Z") == RssFeed.date("2026-10-30T13:01:14Z") + 500);
+        check(RssFeed.date(entries.get(0).date) > RssFeed.date(entries.get(1).date));
         try {
             RssFeed.parse("<!DOCTYPE rss [<!ENTITY x SYSTEM 'http://127.0.0.1:1/'>]><rss><channel><item><title>&x;</title></item></channel></rss>");
             throw new AssertionError("External entity accepted");
@@ -41,6 +63,9 @@ public final class RssFeedTest {
             && !NewsSources.articleHost(3,"www.ithome.com") && !NewsSources.articleHost(3,"www.stdaily.com.attacker.test"));
         check(!NewsSources.articleHost(4,"aihot.news"));
         check(NewsSources.articleHost(5,"aihot.news") && !NewsSources.articleHost(5,"www.qbitai.com"));
+        check(RssFeed.date("Fri, 30 Oct 2026 09:00:06 EDT") == RssFeed.date("Fri, 30 Oct 2026 13:00:06 +0000"));
+        check(RssFeed.date("Fri, 30 Oct 2026 09:00:06 EST") == RssFeed.date("Fri, 30 Oct 2026 14:00:06 +0000"));
+        check(RssFeed.date("Fri, 30 Oct 2026 09:00:06 XYZ") == 0);
         System.out.println("PASS: " + assertions + " RSS and source assertions");
         for (String file : args) {
             List<RssFeed.Item> live = RssFeed.parse(new String(Files.readAllBytes(Paths.get(file)),StandardCharsets.UTF_8));

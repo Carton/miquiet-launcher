@@ -30,6 +30,7 @@ public final class NewsReaderActivity extends Activity {
     private WebView web;
     private TextView back, status, retry;
     private String address, publisher, suppliedBody;
+    private boolean english;
     private boolean loading, failed, readerDocument;
     private int textZoom = 125;
     private int fetchGeneration;
@@ -49,14 +50,22 @@ public final class NewsReaderActivity extends Activity {
     }
 
     static boolean canRead(Activity activity,String url) {
-        String normalized = NewsReaderPolicy.address(url);
-        return normalized != null && !unreadable.contains(normalized) && available(activity);
+        boolean english = UiLocale.english(activity);
+        String normalized = NewsReaderPolicy.address(url, english);
+        try {
+            return normalized != null && NewsSources.readerHost(new java.net.URL(normalized).getHost(), english)
+                && !unreadable.contains(normalized) && available(activity);
+        } catch (java.net.MalformedURLException error) { return false; }
     }
 
     @Override public void onCreate(Bundle state) {
         super.onCreate(state);
-        address = NewsReaderPolicy.address(getIntent().getStringExtra("url"));
-        if (address == null || !available(this)) { finish(); return; }
+        english = UiLocale.english(this);
+        address = NewsReaderPolicy.address(getIntent().getStringExtra("url"), english);
+        boolean readable = false;
+        try { readable = NewsSources.readerHost(new java.net.URL(address).getHost(), english); }
+        catch (java.net.MalformedURLException ignored) {}
+        if (address == null || !readable || !available(this)) { finish(); return; }
         publisher = getIntent().getStringExtra("publisher");
         if (publisher == null || publisher.isEmpty()) publisher = NewsReaderActivity.this.getString(R.string.cctv);
         suppliedBody = getIntent().getStringExtra("body");
@@ -90,7 +99,7 @@ public final class NewsReaderActivity extends Activity {
             web.setBackgroundColor(Color.WHITE);
             web.setWebViewClient(new WebViewClient() {
                 @Override public boolean shouldOverrideUrlLoading(WebView view,String url) {
-                    String allowed = NewsReaderPolicy.address(url);
+                    String allowed = NewsReaderPolicy.address(url, english);
                     if (allowed == null) { Toast.makeText(NewsReaderActivity.this,NewsReaderActivity.this.getString(R.string.this_link_cannot_be_opened_on_the),Toast.LENGTH_SHORT).show(); return true; }
                     // Keep this reader on its selected story. Other pages have different extraction rules.
                     Toast.makeText(NewsReaderActivity.this,NewsReaderActivity.this.getString(R.string.return_to_the_news_list_and_choose),Toast.LENGTH_SHORT).show(); return true;

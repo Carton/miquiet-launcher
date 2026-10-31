@@ -62,6 +62,7 @@ final class DashboardRepository {
     interface PlacesListener { void result(List<Place> places, String error); }
     private final SharedPreferences prefs;
     private final Context context;
+    private final boolean english;
     private final Handler main = new Handler();
     private final ExecutorService worker = Executors.newFixedThreadPool(3);
     private final Runnable changed;
@@ -77,6 +78,7 @@ final class DashboardRepository {
 
     DashboardRepository(Context context, SharedPreferences prefs, Runnable changed) {
         this.context = context.getApplicationContext(); this.prefs = prefs; this.changed = changed;
+        english = UiLocale.english(this.context);
         try { weather = parseWeather(new JSONObject(prefs.getString("weather_cache", "{}"))); }
         catch (Exception ignored) {}
         for (int i = 0; i < NewsSources.IDS.length; i++) {
@@ -85,7 +87,7 @@ final class DashboardRepository {
             final int category = i;
             worker.execute(() -> {
                 try {
-                    List<Story> cached = parseFeed(prefs.getString("news_" + NewsSources.IDS[category] + "_cache", ""),category);
+                    List<Story> cached = parseFeed(prefs.getString(cacheKey(category), ""), category, english);
                     deliver(() -> {
                         // A live response may already have won the race. Never replace it with cache.
                         if (news.get(category).isEmpty()) { news.set(category,cached); changed.run(); }
@@ -93,6 +95,11 @@ final class DashboardRepository {
                 } catch (Exception ignored) { /* Empty or old-format cache is harmless. */ }
             });
         }
+    }
+
+    /** Cache keys are per-edition so switching the system language never shows the other language's feeds. */
+    private String cacheKey(int category) {
+        return "news_" + (english ? "en_" : "") + NewsSources.IDS[category] + "_cache";
     }
 
     private void deliver(Runnable action) {
@@ -170,17 +177,18 @@ final class DashboardRepository {
                 boolean partial=false;
                 if(category==3) {
                     String[] cached={"",""};
-                    try { cached=unpackScience(prefs.getString("news_tech_cache","")); } catch(Exception ignored) {}
-                    ScienceNews.Batch batch=ScienceNews.load(cached,i->get(NewsSources.SCIENCE_URLS[i]),System.currentTimeMillis());
+                    try { cached=unpackScience(prefs.getString(cacheKey(3),"")); } catch(Exception ignored) {}
+                    ScienceNews.Batch batch=ScienceNews.load(english?ScienceNews.EN:ScienceNews.ZH,cached,
+                        i->get(NewsSources.scienceUrls(english)[i]),System.currentTimeMillis());
                     response=packScience(batch.responses);partial=batch.partial;
-                } else response=get(NewsSources.URLS[category]);
-                List<Story> stories = parseFeed(response, category);
+                } else response=get(NewsSources.urls(english)[category]);
+                List<Story> stories = parseFeed(response, category, english);
                 if (stories.isEmpty()) throw new IllegalArgumentException("No recent headlines");
                 final boolean incomplete=partial;
                 deliver(() -> {
                     newsBusy[category] = false; news.set(category, stories); newsFailed[category] = incomplete;
                     if(incomplete)nextNews[category]=System.currentTimeMillis()+2*60_000L;
-                    prefs.edit().putString("news_" + NewsSources.IDS[category] + "_cache", response).apply();
+                    prefs.edit().putString(cacheKey(category), response).apply();
                     Log.i("QuietTVData", NewsSources.IDS[category] + " updated count=" + stories.size() + " partial=" + incomplete + " newest=" + stories.get(0).time);
                     changed.run();
                 });
@@ -266,14 +274,18 @@ final class DashboardRepository {
     }
 
     static List<Story> parseFeed(String response, int category) throws Exception {
+        return parseFeed(response, category, false);
+    }
+    static List<Story> parseFeed(String response, int category, boolean english) throws Exception {
+        if (english) return parseEnglishFeed(response, category);
         if (category < 2) return parseStories(response, NewsSources.IDS[category]);
         List<Story> result = new ArrayList<>();
         HashSet<String> seen = new HashSet<>();
         long now = System.currentTimeMillis();
         if(category==3) {
             String[] feeds=unpackScience(response);
-            List<ScienceNews.Item> first=feeds[0].isEmpty()?Collections.emptyList():ScienceNews.parse(0,feeds[0]);
-            List<ScienceNews.Item> second=feeds[1].isEmpty()?Collections.emptyList():ScienceNews.parse(1,feeds[1]);
+            List<ScienceNews.Item> first=feeds[0].isEmpty()?Collections.emptyList():ScienceNews.parse(ScienceNews.ZH,0,feeds[0]);
+            List<ScienceNews.Item> second=feeds[1].isEmpty()?Collections.emptyList():ScienceNews.parse(ScienceNews.ZH,1,feeds[1]);
             for(ScienceNews.Item item:ScienceNews.merge(first,second,now)) {
                 String brief=plain(item.brief);
                 result.add(new Story(plain(item.title),brief.length()>360?brief.substring(0,360)+"…":brief,
@@ -290,7 +302,7 @@ final class DashboardRepository {
                     String title = plain(row.optString("title"));
                     if (title.isEmpty()) title = text;
                     addStory(result, seen, category, title, text, row.getString("uri"), row.getLong("display_time") * 1000L,
-                        "<p>" + Html.escapeHtml(text).replace("\n", "</p><p>") + "</p>", now);
+                        "<p>" + Html.escapeHtml(text).replace("\n", "</p><p>") + "</p>", now, false);
                 } catch (Exception ignored) { /* Individual malformed flash. */ }
             }
         } else if (category == 4) {
@@ -300,7 +312,7 @@ final class DashboardRepository {
             if (!data.getString("status").equals("ok")) throw new IllegalArgumentException("Game source unavailable");
             for (GameNews.Item item : GameNews.parse(data.getString("body"))) {
                 String title = plain(item.title), brief = plain(item.brief);
-                if (GameNews.relevant(title,brief)) addStory(result,seen,category,title,brief,item.url,item.time,"",now);
+                if (GameNews.relevant(title,brief)) addStory(result,seen,category,title,brief,item.url,item.time,"",now,false);
             }
         } else {
             for (RssFeed.Item item : RssFeed.parse(response)) {
@@ -309,8 +321,32 @@ final class DashboardRepository {
                 // RSS link footers become dead text in a remote-only reader; retain the
                 // publisher credit in our own header instead of filling the summary with URLs.
                 if (category == 5) body = body.replaceAll("(?is)<p>\\s*(?:🔗|via\\s+AIHOT\\b).*?</p\\s*>","");
-                addStory(result, seen, category, title, plain(body), item.url, RssFeed.date(item.date), body, now);
+                addStory(result, seen, category, title, plain(body), item.url, RssFeed.date(item.date), body, now, false);
             }
+        }
+        Collections.sort(result, (a, b) -> Long.compare(b.time, a.time));
+        return Collections.unmodifiableList(new ArrayList<>(result.subList(0, Math.min(12, result.size()))));
+    }
+
+    /** English edition: every category is publisher RSS; science stays the interleaved two-publisher pair. */
+    static List<Story> parseEnglishFeed(String response, int category) throws Exception {
+        List<Story> result = new ArrayList<>();
+        HashSet<String> seen = new HashSet<>();
+        long now = System.currentTimeMillis();
+        if (category == 3) {
+            String[] feeds = unpackScience(response);
+            List<ScienceNews.Item> first = feeds[0].isEmpty() ? Collections.emptyList() : ScienceNews.parse(ScienceNews.EN, 0, feeds[0]);
+            List<ScienceNews.Item> second = feeds[1].isEmpty() ? Collections.emptyList() : ScienceNews.parse(ScienceNews.EN, 1, feeds[1]);
+            for (ScienceNews.Item item : ScienceNews.merge(first, second, now)) {
+                String brief = plain(item.brief);
+                result.add(new Story(plain(item.title), brief.length() > 360 ? brief.substring(0, 360) + "…" : brief,
+                    item.url, item.time, item.publisher, ""));
+            }
+            return Collections.unmodifiableList(result);
+        }
+        for (RssFeed.Item item : RssFeed.parse(response)) {
+            String title = plain(item.title);
+            addStory(result, seen, category, title, plain(item.body()), item.url, RssFeed.date(item.date), item.body(), now, true);
         }
         Collections.sort(result, (a, b) -> Long.compare(b.time, a.time));
         return Collections.unmodifiableList(new ArrayList<>(result.subList(0, Math.min(12, result.size()))));
@@ -331,10 +367,10 @@ final class DashboardRepository {
         return Html.fromHtml(html).toString().replace("\ufffc", "").replace('\u00a0', ' ').replaceAll("\\n{3,}","\n\n").trim();
     }
     private static void addStory(List<Story> result, HashSet<String> seen, int category, String title,
-                                 String text, String url, long time, String body, long now) {
-        String address = NewsReaderPolicy.address(url);
+                                 String text, String url, long time, String body, long now, boolean english) {
+        String address = NewsReaderPolicy.address(url, english);
         try {
-            if (address == null || !NewsSources.articleHost(category, new URL(address).getHost())
+            if (address == null || !NewsSources.articleHost(category, new URL(address).getHost(), english)
                 || title.isEmpty() || !DashboardPolicy.fresh(time, now, NEWS_MAX_AGE) || !seen.add(address)) return;
             String brief = text.length() > 360 ? text.substring(0, 360) + "…" : text;
             // AIHOT publishes curated summaries, not full articles. Read the supplied feed text
@@ -342,7 +378,7 @@ final class DashboardRepository {
             String article = !text.isEmpty() && (category == 2 || category == 5 || text.length() >= 500)
                 && body.length() <= 60_000 ? body : "";
             result.add(new Story(title.length() > 160 ? title.substring(0, 160) + "…" : title,
-                brief, address, time, NewsSources.PUBLISHERS[category], article));
+                brief, address, time, NewsSources.publishers(english)[category], article));
         } catch (java.net.MalformedURLException ignored) {}
     }
 

@@ -177,8 +177,9 @@ final class DashboardPanel {
             }
         }
         String time = shown.isEmpty() ? "" : format(shown.get(0).time, "MM-dd HH:mm");
-        newsMeta.setText(NewsSources.PUBLISHERS[category] + (data.busy(category) ? activity.getString(R.string.updating) : failed ? activity.getString(R.string.cached) : "") + (time.isEmpty() || data.busy(category) ? "" : " · " + time));
-        newsMeta.setTextSize(failed || NewsSources.PUBLISHERS[category].length() > 3 ? 9 : 10);
+        String publisher = NewsSources.publishers(UiLocale.english(activity))[category];
+        newsMeta.setText(publisher + (data.busy(category) ? activity.getString(R.string.updating) : failed ? activity.getString(R.string.cached) : "") + (time.isEmpty() || data.busy(category) ? "" : " · " + time));
+        newsMeta.setTextSize(failed || publisher.length() > 3 ? 9 : 10);
         next.setText(pages > 1 ? (page + 1) + "/" + pages + " ›" : activity.getString(R.string.refresh));
         next.setContentDescription(pages > 1 ? activity.getString(R.string.next_news_page_hold_ok_to_refresh) : activity.getString(R.string.refresh_news));
         next.setOnClickListener(v -> { if (pages > 1) { page++; render(); } else refreshNews(); });

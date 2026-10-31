@@ -28,6 +28,11 @@ public final class ArticleHtmlTest {
         check(ArticleHtml.extract("<script>var contentdate = '<p>"+text+"\\'quoted\\'</p>';</script>","news.cctv.com").contains("'quoted'"));
         check(ArticleHtml.extract("<script>var contentdate = '<p>unterminated", "news.cctv.com") == null);
         check(!ArticleHtml.clean("<p>[!--begin:htmlVideoCode--]private player id[!--end:htmlVideoCode--]</p>").contains("player id"));
+        check(ArticleHtml.extract("<div id='maincontent'><p>" + text + "</p></div>", "www.theguardian.com") != null);
+        check(ArticleHtml.extract("<div id='story_text'><p>" + text + "</p></div>", "www.sciencedaily.com") != null);
+        check(ArticleHtml.extract("<div id='maincontent'><article><p>" + text + "</p></article></div>", "www.theguardian.com") != null);
+        check(ArticleHtml.extract("<div id='maincontent'><p>short</p></div>", "www.theguardian.com") == null);
+        check(ArticleHtml.extract("<div id='story_text'><p>" + text + "</p></div>", "www.sciencedaily.com.attacker.test") == null);
         System.out.println("PASS: " + assertions + " static article assertions");
         for (String file : args) {
             String source = new String(java.nio.file.Files.readAllBytes(java.nio.file.Paths.get(file)),java.nio.charset.StandardCharsets.UTF_8);

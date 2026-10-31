@@ -15,7 +15,9 @@ import java.util.regex.Pattern;
 /** Publisher-specific scientific reporting, balanced without subject-keyword guessing. */
 final class ScienceNews {
     static final long MAX_AGE = 7 * 24 * 60 * 60_000L;
+    static final int ZH = 0, EN = 1;
     static final String[] PUBLISHERS = {"科学网", "科技日报"};
+    static final String[] EN_PUBLISHERS = {"Phys.org", "ScienceDaily"};
     private static final Pattern DAILY = Pattern.compile(
         "<div\\s+class=['\"]content_right_top_item(?:\\s+[^'\"]*)?['\"]\\s*>\\s*"
         + "<div\\s+class=['\"]content_right_top_item_title['\"]\\s*>\\s*"
@@ -37,17 +39,17 @@ final class ScienceNews {
         final boolean partial;
         Batch(String[] responses,boolean partial) {this.responses=responses;this.partial=partial;}
     }
-    static Batch load(String[] cached,Loader loader,long now) throws Exception {
+    static Batch load(int edition, String[] cached, Loader loader, long now) throws Exception {
         String[] responses={"",""};boolean partial=false;
         for(int i=0;i<2;i++) {
             try {
                 String value=loader.get(i);
-                if(merge(parse(i,value),Collections.emptyList(),now).isEmpty())throw new IllegalArgumentException("No recent science stories");
+                if(merge(parse(edition,i,value),Collections.emptyList(),now).isEmpty())throw new IllegalArgumentException("No recent science stories");
                 responses[i]=value;
             } catch(Exception error) {
                 partial=true;
                 try {
-                    if(!merge(parse(i,cached[i]),Collections.emptyList(),now).isEmpty())responses[i]=cached[i];
+                    if(!merge(parse(edition,i,cached[i]),Collections.emptyList(),now).isEmpty())responses[i]=cached[i];
                 } catch(Exception ignored) { /* Keep the other publisher working independently. */ }
             }
         }
@@ -55,32 +57,37 @@ final class ScienceNews {
         return new Batch(responses,partial);
     }
 
-    static List<Item> parse(int source, String response) throws Exception {
+    static List<Item> parse(int edition, int source, String response) throws Exception {
         List<Item> result = new ArrayList<>();
-        if (source == 0) {
-            for (RssFeed.Item row : RssFeed.parse(response)) {
-                add(result,source,row.title,row.body(),row.url,date(row.date));
-            }
-        } else if (source == 1) {
+        if (edition == ZH && source == 1) {
             // Only dated international-science / innovation cards. Ignore navigation,
             // policy commentary, promotional blocks and undated carousel headlines.
             String html=response.replaceAll("(?is)<!--.*?-->","");
             Matcher cards=DAILY.matcher(html);
-            while(cards.find()) add(result,source,cards.group(2),"",cards.group(1),date(cards.group(3).trim()));
+            while(cards.find()) add(result,edition,source,cards.group(2),"",cards.group(1),date(cards.group(3).trim()));
+        } else if (source == 0 || source == 1) {
+            for (RssFeed.Item row : RssFeed.parse(response)) {
+                add(result,edition,source,row.title,row.body(),row.url,date(row.date));
+            }
         } else throw new IllegalArgumentException("Unknown science publisher");
         Collections.sort(result,(a,b)->Long.compare(b.time,a.time));
         return result;
     }
 
-    private static void add(List<Item> result,int source,String title,String brief,String url,long time) {
-        String address=NewsReaderPolicy.address(url);
+    private static void add(List<Item> result,int edition,int source,String title,String brief,String url,long time) {
+        String address=NewsReaderPolicy.address(url, edition == EN);
         if(address==null || time==0)return;
         try {
             URI uri=new URI(address);
-            if (!(source==0 ? uri.getHost().equals("news.sciencenet.cn") && uri.getPath().startsWith("/htmlnews/")
-                : uri.getHost().equals("www.stdaily.com") && uri.getPath().startsWith("/web/gjxw/")))return;
+            boolean host = edition==EN
+                ? (source==0 ? uri.getHost().equals("phys.org") && uri.getPath().startsWith("/news/")
+                             : uri.getHost().equals("www.sciencedaily.com") && uri.getPath().startsWith("/releases/"))
+                : (source==0 ? uri.getHost().equals("news.sciencenet.cn") && uri.getPath().startsWith("/htmlnews/")
+                             : uri.getHost().equals("www.stdaily.com") && uri.getPath().startsWith("/web/gjxw/"));
+            if(!host)return;
             title=text(title);
-            if(!title.isEmpty())result.add(new Item(title,brief,address,time,PUBLISHERS[source]));
+            String publisher=(edition==EN?EN_PUBLISHERS:PUBLISHERS)[source];
+            if(!title.isEmpty())result.add(new Item(title,brief,address,time,publisher));
         } catch(java.net.URISyntaxException ignored) {}
     }
 
