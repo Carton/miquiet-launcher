@@ -221,7 +221,7 @@ public final class DashboardDataTest {
                 try (java.io.InputStream input = connection.getInputStream()) {
                     byte[] buffer = new byte[8192]; int count;
                     while ((count = input.read(buffer)) != -1) {
-                        if (output.size() + count > 512*1024) throw new AssertionError("Oversize feed");
+                        if (output.size() + count > 1024*1024) throw new AssertionError("Oversize feed");
                         output.write(buffer,0,count);
                     }
                 }
@@ -265,7 +265,7 @@ public final class DashboardDataTest {
             java.io.ByteArrayOutputStream output=new java.io.ByteArrayOutputStream();
             try(java.io.InputStream input=connection.getInputStream()) {
                 byte[] buffer=new byte[8192];int count;
-                while((count=input.read(buffer))!=-1){if(output.size()+count>512*1024)throw new java.io.IOException("Oversize response");output.write(buffer,0,count);}
+                while((count=input.read(buffer))!=-1){if(output.size()+count>1024*1024)throw new java.io.IOException("Oversize response");output.write(buffer,0,count);}
             }
             return output.toString("UTF-8");
         } finally {connection.disconnect();}

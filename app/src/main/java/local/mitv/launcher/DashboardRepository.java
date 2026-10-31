@@ -400,7 +400,8 @@ final class DashboardRepository {
                 int count;
                 while ((count = input.read(buffer)) != -1) {
                     if (Thread.currentThread().isInterrupted()) throw new java.io.InterruptedIOException();
-                    if (output.size() + count > 512 * 1024) throw new java.io.IOException("Response too large");
+                    // Full-content feeds (GameSpot mashup ~0.6 MB) and article pages need more than 0.5 MB.
+                    if (output.size() + count > 1024 * 1024) throw new java.io.IOException("Response too large");
                     output.write(buffer, 0, count);
                 }
                 return output.toString("UTF-8");
