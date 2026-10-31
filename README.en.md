@@ -18,7 +18,7 @@ Settings menu (4 columns × 3 rows):
 
 ![MiTV Quiet Launcher settings in English: icon-and-label grid with visible remote focus](docs/images/settings-en.png)
 
-See the [image notes](docs/images/README.md) for provenance and rights.
+See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) for screenshot provenance and rights.
 
 ## Everyday use
 

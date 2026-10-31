@@ -25,7 +25,7 @@
 - Home连续三次回归为2.61／2.11／2.16秒；这只代表本轮测量，不承诺所有场景都在3秒内。
 - 本项目无障碍服务仍绑定，Usage授权仍为allow；原厂广告屏保定时器仍为-2。本地屏保仍为0/24张图片、等待12分钟、轮播30秒；本轮只验证其入口和原配置保留。
 
-真实首页和设置截图位于[产品截图目录](images/README.md)，供中英文README展示。已人工检查无账户、地址、位置或私人照片等信息，PNG不含文本或EXIF元数据。其他取证保留于忽略的`nor/research/settings-grid-preview/`，不公开。
+真实首页和设置截图位于 docs/images/，来源与版权说明见仓库根目录 THIRD_PARTY_NOTICES.md。已人工检查无账户、地址、位置或私人照片等信息，PNG不含文本或EXIF元数据。其他取证保留于忽略的`nor/research/settings-grid-preview/`，不公开。
 
 ## 本轮范围
 

@@ -1,6 +1,12 @@
 # 数据源与第三方许可
 
-桌面本身从头编写，未修改或重新打包小米原厂 APK。HDMI无信号背景在设备运行时通过原厂资源包加载，不作为独立素材打包进本项目APK。README的实机截图展示运行时界面，其中原厂背景、第三方应用图标和新闻文字的权利仍归原权利人，不因此成为本项目MIT源码或可独立复用的素材。英文README的首页截图为模拟器截屏并合成了YouTube、Netflix、Prime Video、Disney+、Spotify的真实公开标识（Wikimedia Commons），仅用于展示应用栏布局；这些商标与标识不随本项目授权，也不代表相关应用已测试兼容。
+桌面本身从头编写，未修改或重新打包小米原厂 APK。HDMI无信号背景在设备运行时通过原厂资源包加载，不作为独立素材打包进本项目APK。截图中的原厂背景、第三方应用图标、商标和新闻文字的权利仍归原权利人，不因此成为本项目MIT源码或可独立复用的素材；截图仅用于说明本项目运行效果。
+
+## README 截图来源
+
+`docs/images/home.png`、`settings.png` 是维护者要求公开展示的 0.8.0 电视实机截图（2026-10-25，1920×1080），分别展示首页与 4×3 设置矩阵；不是设计稿或合成图。已人工检查不含账户、IP/MAC、Wi-Fi 名称、城市位置或私人照片，PNG 无附带文本或 EXIF。首页 HDMI 未连接，不把无信号背景当作真实视频预览的证据；应用、天气和新闻为拍摄时的示例状态。
+
+`docs/images/home-en.png`、`settings-en.png` 是 2026-10-30 在 AOSP Android 6/API23 电视模拟器（960×540，英文系统语言，经宿主机代理联网）截取的 0.8.8 开发版英文界面：BBC News 实时标题、Top News／World 标签、Stock launcher 按钮与 Launcher settings 设置矩阵。模拟器无 TV 输入 HAL，预览区显示"不支持预览"占位，不代表实机 HDMI 预览。`home-en.png` 的应用栏中 YouTube、Netflix、Prime Video、Disney+、Spotify 五个图标为后期用各品牌公开标识（Wikimedia Commons）合成，模拟器并未安装这些应用，不代表兼容性声明；新闻与天气为截屏时的真实在线数据，除此之外画面未做其他修改。原始取证截图留在忽略的 `nor/`，不发布。
 
 ## Tabler Icons — MIT
 

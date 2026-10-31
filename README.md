@@ -18,7 +18,7 @@
 
 ![简净桌面设置菜单实机截图：图标文字矩阵与遥控器焦点](docs/images/settings.png)
 
-截图来源与版权边界见[图片说明](docs/images/README.md)。
+截图来源与版权边界见 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。
 
 ## 使用
 
